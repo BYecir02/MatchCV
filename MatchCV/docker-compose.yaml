@@ -17,6 +17,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./frontend:/app
+      - /app/node_modules
     ports:
       - "8080:80"
     depends_on:
