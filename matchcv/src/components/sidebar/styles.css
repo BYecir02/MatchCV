@@ -9,7 +9,6 @@
 }
 
 .sidebar {
-  width: var(--sidebar-width);
   height: 100vh;
   background: var(--bg-dark);
   color: var(--text-color);
@@ -17,13 +16,12 @@
   position: fixed;
   top: 0;
   left: 0;
-  transition: width var(--transition-speed) ease-in-out;
   display: flex;
   flex-direction: column;
 }
 
 .sidebar.closed {
-  width: var(--sidebar-closed-width);
+
 }
 
 .toggle-btn {
@@ -35,6 +33,7 @@
   position: absolute;
   top: 20px;
   right: 20px;
+  border: 2px solid white;
 }
 
 .sidebar-header {
@@ -45,19 +44,26 @@
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-top: 60px;
 }
 
 .sidebar-content {
   flex: 1;
   overflow-y: auto;
   padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Assure un espacement constant entre les menus */
 }
 
 ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  flex-grow: 1; /* Permet au menu principal de prendre l'espace disponible */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centre verticalement les éléments */
 }
 
 .nav-link {

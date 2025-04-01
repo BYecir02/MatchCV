@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion"; // Import framer-motion
 import "./styles.css";
 import { FaHome, FaChartLine, FaFileAlt, FaBriefcase, FaUserCircle, FaCog, FaSignOutAlt } from "react-icons/fa";
 
@@ -35,36 +36,50 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
+    <motion.div
+      className="sidebar"
+      animate={{ width: isOpen ? "280px" : "80px" }} // Animation de largeur
+      transition={{ duration: 0.3, ease: "easeInOut" }} // Durée et easing
+    >
       <button className="toggle-btn" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? "<" : ">"}
       </button>
       <div className="sidebar-header">
-        <div className="logo">{isOpen ? "MatchCV" : ""}</div>
+        <div className="logo">{isOpen ? "MatchCV" : "Mc"}</div>
       </div>
       <div className="sidebar-content">
         <ul className="main-menu">
           {menuItems.map((item) => (
-            <li key={item.path}>
+            <motion.li
+              key={item.path}
+              initial={{ opacity: 0, x: -20 }} // Départ hors de la vue
+              animate={{ opacity: 1, x: 0 }} // Animation vers la position finale
+              transition={{ duration: 0.2, delay: menuItems.indexOf(item) * 0.1 }} // Délai pour chaque élément
+            >
               <Link to={item.path} className={`nav-link ${location.pathname === item.path ? "active" : ""}`}>
                 <span className="icon">{item.icon}</span>
-                {isOpen && <span className="text">{item.name}</span>}
+                {isOpen && <motion.span className="text">{item.name}</motion.span>}
               </Link>
-            </li>
+            </motion.li>
           ))}
         </ul>
         <ul className="bottom-menu">
           {bottomMenuItems.map((item) => (
-            <li key={item.path}>
+            <motion.li
+              key={item.path}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2, delay: bottomMenuItems.indexOf(item) * 0.1 }}
+            >
               <Link to={item.path} className={`nav-link ${location.pathname === item.path ? "active" : ""}`}>
                 <span className="icon">{item.icon}</span>
-                {isOpen && <span className="text">{item.name}</span>}
+                {isOpen && <motion.span className="text">{item.name}</motion.span>}
               </Link>
-            </li>
+            </motion.li>
           ))}
         </ul>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
