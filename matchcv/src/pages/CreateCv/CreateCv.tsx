@@ -1,4 +1,4 @@
-import Sidebar from "../components/sidebar/index";
+import Sidebar from "../../components/sidebar/index";
 
 const CreateCv = () => {
   return (

@@ -3,10 +3,17 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import "./styles.css";
 import { FaHome, FaChartLine, FaFileAlt, FaBriefcase, FaUserCircle, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { FiAlignJustify } from "react-icons/fi"; 
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const location = useLocation();
+
+  const handleMenuClick = () => {
+    if (!isOpen) {
+      setIsOpen(true); 
+    }
+  };
 
   const menuItems = [
     { path: "/", name: "Accueil", icon: <FaHome /> },
@@ -42,21 +49,25 @@ const Sidebar = () => {
       transition={{ duration: 0.3, ease: "easeInOut" }} // Durée et easing
     >
       <button className="toggle-btn" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? "<" : ">"}
+        {isOpen ? <FiAlignJustify /> : ">"}
       </button>
       <div className="sidebar-header">
-        <div className="logo">{isOpen ? "MatchCV" : "Mc"}</div>
+        <div className="logo">{isOpen ? "MatchCV" : "MC"}</div>
       </div>
       <div className="sidebar-content">
         <ul className="main-menu">
           {menuItems.map((item) => (
             <motion.li
               key={item.path}
-              initial={{ opacity: 0, x: -20 }} // Départ hors de la vue
-              animate={{ opacity: 1, x: 0 }} // Animation vers la position finale
+              initial={{ opacity: 0, x: -20 }} 
+              animate={{ opacity: 1, x: 0 }} 
               transition={{ duration: 0.2, delay: menuItems.indexOf(item) * 0.1 }} // Délai pour chaque élément
             >
-              <Link to={item.path} className={`nav-link ${location.pathname === item.path ? "active" : ""}`}>
+              <Link
+                to={item.path}
+                className={`nav-link ${location.pathname === item.path ? "active" : ""}`}
+                onClick={handleMenuClick} // Gère l'ouverture si nécessaire
+              >
                 <span className="icon">{item.icon}</span>
                 {isOpen && <motion.span className="text">{item.name}</motion.span>}
               </Link>
@@ -71,7 +82,11 @@ const Sidebar = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2, delay: bottomMenuItems.indexOf(item) * 0.1 }}
             >
-              <Link to={item.path} className={`nav-link ${location.pathname === item.path ? "active" : ""}`}>
+              <Link
+                to={item.path}
+                className={`nav-link ${location.pathname === item.path ? "active" : ""}`}
+                onClick={handleMenuClick} // Gère l'ouverture si nécessaire
+              >
                 <span className="icon">{item.icon}</span>
                 {isOpen && <motion.span className="text">{item.name}</motion.span>}
               </Link>
