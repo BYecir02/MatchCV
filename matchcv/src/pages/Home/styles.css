@@ -1,0 +1,45 @@
+.dashboard-container {
+    display: grid;
+    grid-template-columns: auto 1fr; /* Sidebar + contenu principal */
+    height: 100vh; /* Prend toute la hauteur de l'écran */
+  }
+  
+  .sidebar-container {
+    flex-shrink: 0;
+    min-width: 200px; /* Largeur minimale de la sidebar */
+    max-width: 300px; /* Largeur maximale de la sidebar */
+  }
+  
+  .content-container {
+    padding: 24px;
+    overflow-y: auto; /* Permet le défilement si le contenu dépasse */
+    background-color: #ffffff; /* Optionnel : couleur de fond */
+  }
+  
+  .title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+  
+  .button {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .button:hover {
+    background-color: #0056b3;
+  }
+
+  .full-height {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }

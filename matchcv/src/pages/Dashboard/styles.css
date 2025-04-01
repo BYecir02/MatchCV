@@ -1,0 +1,14 @@
+.dashboard-container {
+    display: flex;
+    height: 100vh; /* Prend toute la hauteur de l'écran */
+  }
+  
+  .sidebar-container {
+    flex-shrink: 0; /* Empêche la colonne de la sidebar de rétrécir */
+  }
+  
+  .content-container {
+    flex-grow: 1; /* Permet à la colonne du contenu principal de prendre tout l'espace restant */
+    padding: 24px; /* Ajoute un espacement autour du contenu */
+    overflow-y: auto; /* Permet le défilement si le contenu dépasse */
+  }
