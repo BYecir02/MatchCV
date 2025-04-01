@@ -13,7 +13,6 @@
   .content-container {
     padding: 24px;
     overflow-y: auto; /* Permet le défilement si le contenu dépasse */
-    background-color: #ffffff; /* Optionnel : couleur de fond */
   }
   
   .title {

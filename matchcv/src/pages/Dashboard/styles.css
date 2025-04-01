@@ -4,7 +4,7 @@
   }
   
   .sidebar-container {
-    flex-shrink: 0; /* Empêche la colonne de la sidebar de rétrécir */
+    flex-shrink: 0; 
   }
   
   .content-container {
