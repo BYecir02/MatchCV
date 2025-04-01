@@ -1,241 +1,475 @@
 import Sidebar from "../../components/sidebar/index";
 import "./styles.css";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const cvData = {
-    // 1. En-tête
-    header: {
-      name: "BADIROU Mohamed Yecir",
+  const navigate = useNavigate(); // Hook pour la navigation
+
+  const userProfile = {
+    // 1. Identité complète
+    identity: {
+      fullName: "BADIROU Mohamed Yecir",
       title: "Développeur Fullstack | Alternance",
-      rythme: "Rythme : 3 semaines en entreprise / 1 semaine à l'école",
-      contact: {
-        phone: "📞 0783842794",
-        email: "📧 Badirouyecir@gmail.com",
-        location: "📍 Villeneuve d'Ascq 59650",
-        permis: "🔍 Permis B"
+      profileImage: "https://th.bing.com/th/id/OIP.RUnTNUv-Fk-jpRkd7Vjn6gHaDt?rs=1&pid=ImgDetMain",
+      personalDetails: {
+        birthDate: "15/03/2000",
+        nationality: "Béninoise",
+        address: "10 Rue de l'Université, Villeneuve d'Ascq 59650",
+        phone: "+33 7 83 84 27 94",
+        email: "badirouyecir@gmail.com",
+        linkedIn: "linkedin.com/in/mohamed-yecir",
+        github: "github.com/mohamed-yecir",
+        permis: "Permis B"
       }
     },
-  
-    // 2. À propos (accroche)
-    about: "Étudiant en informatique passionné par les langages de programmation, je recherche une alternance pour mettre en pratique mes compétences en programmation et contribuer à des projets innovants. Dynamique, curieux et rigoureux, je suis prêt à m'investir pleinement pour apprendre et progresser au sein d'une équipe.",
-  
-    // 3. Expériences (en premier après l'accroche)
-    experiences: [
-      {
-        position: "Employé commercial ELDPH (Super U)",
-        period: "Juillet 2024 - Août 2024",
-        location: "La madeleine France",
-        tasks: ["Réapprovisionnement", "Mise en rayon", "Entretien"]
-      },
-      {
-        position: "Employé commercial (KESED Services)",
-        period: "Octobre 2021 - Juin 2023",
-        location: "Cotonou Bénin",
-        tasks: ["Service client", "Gestion des stocks et inventaires", "Entretien"]
-      },
-      {
-        position: "Stage Académique (Safar Travels & Tours)",
-        period: "Juillet 2022 - Août 2022",
-        location: "Cotonou Bénin",
-        tasks: ["Réservations et ventes de billets", "Relations clients et entretiens"]
-      }
-    ],
-  
-    // 4. Formation
-    education: [
-      {
-        title: "CYCLE INGENIEUR",
-        institution: "Institut Supérieur de l'Electronique et du Numérique (ISEN)",
-        period: "Depuis 2023",
-        location: "Lille France"
-      },
-      {
-        title: "CYCLE PREPARATOIRE",
-        institution: "Cour Préparatoire Sainte Marie - Stella (CPMS)",
-        period: "2021 - 2023",
-        location: "Cotonou Bénin"
-      },
-      {
-        title: "BACCALAUREAT SCIENTIFIQUE D",
-        institution: "Complexe scolaire Le Rocher",
-        period: "2021",
-        location: "Cotonou Bénin"
-      }
-    ],
-  
-    // 5. Compétences (organisées par catégories)
-    skills: {
-      "Développement Web": [
-        "JavaScript (React, Vue, Node)",
-        "Python (Django)",
-        "HTML/CSS"
+
+    // 2. Situation professionnelle
+    professionalStatus: {
+      current: "Étudiant en cycle ingénieur - Recherche alternance",
+      rythme: "3 semaines entreprise / 1 semaine école",
+      availability: "Disponible à partir de Septembre 2024",
+      desiredSalary: "Selon convention d'alternance",
+      mobility: "Nord de la France (Lille et alentours)"
+    },
+
+    // 3. À propos détaillé
+    about: {
+      summary: "Étudiant en informatique passionné par les langages de programmation, je recherche une alternance pour mettre en pratique mes compétences en programmation et contribuer à des projets innovants.",
+      personality: [
+        "Dynamique et curieux",
+        "Rigoureux dans mon travail",
+        "Esprit d'équipe développé",
+        "Capacité d'adaptation"
       ],
-      "Mobile & Design": [
-        "Flutter",
-        "Figma",
-        "Farmer"
-      ],
-      "Outils & Bases de données": [
-        "VS Code",
-        "MySQL",
-        "SQLite",
-        "Git"
+      motivations: [
+        "Apprendre de nouvelles technologies",
+        "Travailler sur des projets concrets",
+        "Évoluer dans un environnement professionnel"
       ]
     },
-  
-    // 6. Projets (avec résultats concrets si possible)
-    projects: [
+
+    // 4. Parcours académique complet
+    education: [
       {
-        name: "Application de gestion de sortie",
-        period: "Juin 2024",
-        description: "Application web complète avec système d'authentification et base de données, permettant l'organisation d'événements pour groupes.",
-        technologies: "React, Node.js, Express, MySQL",
-        achievements: [
-          "Réduction du temps d'organisation des événements de 60%",
-          "Gestion centralisée des participants"
+        degree: "Cycle Ingénieur en Informatique",
+        institution: "ISEN Lille",
+        period: "2023 - 2026 (en cours)",
+        details: [
+          "Spécialisation en développement web et mobile",
+          "Cours avancés en algorithmique et structures de données",
+          "Projets pratiques en équipe"
         ]
       },
       {
-        name: "Desktop Portfolio (en cours)",
-        period: "2024",
-        description: "Environnement de bureau interactif présentant mes projets de manière innovante.",
-        technologies: "React, Figma",
-        achievements: [
-          "Interface UX primée lors d'un concours étudiant"
+        degree: "Classe Préparatoire Scientifique",
+        institution: "CPMS Cotonou",
+        period: "2021 - 2023",
+        details: [
+          "Formation intensive en mathématiques et physique",
+          "Préparation aux concours d'ingénieur"
+        ]
+      },
+      {
+        degree: "Baccalauréat Scientifique",
+        institution: "Complexe scolaire Le Rocher",
+        period: "2021",
+        details: [
+          "Mention Bien",
+          "Option Sciences de l'Ingénieur"
         ]
       }
     ],
-  
-    // 7. Langues & Centres d'intérêt (en fin de document)
-    languages: ["🇫🇷 Français - Natif", "🇬🇧 Anglais - Courant"],
-    interests: ["🏀 Basketball compétitif", "✈️ Voyages internationaux", "🤖 Robotique DIY"]
+
+    // 5. Expériences professionnelles détaillées
+    experiences: [
+      {
+        position: "Employé commercial",
+        company: "Super U - La Madeleine",
+        period: "Juillet 2024 - Août 2024",
+        location: "France",
+        responsibilities: [
+          "Gestion des stocks et réapprovisionnement des rayons",
+          "Service client et conseil aux acheteurs",
+          "Mise en place des promotions et présentoirs"
+        ],
+        achievements: [
+          "Optimisation du temps de réapprovisionnement de 20%",
+          "Recommandé par le manager pour mon efficacité"
+        ]
+      },
+      {
+        position: "Employé commercial",
+        company: "KESED Services",
+        period: "Octobre 2021 - Juin 2023",
+        location: "Cotonou, Bénin",
+        responsibilities: [
+          "Gestion des inventaires et commandes",
+          "Relation client et gestion des réclamations",
+          "Formation des nouveaux employés"
+        ],
+        achievements: [
+          "Mise en place d'un système de gestion des stocks",
+          "Augmentation de la satisfaction client de 15%"
+        ]
+      }
+    ],
+
+    // 6. Compétences techniques approfondies
+    technicalSkills: {
+      languages: [
+        { name: "JavaScript", level: 4, projects: 5 },
+        { name: "Python", level: 3, projects: 3 },
+        { name: "HTML/CSS", level: 4, projects: 6 }
+      ],
+      frameworks: [
+        { name: "React", level: 4 },
+        { name: "Node.js", level: 3 },
+        { name: "Django", level: 2 }
+      ],
+      tools: ["Git", "VS Code", "Figma", "MySQL", "Docker"],
+      methodologies: ["Agile", "SCRUM", "Test-Driven Development"]
+    },
+
+    // 7. Projets personnels et académiques
+    projects: [
+      {
+        name: "Application de gestion d'événements",
+        role: "Développeur Fullstack",
+        period: "Juin 2024",
+        description: "Plateforme complète avec système d'authentification et gestion des participants pour événements universitaires.",
+        technologies: ["React", "Node.js", "Express", "MySQL"],
+        features: [
+          "Inscription en ligne des participants",
+          "Gestion des paiements",
+          "Tableau de bord administrateur"
+        ],
+        link: "github.com/mohamed-yecir/event-app"
+      },
+      {
+        name: "Portfolio Desktop",
+        role: "Développeur Frontend",
+        period: "2024 (en cours)",
+        description: "Environnement de bureau interactif présentant mes compétences et projets de manière originale.",
+        technologies: ["React", "Framer Motion", "Figma"],
+        features: [
+          "Interface type bureau avec fenêtres interactives",
+          "Animation fluide entre les sections",
+          "Design personnalisable"
+        ]
+      }
+    ],
+
+    // 8. Langues et compétences interculturelles
+    languages: [
+      { language: "Français", level: "Langue maternelle", certification: null },
+      { language: "Anglais", level: "Courant (B2)", certification: "TOEIC 785" }
+    ],
+
+    // 9. Centres d'intérêt et activités
+    interests: [
+      {
+        category: "Sport",
+        activities: [
+          "Basketball en club depuis 5 ans",
+          "Participation à des tournois universitaires"
+        ]
+      },
+      {
+        category: "Technologie",
+        activities: [
+          "Veille technologique quotidienne",
+          "Participation à des hackathons",
+          "Robotique DIY"
+        ]
+      },
+      {
+        category: "Voyages",
+        activities: [
+          "Europe: France, Belgique",
+          "Afrique: Bénin, Togo"
+        ]
+      }
+    ],
+
+    // 10. Informations supplémentaires
+    additionalInfo: {
+      references: "Disponibles sur demande",
+      publications: [],
+      volunteer: [
+        "Tutorat en mathématiques pour collégiens (2022)",
+        "Organisation d'événements caritatifs"
+      ]
+    }
   };
 
   return (
-    <div className="dashboard-container full-height">
+    <div className="profile-container">
       <div className="sidebar-container">
         <Sidebar />
       </div>
-      <div className="content-container">
-        <h1 className="title">Mon CV</h1>
-        <div className="profile-card">
-          {/* 1. En-tête */}
-          <div className="cv-header">
-            <h1 className="cv-name">{cvData.header.name}</h1>
-            <h2 className="cv-title">{cvData.header.title}</h2>
-            <p className="cv-rythme">{cvData.header.rythme}</p>
-            <div className="cv-contact">
-              <span>{cvData.header.contact.location}</span>
-              <span>{cvData.header.contact.email}</span>
-              <span>{cvData.header.contact.phone}</span>
-              <span>{cvData.header.contact.permis}</span>
-            </div>
-          </div>
-
-          <hr className="cv-divider" />
-
-          {/* 2. À propos */}
-          <div className="cv-section">
-            <h2 className="section-title">À PROPOS DE MOI</h2>
-            <p className="about-text">{cvData.about}</p>
-          </div>
-
-          <hr className="cv-divider" />
-
-          {/* 3. Compétences */}
-          <div className="cv-section">
-            <h2 className="section-title">COMPÉTENCES</h2>
-            {Object.entries(cvData.skills).map(([category, skills], index) => (
-              <div key={index} className="skills-category">
-                <h3 className="skills-category-title">{category}</h3>
-                <ul className="skills-list">
-                  {skills.map((skill, skillIndex) => (
-                    <li key={skillIndex} className="skill-item">
-                      {skill}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          <hr className="cv-divider" />
-
-          {/* 4. Expériences professionnelles */}
-          <div className="cv-section">
-            <h2 className="section-title">EXPÉRIENCES PROFESSIONNELLES</h2>
-            {cvData.experiences.map((exp, index) => (
-              <div key={index} className="experience-item">
-                <h3 className="experience-position">{exp.position}</h3>
-                <p className="experience-period">
-                  {exp.period} | {exp.location}
-                </p>
-                <ul className="experience-tasks">
-                  {exp.tasks.map((task, taskIndex) => (
-                    <li key={taskIndex} className="task-item">
-                      {task}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          <hr className="cv-divider" />
-
-          {/* 5. Formation */}
-          <div className="cv-section">
-            <h2 className="section-title">FORMATION</h2>
-            {cvData.education.map((edu, index) => (
-              <div key={index} className="education-item">
-                <h3 className="education-title">{edu.title}</h3>
-                <p className="education-institution">{edu.institution}</p>
-                <p className="education-period">
-                  {edu.period} | {edu.location}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <hr className="cv-divider" />
-
-          {/* 6. Projets */}
-          <div className="cv-section">
-            <h2 className="section-title">PROJETS</h2>
-            {cvData.projects.map((project, index) => (
-              <div key={index} className="project-item">
-                <h3 className="project-name">- {project.name}</h3>
-                <p className="project-description">{project.description}</p>
-                <p className="project-technologies">
-                  Technologies : <strong>{project.technologies}</strong>
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <hr className="cv-divider" />
-
-          {/* 7. Langues et centres d'intérêt */}
-          <div className="cv-section">
-            <h2 className="section-title">LANGUES</h2>
-            <ul className="languages-list">
-              {cvData.languages.map((language, index) => (
-                <li key={index} className="language-item">
-                  {language}
-                </li>
-              ))}
-            </ul>
-
-            <h3 className="sub-section-title">CENTRES D'INTÉRÊT</h3>
-            <div className="interests-container">
-              {cvData.interests.map((interest, index) => (
-                <span key={index} className="interest-item">
-                  {interest}
-                </span>
-              ))}
-            </div>
-          </div>
+      
+      <div className="profile-content">
+        {/* Bouton pour modifier le profil */}
+        <div className="edit-profile-button-container">
+          <button
+            className="edit-profile-button"
+            onClick={() => navigate("/edit-profile")} // Redirige vers la page d'édition
+          >
+            Modifier / Compléter mon profil
+          </button>
         </div>
+
+        {/* Section Identité */}
+        <section className="identity-section">
+          <div className="identity-header">
+            <img src={userProfile.identity.profileImage} alt="Profile" className="profile-image" />
+            <div>
+              <h1>{userProfile.identity.fullName}</h1>
+              <h2>{userProfile.identity.title}</h2>
+            </div>
+          </div>
+          
+          <div className="personal-details">
+            <h3>Informations Personnelles</h3>
+            <div className="details-grid">
+              {Object.entries(userProfile.identity.personalDetails).map(([key, value]) => (
+                <div key={key} className="detail-item">
+                  <span className="detail-label">{key}:</span>
+                  <span className="detail-value">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Section Situation Professionnelle */}
+        <section className="section">
+          <h2>Situation Professionnelle</h2>
+          <div className="status-grid">
+            {Object.entries(userProfile.professionalStatus).map(([key, value]) => (
+              <div key={key} className="status-item">
+                <span className="status-label">{key}:</span>
+                <span className="status-value">{Array.isArray(value) ? value.join(", ") : value}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Section À Propos */}
+        <section className="section">
+          <h2>À Propos de Moi</h2>
+          <p className="about-summary">{userProfile.about.summary}</p>
+          
+          <div className="about-details">
+            <div>
+              <h3>Personnalité</h3>
+              <ul>
+                {userProfile.about.personality.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            
+            <div>
+              <h3>Motivations</h3>
+              <ul>
+                {userProfile.about.motivations.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Section Formation */}
+        <section className="section">
+          <h2>Parcours Académique</h2>
+          {userProfile.education.map((edu, i) => (
+            <div key={i} className="education-item">
+              <h3>{edu.degree} - {edu.institution}</h3>
+              <p className="period">{edu.period}</p>
+              <ul>
+                {edu.details.map((detail, j) => (
+                  <li key={j}>{detail}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+
+        {/* Section Expériences */}
+        <section className="section">
+          <h2>Expériences Professionnelles</h2>
+          {userProfile.experiences.map((exp, i) => (
+            <div key={i} className="experience-item">
+              <div className="experience-header">
+                <h3>{exp.position} - {exp.company}</h3>
+                <p className="location-period">{exp.location} | {exp.period}</p>
+              </div>
+              
+              <h4>Responsabilités:</h4>
+              <ul>
+                {exp.responsibilities.map((resp, j) => (
+                  <li key={j}>{resp}</li>
+                ))}
+              </ul>
+              
+              <h4>Réalisations:</h4>
+              <ul className="achievements">
+                {exp.achievements.map((ach, j) => (
+                  <li key={j}>{ach}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+
+        {/* Section Compétences Techniques */}
+        <section className="section">
+          <h2>Compétences Techniques</h2>
+          
+          <div className="skills-container">
+            <div>
+              <h3>Langages de Programmation</h3>
+              <div className="skills-grid">
+                {userProfile.technicalSkills.languages.map((skill, i) => (
+                  <div key={i} className="skill-item">
+                    <span>{skill.name}</span>
+                    <div className="skill-level">
+                      {[...Array(5)].map((_, j) => (
+                        <span key={j} className={j < skill.level ? "filled" : ""}>•</span>
+                      ))}
+                    </div>
+                    <span className="projects-count">{skill.projects} projets</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <h3>Frameworks & Bibliothèques</h3>
+              <div className="skills-grid">
+                {userProfile.technicalSkills.frameworks.map((skill, i) => (
+                  <div key={i} className="skill-item">
+                    <span>{skill.name}</span>
+                    <div className="skill-level">
+                      {[...Array(5)].map((_, j) => (
+                        <span key={j} className={j < skill.level ? "filled" : ""}>•</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <div className="other-skills">
+            <div>
+              <h3>Outils</h3>
+              <div className="tools-list">
+                {userProfile.technicalSkills.tools.map((tool, i) => (
+                  <span key={i} className="tool-tag">{tool}</span>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <h3>Méthodologies</h3>
+              <div className="methods-list">
+                {userProfile.technicalSkills.methodologies.map((method, i) => (
+                  <span key={i} className="method-tag">{method}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section Projets */}
+        <section className="section">
+          <h2>Projets Réalisés</h2>
+          {userProfile.projects.map((project, i) => (
+            <div key={i} className="project-item">
+              <div className="project-header">
+                <h3>{project.name}</h3>
+                <p className="project-period">{project.period} | {project.role}</p>
+              </div>
+              
+              <p className="project-description">{project.description}</p>
+              
+              <h4>Technologies utilisées:</h4>
+              <div className="technologies-list">
+                {project.technologies.map((tech, j) => (
+                  <span key={j} className="tech-tag">{tech}</span>
+                ))}
+              </div>
+              
+              <h4>Fonctionnalités clés:</h4>
+              <ul>
+                {project.features.map((feature, j) => (
+                  <li key={j}>{feature}</li>
+                ))}
+              </ul>
+              
+              {project.link && (
+                <a href={`https://${project.link}`} target="_blank" rel="noopener noreferrer" className="project-link">
+                  Voir le projet
+                </a>
+              )}
+            </div>
+          ))}
+        </section>
+
+        {/* Section Langues et Centres d'Intérêt */}
+        <section className="section">
+          <div className="languages-interests">
+            <div>
+              <h2>Langues</h2>
+              <ul className="languages-list">
+                {userProfile.languages.map((lang, i) => (
+                  <li key={i}>
+                    <strong>{lang.language}:</strong> {lang.level}
+                    {lang.certification && ` (${lang.certification})`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div>
+              <h2>Centres d'Intérêt</h2>
+              {userProfile.interests.map((interest, i) => (
+                <div key={i} className="interest-category">
+                  <h3>{interest.category}</h3>
+                  <ul>
+                    {interest.activities.map((activity, j) => (
+                      <li key={j}>{activity}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Section Informations Supplémentaires */}
+        <section className="section">
+          <h2>Informations Complémentaires</h2>
+          <div className="additional-info">
+            {Object.entries(userProfile.additionalInfo).map(([key, value]) => (
+              <div key={key} className="additional-item">
+                <h3>{key}:</h3>
+                {Array.isArray(value) && value.length > 0 ? (
+                  <ul>
+                    {value.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>{value || "Aucune information"}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );

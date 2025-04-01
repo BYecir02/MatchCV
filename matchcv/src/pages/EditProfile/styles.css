@@ -1,0 +1,57 @@
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar-container {
+  flex-shrink: 0;
+}
+
+.content-container {
+  flex-grow: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.edit-profile-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.save-button {
+  background-color: #4361ee;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #3a56d4;
+}
