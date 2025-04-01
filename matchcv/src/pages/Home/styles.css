@@ -1,7 +1,7 @@
 .dashboard-container {
-    display: grid;
     grid-template-columns: auto 1fr; /* Sidebar + contenu principal */
     height: 100vh; /* Prend toute la hauteur de l'écran */
+    display: flex;
   }
   
   .sidebar-container {
@@ -11,8 +11,9 @@
   }
   
   .content-container {
-    padding: 24px;
-    overflow-y: auto; /* Permet le défilement si le contenu dépasse */
+    flex: 1;
+    margin: 0 auto;
+    max-width: 1200px;
   }
   
   .title {

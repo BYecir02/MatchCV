@@ -3,7 +3,7 @@ import "./styles.css";
 
 const EditProfile = () => {
   return (
-    <div className="dashboard-container full-height">
+    <div className="dashboard-container">
       <div className="sidebar-container">
         <Sidebar />
       </div>
