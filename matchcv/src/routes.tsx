@@ -5,6 +5,8 @@ import CreateCv from "./pages/CreateCv/CreateCv";
 import Profile from "./pages/Profile";
 import CvTemplate from "./components/cv-templates/template1/index";
 import EditProfile from "./pages/EditProfile"; // Importez la page d'édition
+import Login from "./pages/auth/login";
+import Register from "./pages/auth/register";
 
 const AppRoutes = () => (
   <BrowserRouter>
@@ -15,6 +17,8 @@ const AppRoutes = () => (
       <Route path="/profile" element={<Profile />} />
       <Route path="/CvTemplate" element={<CvTemplate />} />
       <Route path="/edit-profile" element={<EditProfile />} /> {/* Ajoutez la route pour la page d'édition */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Register />} />
     </Routes>
   </BrowserRouter>
 );

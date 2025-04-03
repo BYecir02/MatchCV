@@ -52,7 +52,7 @@ const Sidebar = () => {
         {isOpen ? <FiAlignJustify /> : ">"}
       </button>
       <div className="sidebar-header">
-        <div className="logo">{isOpen ? "MatchCV" : "MC"}</div>
+        <div className="logo">{isOpen ? "MatchCV" : " "}</div>
       </div>
       <div className="sidebar-content">
         <ul className="main-menu">
