@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaGoogle, FaGithub } from "react-icons/fa";
 import { motion } from "framer-motion";
 import "./styles.css"; 
@@ -14,6 +14,13 @@ const Signup = () => {
     acceptTerms: false
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    document.body.classList.add("login-page");
+    return () => {
+      document.body.classList.remove("login-page");
+    };
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -34,16 +41,16 @@ const Signup = () => {
   };
 
   return (
-    <div className="auth-container"> {/* Classe générique */}
+    <div className="login-container"> {/* Classe générique */}
       <motion.div 
-        className="auth-card" // Supprimez le commentaire ici
+        className="login-card" // Supprimez le commentaire ici
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="auth-header"> {/* Classe générique */}
-          <h1 className="auth-title">Créer un compte</h1>
-          <p className="auth-subtitle">Rejoignez notre communauté</p>
+        <div className="login-header"> {/* Classe générique */}
+          <h1 className="login-title">Créer un compte</h1>
+          <p className="login-subtitle">Rejoignez notre communauté</p>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form"> {/* Classe générique */}
@@ -161,7 +168,7 @@ const Signup = () => {
 
           <motion.button
             type="submit"
-            className="auth-button"
+            className="login-button"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             disabled={isLoading || formData.password !== formData.confirmPassword}
@@ -187,7 +194,7 @@ const Signup = () => {
             </div>
           </div>
 
-          <p className="auth-footer">
+          <p className="signup-link">
             Déjà membre ? <a href="/login">Se connecter</a>
           </p>
         </form>

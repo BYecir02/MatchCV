@@ -1,21 +1,3 @@
-.dashboard-container {
-    grid-template-columns: auto 1fr; /* Sidebar + contenu principal */
-    height: 100vh; /* Prend toute la hauteur de l'écran */
-    display: flex;
-  }
-  
-  .sidebar-container {
-    flex-shrink: 0;
-    min-width: 200px; /* Largeur minimale de la sidebar */
-    max-width: 300px; /* Largeur maximale de la sidebar */
-  }
-  
-  .content-container {
-    flex: 1;
-    margin: 0 auto;
-    max-width: 1200px;
-  }
-  
   .title {
     font-size: 2rem;
     font-weight: bold;

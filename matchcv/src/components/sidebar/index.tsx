@@ -3,7 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import "./styles.css";
 import { FaHome, FaChartLine, FaFileAlt, FaBriefcase, FaUserCircle, FaCog, FaSignOutAlt } from "react-icons/fa";
-import { FiAlignJustify } from "react-icons/fi"; 
+import { FaRegEye } from "react-icons/fa";
+import { LuEyeClosed } from "react-icons/lu";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -48,8 +49,8 @@ const Sidebar = () => {
       animate={{ width: isOpen ? "280px" : "80px" }} // Animation de largeur
       transition={{ duration: 0.3, ease: "easeInOut" }} // Durée et easing
     >
-      <button className="toggle-btn" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? <FiAlignJustify /> : ">"}
+      <button className="toggle-btn" onClick={() => setIsOpen(!isOpen)}> <span className="toggle-icon">
+        {isOpen ? <FaRegEye /> : <LuEyeClosed />} </span>
       </button>
       <div className="sidebar-header">
         <div className="logo">{isOpen ? "MatchCV" : " "}</div>

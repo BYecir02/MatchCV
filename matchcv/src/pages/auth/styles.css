@@ -96,7 +96,8 @@
     border-radius: var(--border-radius);
     font-size: 0.95rem;
     transition: all var(--transition-speed) ease;
-    background-color: var(--bg-light);
+    background-color: white;
+    color: black;
   }
   
   .input-field:focus {

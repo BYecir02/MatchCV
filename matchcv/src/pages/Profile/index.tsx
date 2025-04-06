@@ -203,12 +203,12 @@ const Profile = () => {
   };
 
   return (
-    <div className="profile-container">
+    <div className="main-container">
       <div className="sidebar-container">
         <Sidebar />
       </div>
       
-      <div className="profile-content">
+      <div className="content-container">
         {/* Bouton pour modifier le profil */}
         <div className="edit-profile-button-container">
           <button

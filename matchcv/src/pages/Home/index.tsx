@@ -3,7 +3,7 @@ import "./styles.css";
 
 const Home = () => {
   return (
-    <div className="dashboard-container">
+    <div className="main-container">
       <div className="sidebar-container">
         <Sidebar />
       </div>

@@ -2,7 +2,7 @@ import Sidebar from "../../components/sidebar/index";
 
 const CreateCv = () => {
   return (
-    <div className="dashboard-container">
+    <div className="main-container">
       <div className="sidebar-container">
         <Sidebar />
       </div>

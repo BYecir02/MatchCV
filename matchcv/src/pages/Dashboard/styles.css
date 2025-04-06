@@ -1,13 +1,1 @@
-.dashboard-container {
-    display: flex;
-    height: 100vh; /* Prend toute la hauteur de l'écran */
-  }
-  
-  .sidebar-container {
-    flex-shrink: 0; 
-  }
-  
-  .content-container {
-    flex-grow: 1; 
-    padding-left: 120px; 
-  }
+
