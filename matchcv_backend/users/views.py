@@ -4,6 +4,8 @@ from rest_framework import status
 from .serializers import UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
 
 class RegisterView(APIView):
     def post(self, request):
@@ -32,3 +34,17 @@ class LoginView(APIView):
                 'access': str(refresh.access_token),
             })
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]  # Nécessite un utilisateur connecté
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+            if not refresh_token:
+                return Response({"error": "Refresh token requis"}, status=status.HTTP_400_BAD_REQUEST)
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # Ajoute le token à la liste noire
+            return Response({"message": "Déconnexion réussie"}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -11,3 +11,9 @@ export const login = async (email, password) => {
   const response = await axios.post(`${API_URL}login/`, { email, password });
   return response.data;
 };
+
+export const logout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    window.location.href = '/login'; // Redirection vers la page de connexion
+  };

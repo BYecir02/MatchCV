@@ -7,6 +7,7 @@ import CvTemplate from "./components/cv-templates/template1/index";
 import EditProfile from "./pages/EditProfile"; // Importez la page d'édition
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
+import Logout from "./pages/auth/logout";
 
 const AppRoutes = () => (
   <BrowserRouter>
@@ -19,6 +20,7 @@ const AppRoutes = () => (
       <Route path="/edit-profile" element={<EditProfile />} /> {/* Ajoutez la route pour la page d'édition */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Register />} />
+      <Route path="/logout" element={<Logout />} /> {/* Ajoutez la route pour la déconnexion */}
     </Routes>
   </BrowserRouter>
 );
