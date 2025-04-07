@@ -18,15 +18,17 @@ const Login = () => {
     };
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const data = await login(email, password);
-      localStorage.setItem("authToken", data.key); // Stocke le token
+      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("refresh_token", data.refresh);
       alert("Connexion réussie !");
+      // Rediriger vers une page protégée si besoin
     } catch (error) {
-      alert("Erreur de connexion !");
+      alert("Erreur de connexion : " + (error.response?.data?.error || "Vérifiez vos informations"));
     } finally {
       setIsLoading(false);
     }

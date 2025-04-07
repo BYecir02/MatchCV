@@ -12,7 +12,7 @@ const Signup = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    acceptTerms: false
+    acceptTerms: false,
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,22 +23,27 @@ const Signup = () => {
     };
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      alert("Les mots de passe ne correspondent pas !");
+      return;
+    }
     setIsLoading(true);
     try {
-      const data = await register(formData.username, formData.password, formData.confirmPassword);
+      const data = await register(formData.username, formData.email, formData.password);
       alert("Inscription réussie !");
+      // Rediriger vers login si besoin : window.location.href = '/login';
     } catch (error) {
-      alert("Erreur lors de l'inscription !");
+      alert("Erreur lors de l'inscription : " + (error.response?.data?.detail || "Vérifiez vos informations"));
     } finally {
       setIsLoading(false);
     }

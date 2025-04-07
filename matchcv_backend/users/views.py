@@ -1,34 +1,28 @@
-from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
+from rest_framework import status
+from .serializers import UserSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from .serializers import UserCreateSerializer, UserSerializer
 
-class RegisterView(generics.CreateAPIView):
-    serializer_class = UserCreateSerializer
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            'user': UserSerializer(user).data,
-            'token': token.key
-        }, status=status.HTTP_201_CREATED)
-
-class LoginView(generics.GenericAPIView):
-    serializer_class = UserSerializer
-
-    def post(self, request, *args, **kwargs):
+class LoginView(APIView):
+    def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
-        user = authenticate(email=email, password=password)
-        
+        user = authenticate(email=email, password=password)  # Nécessite un modèle User personnalisé ou une astuce
+
         if user:
-            token, created = Token.objects.get_or_create(user=user)
+            refresh = RefreshToken.for_user(user)
             return Response({
-                'user': self.get_serializer(user).data,
-                'token': token.key
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
             })
-        return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
