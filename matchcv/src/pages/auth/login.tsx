@@ -25,9 +25,11 @@ const Login = () => {
       const data = await login(email, password);
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
+      console.log("Connexion réussie :", data);  // Pour debug
       alert("Connexion réussie !");
-      // Rediriger vers une page protégée si besoin
+      window.location.href = '/dashboard';  // Redirection
     } catch (error) {
+      console.error("Erreur connexion :", error.response);  // Pour debug
       alert("Erreur de connexion : " + (error.response?.data?.error || "Vérifiez vos informations"));
     } finally {
       setIsLoading(false);
@@ -40,7 +42,7 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <motion.div 
+      <motion.div
         className="login-card"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -117,11 +119,7 @@ const Login = () => {
             whileTap={{ scale: 0.98 }}
             disabled={isLoading}
           >
-            {isLoading ? (
-              <span className="loading-spinner"></span>
-            ) : (
-              "Se connecter"
-            )}
+            {isLoading ? <span className="loading-spinner"></span> : "Se connecter"}
           </motion.button>
 
           <div className="social-login">

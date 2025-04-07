@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaGoogle, FaGithub } from "react-icons/fa";
 import { motion } from "framer-motion";
-import "./styles.css"; 
+import "./styles.css";
 import { register } from "../../services/authService";
 
 const Signup = () => {
@@ -40,29 +40,31 @@ const Signup = () => {
     setIsLoading(true);
     try {
       const data = await register(formData.username, formData.email, formData.password);
+      console.log("Inscription réussie :", data);  // Pour debug
       alert("Inscription réussie !");
-      // Rediriger vers login si besoin : window.location.href = '/login';
+      window.location.href = '/login';  // Redirection
     } catch (error) {
-      alert("Erreur lors de l'inscription : " + (error.response?.data?.detail || "Vérifiez vos informations"));
+      console.error("Erreur inscription :", error.response);  // Pour debug
+      alert("Erreur lors de l'inscription : " + (error.response?.data?.error || "Vérifiez vos informations"));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="login-container"> {/* Classe générique */}
-      <motion.div 
-        className="login-card" // Supprimez le commentaire ici
+    <div className="login-container">
+      <motion.div
+        className="login-card"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="login-header"> {/* Classe générique */}
+        <div className="login-header">
           <h1 className="login-title">Créer un compte</h1>
           <p className="login-subtitle">Rejoignez notre communauté</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-form"> {/* Classe générique */}
+        <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="username" className="input-label">
               <FaUser className="input-icon" />
@@ -140,7 +142,7 @@ const Signup = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 name="confirmPassword"
-                placeholder="••••••••"
+                placeholder="••••  ••••••••"
                 required
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -182,11 +184,7 @@ const Signup = () => {
             whileTap={{ scale: 0.98 }}
             disabled={isLoading || formData.password !== formData.confirmPassword}
           >
-            {isLoading ? (
-              <span className="loading-spinner"></span>
-            ) : (
-              "S'inscrire"
-            )}
+            {isLoading ? <span className="loading-spinner"></span> : "S'inscrire"}
           </motion.button>
 
           <div className="social-auth">

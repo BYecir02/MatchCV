@@ -17,7 +17,13 @@ class LoginView(APIView):
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
-        user = authenticate(email=email, password=password)  # Nécessite un modèle User personnalisé ou une astuce
+        # Puisque ton frontend envoie email, on va chercher l'utilisateur par email
+        try:
+            from django.contrib.auth.models import User
+            user = User.objects.get(email=email)
+            user = authenticate(username=user.username, password=password)
+        except User.DoesNotExist:
+            user = None
 
         if user:
             refresh = RefreshToken.for_user(user)
