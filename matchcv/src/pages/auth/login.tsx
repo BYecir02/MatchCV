@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaGoogle, FaGithub } from "react-icons/fa";
 import { motion } from "framer-motion";
 import "./styles.css";
+import { login } from "../../services/authService";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,14 +18,18 @@ const Login = () => {
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simuler une requête API
-    setTimeout(() => {
+    try {
+      const data = await login(email, password);
+      localStorage.setItem("authToken", data.key); // Stocke le token
+      alert("Connexion réussie !");
+    } catch (error) {
+      alert("Erreur de connexion !");
+    } finally {
       setIsLoading(false);
-      // Logique de connexion
-    }, 1500);
+    }
   };
 
   const togglePasswordVisibility = () => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaGoogle, FaGithub } from "react-icons/fa";
 import { motion } from "framer-motion";
 import "./styles.css"; 
+import { register } from "../../services/authService";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,14 +31,17 @@ const Signup = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simuler une requête API
-    setTimeout(() => {
+    try {
+      const data = await register(formData.username, formData.password, formData.confirmPassword);
+      alert("Inscription réussie !");
+    } catch (error) {
+      alert("Erreur lors de l'inscription !");
+    } finally {
       setIsLoading(false);
-      // Logique d'inscription
-    }, 1500);
+    }
   };
 
   return (
