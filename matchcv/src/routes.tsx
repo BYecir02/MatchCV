@@ -8,12 +8,20 @@ import EditProfile from "./pages/EditProfile"; // Importez la page d'édition
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
 import Logout from "./pages/auth/logout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const AppRoutes = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/create-cv" element={<CreateCv />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/CvTemplate" element={<CvTemplate />} />

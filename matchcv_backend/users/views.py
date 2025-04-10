@@ -48,3 +48,35 @@ class LogoutView(APIView):
             return Response({"message": "Déconnexion réussie"}, status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]  # Protège cette vue
+
+    def get(self, request):
+        return Response({
+            "message": f"Bienvenue {request.user.username} sur votre tableau de bord !",
+            "username": request.user.username
+        })
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create(user=request.user)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+
+    def post(self, request):
+        try:
+            profile = request.user.profile
+            serializer = ProfileSerializer(profile, data=request.data)
+        except Profile.DoesNotExist:
+            serializer = ProfileSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
