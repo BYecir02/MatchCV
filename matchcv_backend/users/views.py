@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
-from .models import Profile, PersonalDetail, ProfessionalStatus, AboutPersonality, AboutMotivation, TechnicalSkill, Language
+from .models import Profile, Experience, PersonalDetail, ProfessionalStatus, AboutPersonality, AboutMotivation, TechnicalSkill, Language
 
 class RegisterView(APIView):
     def post(self, request):
@@ -20,10 +20,10 @@ class LoginView(APIView):
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
-        # Puisque ton frontend envoie email, on va chercher l'utilisateur par email
         try:
-            from django.contrib.auth.models import User
             user = User.objects.get(email=email)
+            if not user.is_active:
+                return Response({'error': 'Compte désactivé'}, status=status.HTTP_403_FORBIDDEN)
             user = authenticate(username=user.username, password=password)
         except User.DoesNotExist:
             user = None
@@ -34,10 +34,10 @@ class LoginView(APIView):
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             })
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-    
+        return Response({'error': 'Identifiants invalides'}, status=status.HTTP_401_UNAUTHORIZED)
+
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]  # Nécessite un utilisateur connecté
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
@@ -45,13 +45,13 @@ class LogoutView(APIView):
             if not refresh_token:
                 return Response({"error": "Refresh token requis"}, status=status.HTTP_400_BAD_REQUEST)
             token = RefreshToken(refresh_token)
-            token.blacklist()  # Ajoute le token à la liste noire
+            token.blacklist()
             return Response({"message": "Déconnexion réussie"}, status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 class DashboardView(APIView):
-    permission_classes = [IsAuthenticated]  # Protège cette vue
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         return Response({
@@ -101,3 +101,14 @@ class ProfileView(APIView):
             return Response({"message": "Profile deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Profile.DoesNotExist:
             return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class DeleteExperienceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, experience_id):
+        try:
+            experience = Experience.objects.get(id=experience_id, profile=request.user.profile)
+            experience.delete()
+            return Response({"message": "Expérience supprimée avec succès"}, status=status.HTTP_204_NO_CONTENT)
+        except Experience.DoesNotExist:
+            return Response({"error": "Expérience non trouvée"}, status=status.HTTP_404_NOT_FOUND)

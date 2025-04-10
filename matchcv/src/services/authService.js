@@ -39,8 +39,16 @@ export const getProfile = async () => {
 
 export const updateProfile = async (profileData) => {
   const accessToken = localStorage.getItem('access_token');
-  const response = await axios.post(`${API_URL}profile/`, profileData, {
+  const response = await axios.put(`${API_URL}profile/`, profileData, {  // Corrigé de post à put
     headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  return response.data;
+};
+
+export const deleteExperience = async (experienceId) => {
+  const token = localStorage.getItem('access_token');
+  const response = await axios.delete(`${API_URL}profile/experience/${experienceId}/`, {
+    headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };

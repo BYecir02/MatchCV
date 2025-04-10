@@ -1,16 +1,15 @@
-import Sidebar from "../../components/sidebar/index";
+import { useState } from "react";
+import Sidebar from "../sidebar";
 import "./styles.css";
 
 const Home = () => {
+
   return (
-    <div className="main-container">
-      <div className="sidebar-container">
-        <Sidebar />
-      </div>
-      <div className="content-container">
+    <div>
+      <div>
         <h1 className="title">Bienvenue sur MatchCV</h1>
         <p>Optimisez votre recherche d'emploi facilement.</p>
-        
+
         <h2>Pourquoi utiliser MatchCV ?</h2>
         <ul>
           <li>📌 Analyse automatique des offres d'emploi</li>
@@ -19,7 +18,7 @@ const Home = () => {
           <li>📊 Suivi de l'évolution de vos candidatures</li>
           <li>⏳ Gain de temps et organisation simplifiée</li>
         </ul>
-        
+
         <a href="/dashboard" className="button">
           Accéder au Dashboard
         </a>

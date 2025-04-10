@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "../../components/sidebar/index";
 import "./styles.css";
 import axios from "axios";
 
@@ -41,15 +40,10 @@ const Dashboard = () => {
   }, [accessToken]);
 
   return (
-    <div className="main-container">
-      <div className="sidebar-container">
-        <Sidebar />
-      </div>
-      <div className="content-container">
+    <div>
         <h1 className="text-3xl font-semibold">Tableau de Bord</h1>
         <p>{message || "Suivez vos candidatures et créez vos CV."}</p>
         {username && <p>Connecté en tant que : {username}</p>}
-      </div>
     </div>
   );
 };

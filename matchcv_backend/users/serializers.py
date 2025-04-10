@@ -70,9 +70,28 @@ class InterestSerializer(serializers.ModelSerializer):
         fields = ['category', 'activity']
 
 class ProfileSerializer(serializers.ModelSerializer):
+    experiences = ExperienceSerializer(many=True, required=False)  # Ajouté
+
     class Meta:
         model = Profile
         fields = [
             'full_name', 'title', 'profile_image', 'birth_date', 'nationality',
-            'address', 'phone', 'email', 'linkedin', 'github', 'driving_license'
+            'address', 'phone', 'email', 'linkedin', 'github', 'driving_license', 'experiences'
         ]
+
+    def update(self, instance, validated_data):
+        experiences_data = validated_data.pop('experiences', [])
+        instance = super().update(instance, validated_data)
+
+        existing_experiences = {exp.id: exp for exp in instance.experiences.all()}
+        for exp_data in experiences_data:
+            exp_id = exp_data.get('id', None)
+            if exp_id and exp_id in existing_experiences:
+                exp = existing_experiences[exp_id]
+                for attr, value in exp_data.items():
+                    setattr(exp, attr, value)
+                exp.save()
+            else:
+                Experience.objects.create(profile=instance, **exp_data)
+        
+        return instance
