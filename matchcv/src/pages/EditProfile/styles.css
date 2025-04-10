@@ -82,6 +82,12 @@
   min-width: 0;
 }
 
+.form-row-three-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
 /* Array Items */
 .array-section {
   background: #f9fafc;
