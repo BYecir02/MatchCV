@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer, ProfileSerializer
+from .serializers import UserSerializer, ProfileSerializer, ExperienceSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -111,4 +111,28 @@ class DeleteExperienceView(APIView):
             experience.delete()
             return Response({"message": "Expérience supprimée avec succès"}, status=status.HTTP_204_NO_CONTENT)
         except Experience.DoesNotExist:
-            return Response({"error": "Expérience non trouvée"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Expérience non trouvée ou non autorisée"}, status=status.HTTP_404_NOT_FOUND)
+
+class AddExperienceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ExperienceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(profile=request.user.profile)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class UpdateExperienceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, experience_id):
+        try:
+            experience = Experience.objects.get(id=experience_id, profile=request.user.profile)
+            serializer = ExperienceSerializer(experience, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Experience.DoesNotExist:
+            return Response({"error": "Expérience non trouvée ou non autorisée"}, status=status.HTTP_404_NOT_FOUND)

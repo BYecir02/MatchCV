@@ -52,3 +52,19 @@ export const deleteExperience = async (experienceId) => {
   });
   return response.data;
 };
+
+export const addExperience = async (experienceData) => {
+  const token = localStorage.getItem('access_token');
+  const response = await axios.post(`${API_URL}profile/experience/add/`, experienceData, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};
+
+export const updateExperience = async (experienceId, experienceData) => {
+  const token = localStorage.getItem('access_token');
+  const response = await axios.put(`${API_URL}profile/experience/${experienceId}/update/`, experienceData, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};

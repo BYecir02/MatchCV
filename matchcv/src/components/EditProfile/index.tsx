@@ -1,7 +1,7 @@
 import "./styles.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProfile, updateProfile, deleteExperience } from "../../services/authService";
+import { getProfile, updateProfile, deleteExperience, addExperience as addExperienceAPI, updateExperience } from "../../services/authService";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -54,32 +54,50 @@ const EditProfile = () => {
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleExperienceChange = (index, e) => {
+  const handleExperienceChange = async (index, e) => {
     const { name, value } = e.target;
     setProfile(prev => {
       const updatedExperiences = [...prev.experiences];
-      if (name === "responsibilities" || name === "achievements") {
-        updatedExperiences[index] = { ...updatedExperiences[index], [name]: value.split('\n') };
-      } else {
-        updatedExperiences[index] = { ...updatedExperiences[index], [name]: value };
-      }
+      updatedExperiences[index] = { ...updatedExperiences[index], [name]: value };
       return { ...prev, experiences: updatedExperiences };
     });
+
+    const experience = profile.experiences[index];
+    if (experience.id) {
+      try {
+        await updateExperience(experience.id, { ...experience, [name]: value });
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour de l'expérience:", error.response?.data);
+        alert("Impossible de modifier l'expérience : " + (error.response?.data?.error || "Erreur inconnue"));
+      }
+    }
   };
 
-  const addExperience = () => {
-    setProfile(prev => ({
-      ...prev,
-      experiences: [
-        ...prev.experiences,
-        { position: "", company: "", period: "", location: "", responsibilities: [], achievements: [] }
-      ]
-    }));
+  const addExperience = async () => {
+    try {
+      const newExperience = {
+        position: "",
+        company: "",
+        period: "",
+        location: "",
+        responsibilities: [],
+        achievements: []
+      };
+      const addedExperience = await addExperienceAPI(newExperience);
+      setProfile(prev => ({
+        ...prev,
+        experiences: [...prev.experiences, addedExperience]
+      }));
+    } catch (error) {
+      console.error("Erreur lors de l'ajout de l'expérience:", error.response?.data);
+      alert("Impossible d'ajouter l'expérience : " + (error.response?.data?.error || "Erreur inconnue"));
+    }
   };
 
   const removeExperience = async (index) => {
+    if (!window.confirm("Voulez-vous vraiment supprimer cette expérience ?")) return;
     const experience = profile.experiences[index];
-    if (experience.id) {
+    if (experience.id && !isNaN(experience.id)) {
       try {
         await deleteExperience(experience.id);
         setProfile(prev => ({
@@ -88,7 +106,7 @@ const EditProfile = () => {
         }));
       } catch (error) {
         console.error("Erreur lors de la suppression:", error.response?.data);
-        alert("Impossible de supprimer l’expérience : " + (errorFriendlyMessage(error)));
+        alert("Impossible de supprimer l’expérience : " + errorFriendlyMessage(error));
       }
     } else {
       setProfile(prev => ({
@@ -169,8 +187,8 @@ const EditProfile = () => {
                 <input
                   type="text"
                   name="nationality"
-                  value={profile.nationality}
-                  onChange={handleChange}
+                value={profile.nationality}
+                onChange={handleChange}
                 />
               </div>
               <div className="form-group">
