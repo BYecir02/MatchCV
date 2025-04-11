@@ -2,7 +2,7 @@ import Sidebar from "../sidebar/index";
 import "./styles.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getProfile } from "../../services/authService";
+import { getProfile, deleteExperience } from "../../services/authService";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -21,6 +21,22 @@ const Profile = () => {
     };
     fetchProfile();
   }, [navigate]);
+
+  const handleDeleteExperience = async (experienceId) => {
+    try {
+      await deleteExperience(experienceId);
+      setUserProfile((prevProfile) => ({
+        ...prevProfile,
+        experiences: prevProfile.experiences.filter(
+          (experience) => experience.id !== experienceId
+        ),
+      }));
+      alert("Expérience supprimée avec succès !");
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'expérience:", error.response?.data);
+      alert("Impossible de supprimer l'expérience : " + (error.response?.data?.error || "Erreur inconnue"));
+    }
+  };
 
   if (!userProfile) {
     return <div>Chargement...</div>;
@@ -123,6 +139,12 @@ const Profile = () => {
                   <li>Aucune réalisation listée</li>
                 )}
               </ul>
+              <button
+                className="delete-experience-button"
+                onClick={() => handleDeleteExperience(experience.id)}
+              >
+                Supprimer
+              </button>
             </div>
           ))
         ) : (

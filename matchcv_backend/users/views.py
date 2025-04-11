@@ -104,7 +104,6 @@ class ProfileView(APIView):
 
 class DeleteExperienceView(APIView):
     permission_classes = [IsAuthenticated]
-
     def delete(self, request, experience_id):
         try:
             experience = Experience.objects.get(id=experience_id, profile=request.user.profile)
@@ -112,7 +111,7 @@ class DeleteExperienceView(APIView):
             return Response({"message": "Expérience supprimée avec succès"}, status=status.HTTP_204_NO_CONTENT)
         except Experience.DoesNotExist:
             return Response({"error": "Expérience non trouvée ou non autorisée"}, status=status.HTTP_404_NOT_FOUND)
-
+        
 class AddExperienceView(APIView):
     permission_classes = [IsAuthenticated]
 

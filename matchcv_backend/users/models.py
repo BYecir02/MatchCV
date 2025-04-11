@@ -76,12 +76,12 @@ class Education(models.Model):
 
 class Experience(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='experiences')
-    position = models.CharField(max_length=255)
-    company = models.CharField(max_length=255)
-    period = models.CharField(max_length=100)
-    location = models.CharField(max_length=255)
-    responsibilities = models.JSONField(blank=True, default=list)  # Stocker les responsabilités sous forme de liste
-    achievements = models.JSONField(blank=True, default=list)  # Stocker les réalisations sous forme de liste
+    position = models.CharField(max_length=255, blank=True)  # Ajouter blank=True
+    company = models.CharField(max_length=255, blank=True)
+    period = models.CharField(max_length=100, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    responsibilities = models.JSONField(blank=True, default=list)
+    achievements = models.JSONField(blank=True, default=list)
 
     def __str__(self):
         return f"{self.position} at {self.company}"

@@ -56,65 +56,75 @@ const EditProfile = () => {
 
   const handleExperienceChange = async (index, e) => {
     const { name, value } = e.target;
+    let updatedValue = value;
+    if (name === "responsibilities" || name === "achievements") {
+        updatedValue = value.split('\n').filter(line => line.trim() !== '');
+    }
+
     setProfile(prev => {
-      const updatedExperiences = [...prev.experiences];
-      updatedExperiences[index] = { ...updatedExperiences[index], [name]: value };
-      return { ...prev, experiences: updatedExperiences };
+        const updatedExperiences = [...prev.experiences];
+        updatedExperiences[index] = { ...updatedExperiences[index], [name]: updatedValue };
+        return { ...prev, experiences: updatedExperiences };
     });
 
     const experience = profile.experiences[index];
     if (experience.id) {
-      try {
-        await updateExperience(experience.id, { ...experience, [name]: value });
-      } catch (error) {
-        console.error("Erreur lors de la mise à jour de l'expérience:", error.response?.data);
-        alert("Impossible de modifier l'expérience : " + (error.response?.data?.error || "Erreur inconnue"));
-      }
+        try {
+            await updateExperience(experience.id, { ...experience, [name]: updatedValue });
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour :", error.response?.status, error.response?.data);
+            alert("Impossible de modifier l'expérience : " + (error.response?.data?.error || "Erreur inconnue"));
+        }
     }
-  };
+};
 
   const addExperience = async () => {
     try {
-      const newExperience = {
-        position: "",
-        company: "",
-        period: "",
-        location: "",
-        responsibilities: [],
-        achievements: []
-      };
-      const addedExperience = await addExperienceAPI(newExperience);
-      setProfile(prev => ({
-        ...prev,
-        experiences: [...prev.experiences, addedExperience]
-      }));
-    } catch (error) {
-      console.error("Erreur lors de l'ajout de l'expérience:", error.response?.data);
-      alert("Impossible d'ajouter l'expérience : " + (error.response?.data?.error || "Erreur inconnue"));
-    }
-  };
-
-  const removeExperience = async (index) => {
-    if (!window.confirm("Voulez-vous vraiment supprimer cette expérience ?")) return;
-    const experience = profile.experiences[index];
-    if (experience.id && !isNaN(experience.id)) {
-      try {
-        await deleteExperience(experience.id);
+        const newExperience = {
+            position: "Test Poste",
+            company: "Test Entreprise",
+            period: "2023",
+            location: "Paris",
+            responsibilities: [],
+            achievements: []
+        };
+        console.log("Ajout d'une expérience :", newExperience);
+        const addedExperience = await addExperienceAPI(newExperience);
+        console.log("Expérience ajoutée :", addedExperience);
         setProfile(prev => ({
+            ...prev,
+            experiences: [...prev.experiences, addedExperience]
+        }));
+    } catch (error) {
+        console.error("Erreur lors de l'ajout :", error.response?.status, error.response?.data);
+        alert("Impossible d'ajouter l'expérience : " + (error.response?.data?.error || "Erreur inconnue"));
+    }
+};
+
+const removeExperience = async (index) => {
+  if (!window.confirm("Voulez-vous vraiment supprimer cette expérience ?")) return;
+  const experience = profile.experiences[index];
+  console.log("Suppression de l'expérience avec ID :", experience.id);
+  if (experience.id && !isNaN(experience.id)) {
+      try {
+          await deleteExperience(experience.id);
+          setProfile(prev => ({
+              ...prev,
+              experiences: prev.experiences.filter((_, i) => i !== index)
+          }));
+          console.log("Expérience supprimée avec succès");
+      } catch (error) {
+          console.error("Erreur lors de la suppression :", error.response?.status, error.response?.data);
+          alert("Impossible de supprimer l’expérience : " + errorFriendlyMessage(error));
+      }
+  } else {
+      setProfile(prev => ({
           ...prev,
           experiences: prev.experiences.filter((_, i) => i !== index)
-        }));
-      } catch (error) {
-        console.error("Erreur lors de la suppression:", error.response?.data);
-        alert("Impossible de supprimer l’expérience : " + errorFriendlyMessage(error));
-      }
-    } else {
-      setProfile(prev => ({
-        ...prev,
-        experiences: prev.experiences.filter((_, i) => i !== index)
       }));
-    }
-  };
+      console.log("Expérience locale supprimée");
+  }
+};
 
   const errorFriendlyMessage = (error) => {
    if (error.response?.status === 404) return "Expérience non trouvée.";

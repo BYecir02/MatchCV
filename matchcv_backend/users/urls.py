@@ -10,4 +10,5 @@ urlpatterns = [
     path('profile/experience/<int:experience_id>/', DeleteExperienceView.as_view(), name='delete_experience'),
     path('profile/experience/add/', AddExperienceView.as_view(), name='add_experience'),
     path('profile/experience/<int:experience_id>/update/', UpdateExperienceView.as_view(), name='update_experience'),
+    path('profile/experience/<int:experience_id>/', DeleteExperienceView.as_view(), name='delete_experience'),
 ]

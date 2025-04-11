@@ -47,24 +47,27 @@ export const updateProfile = async (profileData) => {
 
 export const deleteExperience = async (experienceId) => {
   const token = localStorage.getItem('access_token');
+  console.log("Token utilisé pour DELETE :", token);
   const response = await axios.delete(`${API_URL}profile/experience/${experienceId}/`, {
-    headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
 
 export const addExperience = async (experienceData) => {
   const token = localStorage.getItem('access_token');
+  console.log("Token utilisé pour POST :", token);
   const response = await axios.post(`${API_URL}profile/experience/add/`, experienceData, {
-    headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
 
 export const updateExperience = async (experienceId, experienceData) => {
   const token = localStorage.getItem('access_token');
+  console.log("Token utilisé pour PUT :", token);
   const response = await axios.put(`${API_URL}profile/experience/${experienceId}/update/`, experienceData, {
-    headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
