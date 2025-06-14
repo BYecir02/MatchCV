@@ -15,11 +15,12 @@ import {
   Award,
   MapPin,
   Clock,
-  DollarSign
+  DollarSign,
+  File,
 } from 'lucide-react';
 import { analyzeJobDescription } from '../../../services/api';
 
-const JobAnalyzer = ({ user, onNavigateToLetters }) => {
+const JobAnalyzer = ({ user, onNavigateToLetters, onNavigateToCV }) => { // Ajouter onNavigateToCV ici
   const [jobText, setJobText] = useState('');
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -139,6 +140,23 @@ const JobAnalyzer = ({ user, onNavigateToLetters }) => {
       
       // Naviguer vers la page de lettres avec les données
       onNavigateToLetters(jobData);
+    }
+  };
+
+  const handleGenerateCV = () => {
+    if (analysis && onNavigateToCV) {
+      // Préparer les données pour le générateur de CV
+      const jobData = {
+        jobDescription: `${analysis.title} chez ${analysis.company}\n\n${analysis.description}`,
+        companyName: analysis.company,
+        position: analysis.title,
+        skills: analysis.skills.map(s => s.name),
+        location: analysis.location,
+        requirements: analysis.skills.filter(s => s.level === 'Essentiel').map(s => s.name)
+      };
+      
+      // Naviguer vers le générateur de CV avec les données
+      onNavigateToCV(jobData);
     }
   };
 
@@ -404,6 +422,15 @@ const JobAnalyzer = ({ user, onNavigateToLetters }) => {
             >
               <FileText className="h-5 w-5 mr-2" />
               Générer une lettre de motivation
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </button>
+            
+            <button
+              onClick={handleGenerateCV}
+              className="flex-1 bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 flex items-center justify-center transition-colors"
+            >
+              <File className="h-5 w-5 mr-2" />
+              Générer un CV optimisé
               <ArrowRight className="h-4 w-4 ml-2" />
             </button>
             

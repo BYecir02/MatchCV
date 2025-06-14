@@ -10,7 +10,8 @@ import {
   Menu,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  File
 } from 'lucide-react';
 
 // Import des composants séparés
@@ -20,22 +21,55 @@ import JobAnalyzer from '../features/analyzer/JobAnalyzer';
 import ApplicationTracker from '../features/tracker/ApplicationTracker';
 import ProfileSettings from '../features/profile/ProfileSettings';
 import AppSettings from '../features/settings/AppSettings';
+import CVGenerator from '../features/cvgenerator/CVGenerator'; // Corriger ici
 
 const Dashboard = ({ user, onLogout }) => {
   const [activeSection, setActiveSection] = useState('home');
   const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false); // Desktop
+  const [navigationData, setNavigationData] = useState(null); // Nouveau state pour la navigation
 
   const menuItems = [
     { id: 'home', label: 'Accueil', icon: Home, component: DashboardHome },
-    { id: 'letters', label: 'Lettres de motivation', icon: FileText, component: CoverLetterGenerator },
     { id: 'analyzer', label: 'Analyse d\'annonces', icon: Search, component: JobAnalyzer },
+    { id: 'letters', label: 'Lettres de motivation', icon: FileText, component: CoverLetterGenerator },
+    { id: 'cv-generator', label: 'Générateur de CV', icon: File, component: CVGenerator },
     { id: 'tracker', label: 'Suivi candidatures', icon: BarChart3, component: ApplicationTracker },
     { id: 'profile', label: 'Mon profil', icon: User, component: ProfileSettings },
     { id: 'settings', label: 'Paramètres', icon: Settings, component: AppSettings },
   ];
 
-  const ActiveComponent = menuItems.find(item => item.id === activeSection)?.component || DashboardHome;
+  // Fonction pour naviguer vers le générateur de CV
+  const handleNavigateToCV = (jobData) => {
+    setNavigationData(jobData);
+    setActiveSection('cv-generator');
+  };
+
+  // Fonction pour naviguer vers les lettres
+  const handleNavigateToLetters = (jobData) => {
+    setNavigationData(jobData);
+    setActiveSection('letters');
+  };
+
+  // Fonction pour revenir à l'analyseur
+  const handleNavigateBack = () => {
+    setNavigationData(null);
+    setActiveSection('analyzer');
+  };
+
+  const renderActiveComponent = () => {
+    const ActiveComponent = menuItems.find(item => item.id === activeSection)?.component || DashboardHome;
+    
+    const commonProps = {
+      user,
+      initialData: navigationData,
+      onNavigateToLetters: handleNavigateToLetters,
+      onNavigateToCV: handleNavigateToCV,
+      onNavigateBack: handleNavigateBack
+    };
+
+    return <ActiveComponent {...commonProps} />;
+  };
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -84,6 +118,10 @@ const Dashboard = ({ user, onLogout }) => {
                 onClick={() => {
                   setActiveSection(item.id);
                   setSidebarOpen(false);
+                  // Clear navigation data seulement si on ne va pas vers CV ou lettres
+                  if (item.id !== 'cv-generator' && item.id !== 'letters') {
+                    setNavigationData(null);
+                  }
                 }}
                 className={`w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
                   activeSection === item.id ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600' : 'text-gray-700'
@@ -152,9 +190,17 @@ const Dashboard = ({ user, onLogout }) => {
                 <Menu className="h-5 w-5" />
               </button>
               
-              <h2 className="text-lg font-medium text-gray-900">
-                {menuItems.find(item => item.id === activeSection)?.label}
-              </h2>
+              <div>
+                <h2 className="text-lg font-medium text-gray-900">
+                  {menuItems.find(item => item.id === activeSection)?.label}
+                </h2>
+                {/* Sous-titre contextuel */}
+                {navigationData && (activeSection === 'cv-generator' || activeSection === 'letters') && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Pour le poste : {navigationData.position} chez {navigationData.companyName}
+                  </p>
+                )}
+              </div>
             </div>
             
             {/* Actions supplémentaires dans le header */}
@@ -164,13 +210,24 @@ const Dashboard = ({ user, onLogout }) => {
                   Bonjour, {user?.firstName} 👋
                 </span>
               </div>
+              
+              {/* Bouton de retour si on est dans une navigation contextuelle */}
+              {navigationData && (activeSection === 'cv-generator' || activeSection === 'letters') && (
+                <button
+                  onClick={handleNavigateBack}
+                  className="flex items-center px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Retour à l'analyse
+                </button>
+              )}
             </div>
           </div>
         </header>
 
         {/* Page content */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">
-          <ActiveComponent user={user} />
+          {renderActiveComponent()}
         </main>
       </div>
 
