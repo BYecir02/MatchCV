@@ -1,23 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import Dashboard from './components/dashboard/Dashboard';
 
 function App() {
+  const [currentView, setCurrentView] = useState('login'); // 'login', 'register', 'dashboard'
+  const [user, setUser] = useState(null);
+
+  const handleLogin = (userData) => {
+    console.log('Connexion:', userData);
+    setUser(userData);
+    setCurrentView('dashboard');
+  };
+
+  const handleRegister = (userData) => {
+    console.log('Inscription:', userData);
+    setUser(userData);
+    setCurrentView('dashboard');
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentView('login');
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {currentView === 'login' && (
+        <Login 
+          onSwitchToRegister={() => setCurrentView('register')}
+          onLogin={handleLogin}
+        />
+      )}
+      
+      {currentView === 'register' && (
+        <Register 
+          onSwitchToLogin={() => setCurrentView('login')}
+          onRegister={handleRegister}
+        />
+      )}
+      
+      {currentView === 'dashboard' && (
+        <Dashboard 
+          user={user}
+          onLogout={handleLogout}
+        />
+      )}
     </div>
   );
 }
