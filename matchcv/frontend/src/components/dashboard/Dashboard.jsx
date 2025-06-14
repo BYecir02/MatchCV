@@ -77,14 +77,14 @@ const Dashboard = ({ user, onLogout }) => {
       <div className={`
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
         ${sidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} 
-        fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-all duration-300 ease-in-out 
+        fixed inset-y-0 left-0 z-50 w-64 bg-white  transform transition-all duration-300 ease-in-out 
         lg:translate-x-0 lg:static lg:inset-0
       `}>
         
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <div className={`${sidebarCollapsed ? 'lg:hidden' : 'block'}`}>
-            <h1 className="text-xl font-bold text-blue-600">MatchCV</h1>
+        <div className="flex items-center justify-between p-4 ">
+          <div className={`${sidebarCollapsed ? 'lg:invisible' : 'block'}`}>
+            <h1 className="text-xl font-bold text-blue-600 mt-3">MatchCV</h1>
           </div>
           
           {/* Bouton fermer mobile */}
@@ -95,17 +95,18 @@ const Dashboard = ({ user, onLogout }) => {
             <X className="h-6 w-6" />
           </button>
           
-          {/* Bouton collapse desktop */}
+          {/* Bouton collapse desktop 
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="hidden lg:block p-1 rounded-md hover:bg-gray-100"
           >
             {sidebarCollapsed ? (
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-6 w-6" />
             ) : (
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-6 w-6" />
             )}
           </button>
+          */}
         </div>
         
         {/* Navigation */}
@@ -171,8 +172,8 @@ const Dashboard = ({ user, onLogout }) => {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b">
-          <div className="flex items-center justify-between px-4 py-4">
+        <header className="bg-white shadow-lg  shadow-sm border-b px-4 py-4">
+          <div className="flex items-center justify-between ">
             <div className="flex items-center">
               {/* Bouton menu mobile */}
               <button
@@ -191,7 +192,7 @@ const Dashboard = ({ user, onLogout }) => {
               </button>
               
               <div>
-                <h2 className="text-lg font-medium text-gray-900">
+                <h2 className="text-lg font-medium text-gray-900 m-2">
                   {menuItems.find(item => item.id === activeSection)?.label}
                 </h2>
                 {/* Sous-titre contextuel */}

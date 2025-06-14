@@ -2,16 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  /* Configuration de base équivalente à zoom 85% (un peu plus grand) */
+  html {
+    font-size: 14.5px; /* 16px * 0.9 (augmenté de 12.8px) */
+  }
+  
+  body {
+    font-size: 0.9rem; /* 14.5px (augmenté de 0.8rem) */
+    line-height: 1.3;
+  }
+  
+  /* Ajustements des éléments HTML natifs */
+  h1 { font-size: 1.7rem; line-height: 1.2; margin-bottom: 0.7rem; }
+  h2 { font-size: 1.35rem; line-height: 1.2; margin-bottom: 0.6rem; }
+  h3 { font-size: 1.15rem; line-height: 1.2; margin-bottom: 0.5rem; }
+  h4 { font-size: 1rem; line-height: 1.2; margin-bottom: 0.35rem; }
+  h5 { font-size: 0.9rem; line-height: 1.2; margin-bottom: 0.25rem; }
+  h6 { font-size: 0.8rem; line-height: 1.2; margin-bottom: 0.25rem; }
+  
+  p { margin-bottom: 0.45rem; line-height: 1.3; }
+  
+  /* Boutons avec proportions légèrement augmentées */
+  button {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.75rem; /* Un peu plus d'espace */
+    line-height: 1.2;
+  }
+  
+  /* Inputs avec proportions légèrement augmentées */
+  input, textarea, select {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.55rem; /* Un peu plus d'espace */
+    line-height: 1.2;
+  }
+  
+  /* Labels */
+  label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Listes */
+  ul, ol { margin-bottom: 0.45rem; }
+  li { font-size: 0.8rem; line-height: 1.2; margin-bottom: 0.12rem; }
+  
+  /* Tables */
+  table { font-size: 0.8rem; }
+  th, td { padding: 0.4rem 0.55rem; }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Classes utilitaires pour un contrôle précis */
+@layer utilities {
+  .zoom-85 {
+    transform: scale(0.85);
+    transform-origin: top left;
+  }
+  
+  .text-zoom-xs { font-size: 0.7rem; }
+  .text-zoom-sm { font-size: 0.8rem; }
+  .text-zoom-base { font-size: 0.9rem; }
+  .text-zoom-lg { font-size: 1rem; }
+  
+  .p-zoom-1 { padding: 0.25rem; }
+  .p-zoom-2 { padding: 0.45rem; }
+  .p-zoom-3 { padding: 0.7rem; }
+  .p-zoom-4 { padding: 0.9rem; }
+  
+  .m-zoom-1 { margin: 0.25rem; }
+  .m-zoom-2 { margin: 0.45rem; }
+  .m-zoom-3 { margin: 0.7rem; }
+  .m-zoom-4 { margin: 0.9rem; }
 }
