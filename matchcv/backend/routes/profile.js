@@ -11,6 +11,9 @@ router.use(authenticateToken);
 router.get('/', profileController.getProfile);
 router.put('/personal-info', profileController.updatePersonalInfo);
 
+// Import et analyse de CV
+router.post('/import-cv', profileController.importAndAnalyzeCV);
+
 // Routes spécifiques pour les expériences (avec les méthodes dédiées)
 router.post('/experience', profileController.addExperience);
 router.put('/experience/:id', profileController.updateExperience);

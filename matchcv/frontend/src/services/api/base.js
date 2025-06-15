@@ -1,8 +1,24 @@
-const API_BASE_URL = 'http://localhost:5000/api';
-
 class BaseApiService {
+  constructor() {
+    // ⭐ FORCER l'URL complète avec http://
+    this.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+    
+    // Debug pour vérifier
+    console.log('🔗 BaseURL configuré:', this.baseURL);
+    console.log('🔍 Variable env:', process.env.REACT_APP_API_URL);
+  }
+
   async request(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = `${this.baseURL}${endpoint}`;
+    
+    console.log(`📡 API Request: ${options.method || 'GET'} ${url}`);
+    
+    // Vérifier que l'URL est correcte
+    if (!url.startsWith('http')) {
+      console.error('❌ URL malformée:', url);
+      throw new Error(`URL malformée: ${url}`);
+    }
+    
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -11,7 +27,6 @@ class BaseApiService {
       ...options,
     };
 
-    // Ajouter le token d'authentification si disponible
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -19,15 +34,17 @@ class BaseApiService {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
-
+      
       if (!response.ok) {
-        throw new Error(data.message || 'Erreur API');
+        const errorText = await response.text();
+        console.error(`❌ HTTP ${response.status}:`, errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Erreur API:', error);
+      console.error('❌ API Error:', error);
       throw error;
     }
   }

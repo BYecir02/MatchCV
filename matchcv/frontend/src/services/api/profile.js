@@ -212,6 +212,21 @@ class ProfileService extends BaseApiService {
     });
   }
 
+  // ⭐ MÉTHODE IMPORT CV (UNE SEULE VERSION)
+  async importCV(cvText, replaceExisting = false) {
+    console.log('📡 API Call - importCV:', { 
+      textLength: cvText.length, 
+      replaceExisting 
+    });
+    
+    return this.request('/profile/import-cv', {
+      method: 'POST',
+      body: JSON.stringify({
+        cvText,
+        replaceExisting
+      }),
+    });
+  }
 }
 
 export default new ProfileService();

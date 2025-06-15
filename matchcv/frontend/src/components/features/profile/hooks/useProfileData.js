@@ -509,6 +509,7 @@ const addEducation = async (newEducation) => {
     removeItem,
     savePersonalInfo,
     loadProfile,
+    setProfileData,
     // Méthodes spécialisées pour les expériences
     addExperience,
     updateExperience,
