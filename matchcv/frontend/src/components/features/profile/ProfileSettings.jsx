@@ -3,7 +3,7 @@ import { Save, Loader2, AlertCircle, CheckCircle, Upload } from 'lucide-react'; 
 import { extractCVData } from '../../../services/api';
 
 // Hooks
-import { useProfileData } from './hooks/useProfileData';
+import { useProfileData } from '../../../hooks/useProfileData';
 
 // Sections
 import CVUploadSection from './sections/CVUploadSection';

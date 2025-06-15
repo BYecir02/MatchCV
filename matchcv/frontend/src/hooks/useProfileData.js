@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ProfileService } from '../../../../services/api';
+import { ProfileService } from '../services/api';
 
 export const useProfileData = (initialUser) => {
   const [profileData, setProfileData] = useState({
