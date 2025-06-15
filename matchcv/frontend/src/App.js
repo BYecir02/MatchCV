@@ -1,31 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './components/dashboard/Dashboard';
+import './App.css';
 
-function App() {
-  const [currentView, setCurrentView] = useState('login'); // 'login', 'register', 'dashboard'
-  const [user, setUser] = useState(null);
+// Composant principal qui utilise le contexte d'authentification
+const AppContent = () => {
+  const { user, isAuthenticated, logout } = useAuth();
+  const [currentView, setCurrentView] = useState('login');
+
+  // Mettre à jour la vue en fonction de l'état d'authentification
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setCurrentView('dashboard');
+    } else {
+      setCurrentView('login');
+    }
+  }, [isAuthenticated, user]);
 
   const handleLogin = (userData) => {
-    console.log('Connexion:', userData);
-    setUser(userData);
+    console.log('Connexion réussie:', userData);
     setCurrentView('dashboard');
   };
 
   const handleRegister = (userData) => {
-    console.log('Inscription:', userData);
-    setUser(userData);
+    console.log('Inscription réussie:', userData);
     setCurrentView('dashboard');
   };
 
   const handleLogout = () => {
-    setUser(null);
+    logout();
     setCurrentView('login');
   };
 
+  // Si l'utilisateur est authentifié, afficher le dashboard
+  if (isAuthenticated && user) {
+    return (
+      <Dashboard 
+        user={user}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  // Sinon, afficher les formulaires d'authentification
   return (
-    <div className="App">
+    <>
       {currentView === 'login' && (
         <Login 
           onSwitchToRegister={() => setCurrentView('register')}
@@ -39,14 +60,18 @@ function App() {
           onRegister={handleRegister}
         />
       )}
-      
-      {currentView === 'dashboard' && (
-        <Dashboard 
-          user={user}
-          onLogout={handleLogout}
-        />
-      )}
-    </div>
+    </>
+  );
+};
+
+// Composant App principal avec AuthProvider
+function App() {
+  return (
+    <AuthProvider>
+      <div className="App">
+        <AppContent />
+      </div>
+    </AuthProvider>
   );
 }
 

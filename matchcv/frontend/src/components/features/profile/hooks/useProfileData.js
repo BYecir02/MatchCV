@@ -1,44 +1,115 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ProfileService } from '../../../../services/api';
 
 export const useProfileData = (initialUser) => {
   const [profileData, setProfileData] = useState({
     personalInfo: {
-      firstName: initialUser?.firstName || 'Jean',
-      lastName: initialUser?.lastName || 'Dupont',
-      email: initialUser?.email || 'jean.dupont@email.com',
-      phone: '+33 6 12 34 56 78',
-      location: 'Paris, France',
-      title: 'Développeur Full-Stack',
-      currentPosition: 'Développeur Full-Stack',
-      desiredPosition: 'Senior Full-Stack Developer',
-      industry: 'Technologie',
-      yearsExperience: 3,
-      availability: 'Disponible immédiatement',
-      desiredSalaryMin: '45000',
-      desiredSalaryMax: '60000',
-      linkedinUrl: 'https://linkedin.com/in/jean-dupont',
-      githubUrl: 'https://github.com/jean-dupont',
-      portfolioUrl: 'https://jean-dupont.dev',
-      bio: 'Développeur passionné avec 3 ans d\'expérience en JavaScript, React et Node.js.'
+      firstName: initialUser?.firstName || '',
+      lastName: initialUser?.lastName || '',
+      email: initialUser?.email || '',
+      phone: '',
+      location: '',
+      title: '',
+      currentPosition: '',
+      desiredPosition: '',
+      industry: '',
+      yearsExperience: 0,
+      availability: '',
+      desiredSalaryMin: '',
+      desiredSalaryMax: '',
+      linkedinUrl: '',
+      githubUrl: '',
+      portfolioUrl: '',
+      bio: '',
+      city: '',
+      country: '',
+      summary: ''
     },
-    experience: [
-      {
-        id: 1,
-        company: 'TechCorp',
-        position: 'Développeur Full-Stack',
-        startDate: '2022-01',
-        endDate: 'Présent',
-        isCurrent: true,
-        location: 'Paris, France',
-        description: 'Développement d\'applications web avec React et Node.js'
-      }
-    ],
+    experience: [],
     education: [],
     skills: [],
     certifications: [],
     languages: [],
     projects: []
   });
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Charger le profil au démarrage
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('🔄 Chargement du profil...');
+      const response = await ProfileService.getProfile();
+      console.log('✅ Profil reçu:', response);
+      
+      if (response.success) {
+        // Transformer les _id en id pour la compatibilité avec vos composants
+        const transformedData = {
+          ...response.profileData,
+          experience: response.profileData.experience?.map(item => ({ 
+            ...item, 
+            id: item.id || item._id,
+            // Assurer que tous les champs sont présents
+            company: item.company || '',
+            position: item.position || '',
+            startDate: item.startDate || '',
+            endDate: item.endDate || '',
+            isCurrent: item.isCurrent || false,
+            location: item.location || '',
+            description: item.description || '',
+            achievements: item.achievements || [],
+            technologiesUsed: item.technologiesUsed || []
+          })) || [],
+          education: response.profileData.education?.map(item => ({ ...item, id: item.id || item._id })) || [],
+          skills: response.profileData.skills?.map(item => ({ ...item, id: item.id || item._id })) || [],
+          certifications: response.profileData.certifications?.map(item => ({ ...item, id: item.id || item._id })) || [],
+          languages: response.profileData.languages?.map(item => ({ ...item, id: item.id || item._id })) || [],
+          projects: response.profileData.projects?.map(item => ({ ...item, id: item.id || item._id })) || []
+        };
+        
+        console.log('🔄 Données transformées:', transformedData);
+        setProfileData(transformedData);
+      }
+    } catch (error) {
+      console.error('❌ Erreur chargement profil:', error);
+      setError('Erreur lors du chargement du profil: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Sauvegarder les informations personnelles
+  const savePersonalInfo = async (personalInfo) => {
+    try {
+      setSaving(true);
+      setError(null);
+      
+      const response = await ProfileService.updatePersonalInfo(personalInfo);
+      
+      if (response.success) {
+        setProfileData(prev => ({
+          ...prev,
+          personalInfo: response.personalInfo
+        }));
+        return { success: true };
+      }
+    } catch (error) {
+      console.error('Erreur sauvegarde profil:', error);
+      setError('Erreur lors de la sauvegarde: ' + error.message);
+      return { success: false, error: error.message };
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleInputChange = (section, field, value) => {
     setProfileData(prev => ({
@@ -50,34 +121,195 @@ export const useProfileData = (initialUser) => {
     }));
   };
 
-  const addItem = (section, newItem) => {
-    setProfileData(prev => ({
-      ...prev,
-      [section]: [...prev[section], { ...newItem, id: Date.now() }]
-    }));
+  // Ajouter une expérience (méthode spécialisée)
+  const addExperience = async (newExperience) => {
+    try {
+      console.log('➕ Ajout expérience:', newExperience);
+      
+      // Utiliser la route dédiée pour les expériences
+      const response = await ProfileService.addExperience(newExperience);
+      console.log('✅ Expérience ajoutée:', response);
+      
+      if (response.success) {
+        const expWithId = { 
+          ...response.data, 
+          id: response.data.id || response.data._id,
+          // Assurer les valeurs par défaut
+          company: response.data.company || '',
+          position: response.data.position || '',
+          startDate: response.data.startDate || '',
+          endDate: response.data.endDate || '',
+          isCurrent: response.data.isCurrent || false,
+          location: response.data.location || '',
+          description: response.data.description || '',
+          achievements: response.data.achievements || [],
+          technologiesUsed: response.data.technologiesUsed || []
+        };
+        
+        setProfileData(prev => ({
+          ...prev,
+          experience: [...prev.experience, expWithId]
+        }));
+        
+        return { success: true, data: expWithId };
+      }
+    } catch (error) {
+      console.error('❌ Erreur ajout expérience:', error);
+      setError(`Erreur lors de l'ajout de l'expérience: ${error.message}`);
+      return { success: false, error: error.message };
+    }
   };
 
+  // Mettre à jour une expérience (méthode spécialisée)
+  const updateExperience = async (id, field, value) => {
+    // Mise à jour locale immédiate pour la réactivité
+    setProfileData(prev => ({
+      ...prev,
+      experience: prev.experience.map(item => 
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    }));
+
+    // Débounce pour éviter trop de requêtes
+    clearTimeout(updateExperience.timeout);
+    updateExperience.timeout = setTimeout(async () => {
+      try {
+        console.log(`🔄 Mise à jour expérience ${id}:`, { [field]: value });
+        
+        const currentExp = profileData.experience.find(item => item.id === id);
+        if (!currentExp) return;
+        
+        const updatedExp = { ...currentExp, [field]: value };
+        
+        const response = await ProfileService.updateExperience(id, updatedExp);
+        console.log('✅ Expérience mise à jour:', response);
+        
+      } catch (error) {
+        console.error('❌ Erreur mise à jour expérience:', error);
+        setError(`Erreur mise à jour expérience: ${error.message}`);
+        // Recharger les données en cas d'erreur
+        loadProfile();
+      }
+    }, 1500); // Attendre 1.5 seconde après la dernière modification
+  };
+
+  // Supprimer une expérience (méthode spécialisée)
+  const removeExperience = async (id) => {
+    try {
+      console.log('🗑️ Suppression expérience:', id);
+      
+      const response = await ProfileService.deleteExperience(id);
+      console.log('✅ Expérience supprimée:', response);
+      
+      setProfileData(prev => ({
+        ...prev,
+        experience: prev.experience.filter(item => item.id !== id)
+      }));
+      
+      return { success: true };
+    } catch (error) {
+      console.error('❌ Erreur suppression expérience:', error);
+      setError(`Erreur lors de la suppression de l'expérience: ${error.message}`);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Méthode générale pour les autres sections
+  const addItem = async (section, newItem) => {
+    // Si c'est une expérience, utiliser la méthode spécialisée
+    if (section === 'experience') {
+      return await addExperience(newItem);
+    }
+    
+    try {
+      const response = await ProfileService.addProfileSection(section, newItem);
+      
+      if (response.success) {
+        const itemWithId = { ...response.data, id: response.data.id || response.data._id };
+        setProfileData(prev => ({
+          ...prev,
+          [section]: [...prev[section], itemWithId]
+        }));
+        return { success: true };
+      }
+    } catch (error) {
+      console.error(`Erreur ajout ${section}:`, error);
+      setError(`Erreur lors de l'ajout: ${error.message}`);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Méthode générale pour mettre à jour
   const updateItem = (section, id, field, value) => {
+    // Si c'est une expérience, utiliser la méthode spécialisée
+    if (section === 'experience') {
+      return updateExperience(id, field, value);
+    }
+    
+    // Mise à jour locale immédiate pour la réactivité
     setProfileData(prev => ({
       ...prev,
       [section]: prev[section].map(item => 
         item.id === id ? { ...item, [field]: value } : item
       )
     }));
+
+    // Débounce pour éviter trop de requêtes
+    clearTimeout(updateItem.timeout);
+    updateItem.timeout = setTimeout(async () => {
+      try {
+        const item = profileData[section].find(item => item.id === id);
+        if (!item) return;
+        
+        const updatedItem = { ...item, [field]: value };
+        
+        await ProfileService.updateProfileSection(section, id, updatedItem);
+      } catch (error) {
+        console.error(`Erreur mise à jour ${section}:`, error);
+        setError(`Erreur mise à jour: ${error.message}`);
+        // Recharger les données en cas d'erreur
+        loadProfile();
+      }
+    }, 1500);
   };
 
-  const removeItem = (section, id) => {
-    setProfileData(prev => ({
-      ...prev,
-      [section]: prev[section].filter(item => item.id !== id)
-    }));
+  // Méthode générale pour supprimer
+  const removeItem = async (section, id) => {
+    // Si c'est une expérience, utiliser la méthode spécialisée
+    if (section === 'experience') {
+      return await removeExperience(id);
+    }
+    
+    try {
+      await ProfileService.deleteProfileSection(section, id);
+      
+      setProfileData(prev => ({
+        ...prev,
+        [section]: prev[section].filter(item => item.id !== id)
+      }));
+      
+      return { success: true };
+    } catch (error) {
+      console.error(`Erreur suppression ${section}:`, error);
+      setError(`Erreur lors de la suppression: ${error.message}`);
+      return { success: false, error: error.message };
+    }
   };
 
   return {
     profileData,
+    loading,
+    saving,
+    error,
     handleInputChange,
     addItem,
     updateItem,
-    removeItem
+    removeItem,
+    savePersonalInfo,
+    loadProfile,
+    // Méthodes spécialisées pour les expériences
+    addExperience,
+    updateExperience,
+    removeExperience
   };
 };
