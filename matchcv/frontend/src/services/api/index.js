@@ -68,6 +68,26 @@ const ApiService = {
   updateSkill: ProfileService.updateSkill.bind(ProfileService),
   deleteSkill: ProfileService.deleteSkill.bind(ProfileService),
   
+  // Certifications
+  addCertification: ProfileService.addCertification.bind(ProfileService),
+  updateCertification: ProfileService.updateCertification.bind(ProfileService),
+  deleteCertification: ProfileService.deleteCertification.bind(ProfileService),
+  
+  // Languages 
+  addLanguage: ProfileService.addLanguage.bind(ProfileService),
+  updateLanguage: ProfileService.updateLanguage.bind(ProfileService),
+  deleteLanguage: ProfileService.deleteLanguage.bind(ProfileService),
+  
+  addProject: ProfileService.addProject.bind(ProfileService),
+  updateProject: ProfileService.updateProject.bind(ProfileService),
+  deleteProject: ProfileService.deleteProject.bind(ProfileService),
+  
+  // Interests
+    addInterest: ProfileService.addInterest.bind(ProfileService),
+  updateInterest: ProfileService.updateInterest.bind(ProfileService),
+  deleteInterest: ProfileService.deleteInterest.bind(ProfileService),
+  
+
 };
 
 export default ApiService;

@@ -30,7 +30,8 @@ export const useProfileData = (initialUser) => {
     skills: [],
     certifications: [],
     languages: [],
-    projects: []
+    projects: [],
+    interests: []
   });
 
   const [loading, setLoading] = useState(true);
@@ -243,6 +244,122 @@ export const useProfileData = (initialUser) => {
   }
 };
 
+const addCertification = async (newCertification) => {
+  try {
+    console.log('🏆 Ajout certification:', newCertification);
+    
+    const response = await ProfileService.addCertification(newCertification);
+    console.log('✅ Certification ajoutée:', response);
+    
+    if (response.success) {
+      const certificationWithId = { 
+        ...response.data, 
+        id: response.data.id || response.data._id 
+      };
+      
+      setProfileData(prev => ({
+        ...prev,
+        certifications: [...prev.certifications, certificationWithId]
+      }));
+      
+      return { success: true };
+    }
+    
+    throw new Error(response.message || 'Erreur lors de l\'ajout de la certification');
+  } catch (error) {
+    console.error('❌ Erreur ajout certification:', error);
+    setError(`Erreur lors de l'ajout de la certification: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+};
+
+const addLanguage = async (newLanguage) => {
+  try {
+    console.log('🌍 Ajout langue:', newLanguage);
+    
+    const response = await ProfileService.addLanguage(newLanguage);
+    console.log('✅ Langue ajoutée:', response);
+    
+    if (response.success) {
+      const languageWithId = { 
+        ...response.data, 
+        id: response.data.id || response.data._id 
+      };
+      
+      setProfileData(prev => ({
+        ...prev,
+        languages: [...prev.languages, languageWithId]
+      }));
+      
+      return { success: true };
+    }
+    
+    throw new Error(response.message || 'Erreur lors de l\'ajout de la langue');
+  } catch (error) {
+    console.error('❌ Erreur ajout langue:', error);
+    setError(`Erreur lors de l'ajout de la langue: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+};
+
+const addProject = async (newProject) => {
+  try {
+    console.log('🚀 Ajout projet:', newProject);
+    
+    const response = await ProfileService.addProject(newProject);
+    console.log('✅ Projet ajouté:', response);
+    
+    if (response.success) {
+      const projectWithId = { 
+        ...response.data, 
+        id: response.data.id || response.data._id 
+      };
+      
+      setProfileData(prev => ({
+        ...prev,
+        projects: [...prev.projects, projectWithId]
+      }));
+      
+      return { success: true };
+    }
+    
+    throw new Error(response.message || 'Erreur lors de l\'ajout du projet');
+  } catch (error) {
+    console.error('❌ Erreur ajout projet:', error);
+    setError(`Erreur lors de l'ajout du projet: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+};
+
+const addInterest = async (newInterest) => {
+  try {
+    console.log('🎨 Ajout centre d\'intérêt:', newInterest);
+    
+    const response = await ProfileService.addInterest(newInterest);
+    console.log('✅ Centre d\'intérêt ajouté:', response);
+    
+    if (response.success) {
+      const interestWithId = { 
+        ...response.data, 
+        id: response.data.id || response.data._id 
+      };
+      
+      setProfileData(prev => ({
+        ...prev,
+        interests: [...prev.interests, interestWithId]
+      }));
+      
+      return { success: true };
+    }
+    
+    throw new Error(response.message || 'Erreur lors de l\'ajout du centre d\'intérêt');
+  } catch (error) {
+    console.error('❌ Erreur ajout centre d\'intérêt:', error);
+    setError(`Erreur lors de l'ajout du centre d'intérêt: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+};
+
   // Méthode générale pour les autres sections
 const addItem = async (section, newItem) => {
   // Si c'est une expérience, utiliser la méthode spécialisée
@@ -258,7 +375,22 @@ const addItem = async (section, newItem) => {
   if (section === 'skills') {
     return await addSkill(newItem);
   }
+
+  if (section === 'certifications') {
+    return await addCertification(newItem);
+  }
+
+  if (section === 'languages') {
+    return await addLanguage(newItem);
+  }
   
+  if (section === 'projects') {
+    return await addProject(newItem);
+  }
+
+    if (section === 'interests') {
+    return await addInterest(newItem);
+  }
   try {
     const response = await ProfileService.addProfileSection(section, newItem);
     

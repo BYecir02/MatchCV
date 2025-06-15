@@ -8,18 +8,25 @@ const LanguageSchema = new mongoose.Schema({
   },
   languageName: {
     type: String,
-    required: [true, 'Le nom de la langue est requis'],
-    trim: true
+    required: false, // ⭐ CHANGÉ : Optionnel pour permettre création vide
+    trim: true,
+    default: ''
   },
   proficiencyLevel: {
     type: String,
-    required: [true, 'Le niveau est requis'],
-    enum: ['basic', 'conversational', 'fluent', 'native'],
+    required: false, // ⭐ CHANGÉ : Optionnel
+    enum: ['basic', 'conversational', 'fluent', 'native', 'professional'],
     default: 'basic'
   },
   certification: {
     type: String,
-    trim: true
+    trim: true,
+    default: ''
+  },
+  description: {
+    type: String,
+    trim: true,
+    default: ''
   },
   displayOrder: {
     type: Number,

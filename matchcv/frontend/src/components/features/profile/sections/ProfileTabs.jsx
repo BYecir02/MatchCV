@@ -6,7 +6,8 @@ import {
   Award,
   Badge,
   Languages,
-  Rocket
+  Rocket,
+  Heart
 } from 'lucide-react';
 
 const ProfileTabs = ({ activeTab, setActiveTab }) => {
@@ -17,7 +18,8 @@ const ProfileTabs = ({ activeTab, setActiveTab }) => {
     { id: 'skills', label: 'Compétences', icon: Award },
     { id: 'certifications', label: 'Certifications', icon: Badge },
     { id: 'languages', label: 'Langues', icon: Languages },
-    { id: 'projects', label: 'Projets', icon: Rocket }
+    { id: 'projects', label: 'Projets', icon: Rocket },
+    { id: 'interests', label: 'Centres d\'intérêt', icon: Heart }
   ];
 
   return (

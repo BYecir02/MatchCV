@@ -8,34 +8,46 @@ const ProjectSchema = new mongoose.Schema({
   },
   projectName: {
     type: String,
-    required: [true, 'Le nom du projet est requis'],
-    trim: true
+    required: false, // ⭐ CHANGÉ : Optionnel pour permettre création vide
+    trim: true,
+    default: ''
   },
   description: {
     type: String,
-    required: [true, 'La description est requise'],
-    trim: true
+    required: false, // ⭐ CHANGÉ : Optionnel pour permettre création vide
+    trim: true,
+    default: ''
   },
   projectUrl: {
     type: String,
-    trim: true
+    trim: true,
+    default: ''
   },
   repositoryUrl: {
     type: String,
-    trim: true
+    trim: true,
+    default: ''
   },
-  technologiesUsed: [String],
+  technologiesUsed: {
+    type: [String],
+    default: []
+  },
   startDate: {
-    type: String // Format: "YYYY-MM"
+    type: String, // Format: "YYYY-MM"
+    default: ''
   },
   endDate: {
-    type: String // Format: "YYYY-MM"
+    type: String, // Format: "YYYY-MM"
+    default: ''
   },
   isOngoing: {
     type: Boolean,
     default: false
   },
-  screenshots: [String], // URLs des captures d'écran
+  screenshots: {
+    type: [String], // URLs des captures d'écran
+    default: []
+  },
   displayOrder: {
     type: Number,
     default: 0

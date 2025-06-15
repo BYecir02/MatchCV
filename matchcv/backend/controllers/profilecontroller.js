@@ -5,6 +5,7 @@ const UserSkill = require('../models/UserSkill');
 const Certification = require('../models/Certification');
 const Language = require('../models/Language');
 const Project = require('../models/Project');
+const Interest = require('../models/Interest'); // ⭐ AJOUTER cette ligne
 
 const profileController = {
   // Récupérer le profil complet
@@ -12,15 +13,16 @@ const profileController = {
     try {
       const userId = req.user.id;
 
-      // Récupérer toutes les données en parallèle
-      const [user, experiences, education, skills, certifications, languages, projects] = await Promise.all([
+      // ⭐ AJOUTER interests dans Promise.all
+      const [user, experiences, education, skills, certifications, languages, projects, interests] = await Promise.all([
         User.findById(userId).select('-password'),
         Experience.find({ userId }).sort({ displayOrder: 1, createdAt: -1 }),
         Education.find({ userId }).sort({ displayOrder: 1, createdAt: -1 }),
         UserSkill.find({ userId }).sort({ displayOrder: 1, createdAt: -1 }),
         Certification.find({ userId }).sort({ displayOrder: 1, createdAt: -1 }),
         Language.find({ userId }).sort({ displayOrder: 1, createdAt: -1 }),
-        Project.find({ userId }).sort({ displayOrder: 1, createdAt: -1 })
+        Project.find({ userId }).sort({ displayOrder: 1, createdAt: -1 }),
+        Interest.find({ userId }).sort({ displayOrder: 1, createdAt: -1 }) // ⭐ AJOUTER cette ligne
       ]);
 
       if (!user) {
@@ -41,7 +43,7 @@ const profileController = {
           ...user.profile
         },
         experience: experiences.map(exp => ({
-          id: exp._id.toString(), // Conversion explicite en string
+          id: exp._id.toString(),
           company: exp.company,
           position: exp.position,
           startDate: exp.startDate,
@@ -91,6 +93,7 @@ const profileController = {
           languageName: lang.languageName,
           proficiencyLevel: lang.proficiencyLevel,
           certification: lang.certification,
+          description: lang.description, // ⭐ AJOUTER si manquant
           displayOrder: lang.displayOrder
         })),
         projects: projects.map(proj => ({
@@ -105,6 +108,16 @@ const profileController = {
           isOngoing: proj.isOngoing,
           screenshots: proj.screenshots,
           displayOrder: proj.displayOrder
+        })),
+        // ⭐ AJOUTER la section interests
+        interests: interests.map(interest => ({
+          id: interest._id.toString(),
+          interestName: interest.interestName,
+          category: interest.category,
+          description: interest.description,
+          level: interest.level,
+          isActive: interest.isActive,
+          displayOrder: interest.displayOrder
         })),
         settings: user.settings
       };
@@ -283,14 +296,15 @@ const profileController = {
       const userId = req.user.id;
       const data = req.body;
 
-      // Mapping des sections vers les modèles
+      // ⭐ AJOUTER interests dans le mapping
       const modelMap = {
         'experience': Experience,
         'education': Education,
         'skills': UserSkill,
         'certifications': Certification,
         'languages': Language,
-        'projects': Project
+        'projects': Project,
+        'interests': Interest // ⭐ AJOUTER cette ligne
       };
 
       const Model = modelMap[section];

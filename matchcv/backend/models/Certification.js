@@ -8,28 +8,33 @@ const CertificationSchema = new mongoose.Schema({
   },
   certificationName: {
     type: String,
-    required: [true, 'Le nom de la certification est requis'],
-    trim: true
+    required: false, // ⭐ CHANGÉ : Optionnel pour permettre création vide
+    trim: true,
+    default: ''
   },
   issuingOrganization: {
     type: String,
-    required: [true, 'L\'organisme émetteur est requis'],
-    trim: true
+    required: false, // ⭐ CHANGÉ : Optionnel pour permettre création vide
+    trim: true,
+    default: ''
   },
   credentialId: {
     type: String,
-    trim: true
+    trim: true,
+    default: ''
   },
   issueDate: {
-    type: Date,
-    required: [true, 'La date d\'obtention est requise']
+    type: String, // ⭐ CHANGÉ : String pour cohérence avec les autres modèles
+    default: ''
   },
   expirationDate: {
-    type: Date
+    type: String, // ⭐ CHANGÉ : String pour cohérence
+    default: ''
   },
   credentialUrl: {
     type: String,
-    trim: true
+    trim: true,
+    default: ''
   },
   neverExpires: {
     type: Boolean,

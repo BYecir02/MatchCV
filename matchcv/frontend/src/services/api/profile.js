@@ -115,6 +115,103 @@ class ProfileService extends BaseApiService {
       method: 'DELETE',
     });
   }
+
+    // ========== CERTIFICATIONS - MÉTHODES SPÉCIFIQUES ==========
+  async addCertification(certificationData) {
+    console.log('📡 API Call - addCertification:', certificationData);
+    return this.request('/profile/certifications/add', {
+      method: 'POST',
+      body: JSON.stringify(certificationData),
+    });
+  }
+
+  async updateCertification(id, certificationData) {
+    console.log('📡 API Call - updateCertification:', { id, certificationData });
+    return this.request(`/profile/certifications/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(certificationData),
+    });
+  }
+
+  async deleteCertification(id) {
+    console.log('📡 API Call - deleteCertification:', id);
+    return this.request(`/profile/certifications/delete/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+    // ========== LANGUAGES - MÉTHODES SPÉCIFIQUES ==========
+  async addLanguage(languageData) {
+    console.log('📡 API Call - addLanguage:', languageData);
+    return this.request('/profile/languages/add', {
+      method: 'POST',
+      body: JSON.stringify(languageData),
+    });
+  }
+
+  async updateLanguage(id, languageData) {
+    console.log('📡 API Call - updateLanguage:', { id, languageData });
+    return this.request(`/profile/languages/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(languageData),
+    });
+  }
+
+  async deleteLanguage(id) {
+    console.log('📡 API Call - deleteLanguage:', id);
+    return this.request(`/profile/languages/delete/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+    // ========== PROJECTS - MÉTHODES SPÉCIFIQUES ==========
+  async addProject(projectData) {
+    console.log('📡 API Call - addProject:', projectData);
+    return this.request('/profile/projects/add', {
+      method: 'POST',
+      body: JSON.stringify(projectData),
+    });
+  }
+
+  async updateProject(id, projectData) {
+    console.log('📡 API Call - updateProject:', { id, projectData });
+    return this.request(`/profile/projects/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(projectData),
+    });
+  }
+
+  async deleteProject(id) {
+    console.log('📡 API Call - deleteProject:', id);
+    return this.request(`/profile/projects/delete/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+    // ========== INTERESTS - MÉTHODES SPÉCIFIQUES ==========
+  async addInterest(interestData) {
+    console.log('📡 API Call - addInterest:', interestData);
+    return this.request('/profile/interests/add', {
+      method: 'POST',
+      body: JSON.stringify(interestData),
+    });
+  }
+
+  async updateInterest(id, interestData) {
+    console.log('📡 API Call - updateInterest:', { id, interestData });
+    return this.request(`/profile/interests/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(interestData),
+    });
+  }
+
+  async deleteInterest(id) {
+    console.log('📡 API Call - deleteInterest:', id);
+    return this.request(`/profile/interests/delete/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
 }
 
 export default new ProfileService();

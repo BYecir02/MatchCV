@@ -16,7 +16,7 @@ router.post('/experience', profileController.addExperience);
 router.put('/experience/:id', profileController.updateExperience);
 router.delete('/experience/:id', profileController.deleteExperience);
 
-// Routes génériques pour toutes les autres sections
+// Routes génériques pour toutes les autres sections (education, skills, certifications, languages, projects, interests)
 router.post('/:section/add', (req, res) => {
   req.params.action = 'add';
   profileController.updateSection(req, res);

@@ -17,6 +17,7 @@ import SkillsTab from './tabs/SkillsTab';
 import CertificationsTab from './tabs/CertificationsTab';
 import LanguagesTab from './tabs/LanguagesTab';
 import ProjectsTab from './tabs/ProjectsTab';
+import InterestsTab from './tabs/InterestsTab'; 
 
 const ProfileSettings = ({ user }) => {
   const { 
@@ -169,6 +170,8 @@ const ProfileSettings = ({ user }) => {
         return <LanguagesTab {...commonProps} />;
       case 'projects': 
         return <ProjectsTab {...commonProps} />;
+      case 'interests':
+        return <InterestsTab {...commonProps} />;
       default: 
         return null;
     }
