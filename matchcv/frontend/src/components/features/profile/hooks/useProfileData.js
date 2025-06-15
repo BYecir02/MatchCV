@@ -214,30 +214,100 @@ export const useProfileData = (initialUser) => {
     }
   };
 
-  // Méthode générale pour les autres sections
-  const addItem = async (section, newItem) => {
-    // Si c'est une expérience, utiliser la méthode spécialisée
-    if (section === 'experience') {
-      return await addExperience(newItem);
+  const addSkill = async (newSkill) => {
+  try {
+    console.log('💻 Ajout compétence:', newSkill);
+    
+    const response = await ProfileService.addSkill(newSkill);
+    console.log('✅ Compétence ajoutée:', response);
+    
+    if (response.success) {
+      const skillWithId = { 
+        ...response.data, 
+        id: response.data.id || response.data._id 
+      };
+      
+      setProfileData(prev => ({
+        ...prev,
+        skills: [...prev.skills, skillWithId]
+      }));
+      
+      return { success: true };
     }
     
-    try {
-      const response = await ProfileService.addProfileSection(section, newItem);
-      
-      if (response.success) {
-        const itemWithId = { ...response.data, id: response.data.id || response.data._id };
-        setProfileData(prev => ({
-          ...prev,
-          [section]: [...prev[section], itemWithId]
-        }));
-        return { success: true };
-      }
-    } catch (error) {
-      console.error(`Erreur ajout ${section}:`, error);
-      setError(`Erreur lors de l'ajout: ${error.message}`);
-      return { success: false, error: error.message };
+    throw new Error(response.message || 'Erreur lors de l\'ajout de la compétence');
+  } catch (error) {
+    console.error('❌ Erreur ajout compétence:', error);
+    setError(`Erreur lors de l'ajout de la compétence: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+};
+
+  // Méthode générale pour les autres sections
+const addItem = async (section, newItem) => {
+  // Si c'est une expérience, utiliser la méthode spécialisée
+  if (section === 'experience') {
+    return await addExperience(newItem);
+  }
+  
+  // ⭐ AJOUTER : Si c'est une formation, utiliser la méthode spécialisée
+  if (section === 'education') {
+    return await addEducation(newItem);
+  }
+
+  if (section === 'skills') {
+    return await addSkill(newItem);
+  }
+  
+  try {
+    const response = await ProfileService.addProfileSection(section, newItem);
+    
+    if (response.success) {
+      const itemWithId = { ...response.data, id: response.data.id || response.data._id };
+      setProfileData(prev => ({
+        ...prev,
+        [section]: [...prev[section], itemWithId]
+      }));
+      return { success: true };
     }
-  };
+    
+    throw new Error(response.message || 'Erreur lors de l\'ajout');
+  } catch (error) {
+    console.error(`❌ Erreur ajout ${section}:`, error);
+    setError(`Erreur lors de l'ajout: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+};
+
+// ⭐ AJOUTER : Méthode addEducation similaire à addExperience
+const addEducation = async (newEducation) => {
+  try {
+    console.log('🎓 Ajout formation:', newEducation);
+    
+    const response = await ProfileService.addEducation(newEducation);
+    console.log('✅ Formation ajoutée:', response);
+    
+    if (response.success) {
+      const educationWithId = { 
+        ...response.education, 
+        id: response.education.id || response.education._id 
+      };
+      
+      setProfileData(prev => ({
+        ...prev,
+        education: [...prev.education, educationWithId]
+      }));
+      
+      return { success: true };
+    }
+    
+    throw new Error(response.message || 'Erreur lors de l\'ajout de la formation');
+  } catch (error) {
+    console.error('❌ Erreur ajout formation:', error);
+    setError(`Erreur lors de l'ajout de la formation: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+};
 
   // Méthode générale pour mettre à jour
   const updateItem = (section, id, field, value) => {

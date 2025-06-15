@@ -11,12 +11,18 @@ export {
   JobsService
 };
 
-// Export par défaut pour compatibilité
+// Export par défaut pour compatibilité - VERSION CORRIGÉE
 const ApiService = {
-  // Auth
-  ...AuthService,
+  // ========== AUTH - TOUTES LES MÉTHODES ==========
+  login: AuthService.login.bind(AuthService),
+  register: AuthService.register.bind(AuthService),
+  logout: AuthService.logout.bind(AuthService),
+  checkAuth: AuthService.checkAuth.bind(AuthService),
+  isAuthenticated: AuthService.isAuthenticated.bind(AuthService),
+  getCurrentUser: AuthService.getCurrentUser.bind(AuthService),
+  getAuthToken: AuthService.getAuthToken.bind(AuthService),
   
-  // Profile
+  // ========== PROFILE ==========
   getProfile: ProfileService.getProfile.bind(ProfileService),
   updatePersonalInfo: ProfileService.updatePersonalInfo.bind(ProfileService),
   addExperience: ProfileService.addExperience.bind(ProfileService),
@@ -25,17 +31,43 @@ const ApiService = {
   addProfileSection: ProfileService.addProfileSection.bind(ProfileService),
   updateProfileSection: ProfileService.updateProfileSection.bind(ProfileService),
   deleteProfileSection: ProfileService.deleteProfileSection.bind(ProfileService),
+  uploadAvatar: ProfileService.uploadAvatar.bind(ProfileService),
   
-  // CV
+  // ========== CV ==========
   saveCV: CVService.saveCV.bind(CVService),
   getMyCVs: CVService.getMyCVs.bind(CVService),
   getCV: CVService.getCV.bind(CVService),
   deleteCV: CVService.deleteCV.bind(CVService),
   updateCV: CVService.updateCV.bind(CVService),
+  extractCVData: CVService.extractCVData.bind(CVService),
+  exportCVToPDF: CVService.exportCVToPDF.bind(CVService),
+  shareCV: CVService.shareCV.bind(CVService),
+  uploadFile: CVService.uploadFile.bind(CVService),
   
-  // Jobs
+  // ========== JOBS ==========
   analyzeJob: JobsService.analyzeJob.bind(JobsService),
+  getJobAnalyses: JobsService.getJobAnalyses.bind(JobsService),
   generateCoverLetter: JobsService.generateCoverLetter.bind(JobsService),
+  saveCoverLetter: JobsService.saveCoverLetter.bind(JobsService),
+  getMyCoverLetters: JobsService.getMyCoverLetters.bind(JobsService),
+
+  // ⭐ AJOUTER : Education
+  addEducation: ProfileService.addEducation.bind(ProfileService),
+  updateEducation: ProfileService.updateEducation.bind(ProfileService),
+  deleteEducation: ProfileService.deleteEducation.bind(ProfileService),
+  
+
+  // Sections générales
+  addProfileSection: ProfileService.addProfileSection.bind(ProfileService),
+  updateProfileSection: ProfileService.updateProfileSection.bind(ProfileService),
+  deleteProfileSection: ProfileService.deleteProfileSection.bind(ProfileService),
+  
+
+  // Skills
+  addSkill: ProfileService.addSkill.bind(ProfileService),
+  updateSkill: ProfileService.updateSkill.bind(ProfileService),
+  deleteSkill: ProfileService.deleteSkill.bind(ProfileService),
+  
 };
 
 export default ApiService;

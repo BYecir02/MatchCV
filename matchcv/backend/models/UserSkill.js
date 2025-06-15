@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const UserSkillSchema = new mongoose.Schema({
+const userSkillSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -8,26 +8,30 @@ const UserSkillSchema = new mongoose.Schema({
   },
   skillName: {
     type: String,
-    required: [true, 'Le nom de la compétence est requis'],
-    trim: true
+    required: false, // ⭐ Optionnel pour permettre création vide
+    trim: true,
+    default: ''
   },
   category: {
     type: String,
-    required: [true, 'La catégorie est requise'],
-    enum: ['Technique', 'Soft Skills', 'Langages', 'Outils'],
-    default: 'Technique'
+    required: false,
+    trim: true,
+    default: 'Technique',
+    enum: ['Technique', 'Programmation', 'Framework/Librairie', 'Base de données', 
+           'DevOps/Cloud', 'Design/UX', 'Gestion de projet', 'Marketing', 
+           'Communication', 'Langues', 'Soft Skills', 'Autre']
   },
   proficiencyLevel: {
     type: String,
-    required: [true, 'Le niveau est requis'],
-    enum: ['beginner', 'intermediate', 'advanced', 'expert'],
-    default: 'intermediate'
+    required: false,
+    default: 'intermediate',
+    enum: ['beginner', 'intermediate', 'advanced', 'expert', 'master']
   },
   yearsExperience: {
     type: Number,
+    default: 0,
     min: 0,
-    max: 50,
-    default: 1
+    max: 50
   },
   isPrimary: {
     type: Boolean,
@@ -41,7 +45,8 @@ const UserSkillSchema = new mongoose.Schema({
   timestamps: true
 });
 
-UserSkillSchema.index({ userId: 1, displayOrder: 1 });
-UserSkillSchema.index({ userId: 1, category: 1 });
+// Index pour optimiser les requêtes
+userSkillSchema.index({ userId: 1, displayOrder: 1 });
+userSkillSchema.index({ userId: 1, category: 1 });
 
-module.exports = mongoose.model('UserSkill', UserSkillSchema);
+module.exports = mongoose.model('UserSkill', userSkillSchema);

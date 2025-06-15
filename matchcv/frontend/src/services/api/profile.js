@@ -67,6 +67,54 @@ class ProfileService extends BaseApiService {
       headers: {}, // Retirer Content-Type pour FormData
     });
   }
+
+    // ========== EDUCATION - MÉTHODES SPÉCIFIQUES ==========
+  async addEducation(educationData) {
+    console.log('📡 API Call - addEducation:', educationData);
+    return this.request('/profile/education/add', {
+      method: 'POST',
+      body: JSON.stringify(educationData),
+    });
+  }
+
+  async updateEducation(id, educationData) {
+    console.log('📡 API Call - updateEducation:', { id, educationData });
+    return this.request(`/profile/education/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(educationData),
+    });
+  }
+
+  async deleteEducation(id) {
+    console.log('📡 API Call - deleteEducation:', id);
+    return this.request(`/profile/education/delete/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+    // ========== SKILLS - MÉTHODES SPÉCIFIQUES ==========
+  async addSkill(skillData) {
+    console.log('📡 API Call - addSkill:', skillData);
+    return this.request('/profile/skills/add', {
+      method: 'POST',
+      body: JSON.stringify(skillData),
+    });
+  }
+
+  async updateSkill(id, skillData) {
+    console.log('📡 API Call - updateSkill:', { id, skillData });
+    return this.request(`/profile/skills/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(skillData),
+    });
+  }
+
+  async deleteSkill(id) {
+    console.log('📡 API Call - deleteSkill:', id);
+    return this.request(`/profile/skills/delete/${id}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 export default new ProfileService();

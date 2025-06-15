@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const EducationSchema = new mongoose.Schema({
+const educationSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -8,39 +8,48 @@ const EducationSchema = new mongoose.Schema({
   },
   institutionName: {
     type: String,
-    required: [true, 'Le nom de l\'institution est requis'],
-    trim: true
+    required: false, // ⭐ Optionnel pour permettre création vide
+    trim: true,
+    default: ''
   },
   degreeType: {
     type: String,
-    required: [true, 'Le type de diplôme est requis'],
-    trim: true
+    required: false, // ⭐ Optionnel pour permettre création vide
+    trim: true,
+    default: ''
   },
   fieldOfStudy: {
     type: String,
-    required: [true, 'Le domaine d\'étude est requis'],
-    trim: true
+    required: false, // ⭐ Optionnel pour permettre création vide
+    trim: true,
+    default: ''
   },
   location: {
     type: String,
-    trim: true
+    trim: true,
+    default: ''
   },
   startDate: {
-    type: String, // Format: "YYYY-MM"
-    required: [true, 'La date de début est requise']
+    type: String,
+    default: ''
   },
   endDate: {
-    type: String // Format: "YYYY-MM"
+    type: String,
+    default: ''
   },
   grade: {
     type: String,
-    trim: true
+    trim: true,
+    default: ''
   },
   description: {
     type: String,
-    trim: true
+    default: ''
   },
-  honors: [String],
+  honors: [{
+    type: String,
+    trim: true
+  }],
   displayOrder: {
     type: Number,
     default: 0
@@ -49,6 +58,7 @@ const EducationSchema = new mongoose.Schema({
   timestamps: true
 });
 
-EducationSchema.index({ userId: 1, displayOrder: 1 });
+// Index pour optimiser les requêtes
+educationSchema.index({ userId: 1, displayOrder: 1 });
 
-module.exports = mongoose.model('Education', EducationSchema);
+module.exports = mongoose.model('Education', educationSchema);
