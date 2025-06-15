@@ -240,14 +240,7 @@ return (
       </div>
     )}
 
-    <CVUploadSection 
-      cvFile={cvFile}
-      cvLoading={cvLoading}
-      error={error}
-      success={success}
-      onFileUpload={handleCVUpload}
-      onRemoveFile={removeCVFile}
-    />
+
 
     <div className="flex flex-col lg:flex-row gap-6">
       <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />

@@ -135,6 +135,92 @@ const profileController = {
     }
   },
 
+  // ⭐ FONCTION HELPER : Normaliser les valeurs enum pour les compétences
+  normalizeSkillData(skillData) {
+    // ⭐ VALEURS ENUM EXACTES DU MODÈLE UserSkill
+    const validCategories = ['Technique', 'Programmation', 'Framework/Librairie', 'Base de données', 
+                           'DevOps/Cloud', 'Design/UX', 'Gestion de projet', 'Marketing', 
+                           'Communication', 'Langues', 'Soft Skills', 'Autre'];
+    
+    const validProficiencyLevels = ['beginner', 'intermediate', 'advanced', 'expert', 'master'];
+
+    // ⭐ MAPPING CORRIGÉ SELON LES VRAIES VALEURS ENUM
+    const categoryMapping = {
+      // Cas exacts du modèle
+      'Technique': 'Technique',
+      'Programmation': 'Programmation',
+      'Framework/Librairie': 'Framework/Librairie',
+      'Base de données': 'Base de données',
+      'DevOps/Cloud': 'DevOps/Cloud',
+      'Design/UX': 'Design/UX',
+      'Gestion de projet': 'Gestion de projet',
+      'Marketing': 'Marketing',
+      'Communication': 'Communication',
+      'Langues': 'Langues',
+      'Soft Skills': 'Soft Skills',
+      'Autre': 'Autre',
+      
+      // Variations courantes -> Bonnes valeurs
+      'technique': 'Technique',
+      'Technical': 'Technique',        // ⭐ CORRECTION : technical -> Technique
+      'technical': 'Technique',        // ⭐ CORRECTION : technical -> Technique
+      'programmation': 'Programmation',
+      'Programming': 'Programmation',
+      'programming': 'Programmation',
+      'Framework': 'Framework/Librairie',
+      'framework': 'Framework/Librairie',
+      'Librairie': 'Framework/Librairie',
+      'librairie': 'Framework/Librairie',
+      'Library': 'Framework/Librairie',
+      'library': 'Framework/Librairie',
+      'Database': 'Base de données',
+      'database': 'Base de données',
+      'DevOps': 'DevOps/Cloud',
+      'devops': 'DevOps/Cloud',
+      'Cloud': 'DevOps/Cloud',
+      'cloud': 'DevOps/Cloud',
+      'Design': 'Design/UX',
+      'design': 'Design/UX',
+      'UX': 'Design/UX',
+      'ux': 'Design/UX',
+      'UI/UX': 'Design/UX',
+      'Gestion': 'Gestion de projet',
+      'gestion': 'Gestion de projet',
+      'Project Management': 'Gestion de projet',
+      'marketing': 'Marketing',
+      'communication': 'Communication',
+      'Personnel': 'Soft Skills',       // ⭐ CORRECTION : Personnel -> Soft Skills
+      'personnel': 'Soft Skills',       // ⭐ CORRECTION : personnel -> Soft Skills
+      'Personal': 'Soft Skills',        // ⭐ CORRECTION : Personal -> Soft Skills
+      'personal': 'Soft Skills',        // ⭐ CORRECTION : personal -> Soft Skills
+      'langues': 'Langues',
+      'Languages': 'Langues',
+      'languages': 'Langues',
+      'Langue': 'Langues',
+      'langue': 'Langues',
+      'Language': 'Langues',
+      'language': 'Langues',
+      'autre': 'Autre',
+      'Other': 'Autre',
+      'other': 'Autre'
+    };
+
+    const originalCategory = skillData.category;
+    const mappedCategory = categoryMapping[originalCategory] || 'Technique';
+    
+    // ⭐ VÉRIFICATION FINALE DE SÉCURITÉ
+    const finalCategory = validCategories.includes(mappedCategory) ? mappedCategory : 'Technique';
+    const finalProficiency = validProficiencyLevels.includes(skillData.proficiencyLevel) ? skillData.proficiencyLevel : 'intermediate';
+
+    console.log(`🔧 Normalisation compétence: "${originalCategory}" -> "${finalCategory}"`);
+    
+    return {
+      ...skillData,
+      category: finalCategory,          // ⭐ CORRECTION : Utilise la bonne valeur
+      proficiencyLevel: finalProficiency
+    };
+  },
+
   // ⭐ FONCTION HELPER : Normaliser les valeurs enum pour les centres d'intérêt
   normalizeInterestData(interestData) {
     // ⭐ VALEURS ENUM EXACTES DU MODÈLE Interest
@@ -283,91 +369,64 @@ const profileController = {
     };
   },
 
-  // ⭐ FONCTION HELPER : Normaliser les valeurs enum pour les compétences
-  normalizeSkillData(skillData) {
-    // ⭐ VALEURS ENUM EXACTES DU MODÈLE UserSkill
-    const validCategories = ['Technique', 'Programmation', 'Framework/Librairie', 'Base de données', 
-                           'DevOps/Cloud', 'Design/UX', 'Gestion de projet', 'Marketing', 
-                           'Communication', 'Langues', 'Soft Skills', 'Autre'];
-    
-    const validProficiencyLevels = ['beginner', 'intermediate', 'advanced', 'expert', 'master'];
+  // ⭐ FONCTION HELPER : Normaliser les valeurs enum pour les langues (AJOUTÉE)
+  normalizeLanguageData(languageData) {
+    // ⭐ VALEURS ENUM EXACTES DU MODÈLE Language
+    const validProficiencyLevels = ['basic', 'conversational', 'fluent', 'native', 'professional'];
 
-    // ⭐ MAPPING CORRIGÉ SELON LES VRAIES VALEURS ENUM
-    const categoryMapping = {
-      // Cas exacts du modèle
-      'Technique': 'Technique',
-      'Programmation': 'Programmation',
-      'Framework/Librairie': 'Framework/Librairie',
-      'Base de données': 'Base de données',
-      'DevOps/Cloud': 'DevOps/Cloud',
-      'Design/UX': 'Design/UX',
-      'Gestion de projet': 'Gestion de projet',
-      'Marketing': 'Marketing',
-      'Communication': 'Communication',
-      'Langues': 'Langues',
-      'Soft Skills': 'Soft Skills',
-      'Autre': 'Autre',
+    const proficiencyMapping = {
+      // Valeurs exactes du modèle
+      'basic': 'basic',
+      'conversational': 'conversational',
+      'fluent': 'fluent',
+      'native': 'native',
+      'professional': 'professional',
       
       // Variations courantes -> Bonnes valeurs
-      'technique': 'Technique',
-      'Technical': 'Technique',        // ⭐ CORRECTION : technical -> Technique
-      'technical': 'Technique',        // ⭐ CORRECTION : technical -> Technique
-      'programmation': 'Programmation',
-      'Programming': 'Programmation',
-      'programming': 'Programmation',
-      'Framework': 'Framework/Librairie',
-      'framework': 'Framework/Librairie',
-      'Librairie': 'Framework/Librairie',
-      'librairie': 'Framework/Librairie',
-      'Library': 'Framework/Librairie',
-      'library': 'Framework/Librairie',
-      'Database': 'Base de données',
-      'database': 'Base de données',
-      'DevOps': 'DevOps/Cloud',
-      'devops': 'DevOps/Cloud',
-      'Cloud': 'DevOps/Cloud',
-      'cloud': 'DevOps/Cloud',
-      'Design': 'Design/UX',
-      'design': 'Design/UX',
-      'UX': 'Design/UX',
-      'ux': 'Design/UX',
-      'UI/UX': 'Design/UX',
-      'Gestion': 'Gestion de projet',
-      'gestion': 'Gestion de projet',
-      'Project Management': 'Gestion de projet',
-      'marketing': 'Marketing',
-      'communication': 'Communication',
-      'Personnel': 'Soft Skills',       // ⭐ CORRECTION : Personnel -> Soft Skills
-      'personnel': 'Soft Skills',       // ⭐ CORRECTION : personnel -> Soft Skills
-      'Personal': 'Soft Skills',        // ⭐ CORRECTION : Personal -> Soft Skills
-      'personal': 'Soft Skills',        // ⭐ CORRECTION : personal -> Soft Skills
-      'langues': 'Langues',
-      'Languages': 'Langues',
-      'languages': 'Langues',
-      'Langue': 'Langues',
-      'langue': 'Langues',
-      'Language': 'Langues',
-      'language': 'Langues',
-      'autre': 'Autre',
-      'Other': 'Autre',
-      'other': 'Autre'
+      'Basic': 'basic',
+      'Conversational': 'conversational',
+      'Fluent': 'fluent',
+      'Native': 'native',
+      'Professional': 'professional',
+      
+      'Débutant': 'basic',
+      'débutant': 'basic',
+      'Beginner': 'basic',
+      'beginner': 'basic',
+      
+      'Intermédiaire': 'conversational',
+      'intermédiaire': 'conversational',
+      'Intermediate': 'conversational',
+      'intermediate': 'conversational',     // ⭐ CORRECTION PRINCIPALE
+      
+      'Avancé': 'fluent',
+      'avancé': 'fluent',
+      'Advanced': 'fluent',
+      'advanced': 'fluent',
+      
+      'Natif': 'native',
+      'natif': 'native',
+      'Langue maternelle': 'native',
+      'langue maternelle': 'native',
+      
+      'Professionnel': 'professional',
+      'professionnel': 'professional'
     };
 
-    const originalCategory = skillData.category;
-    const mappedCategory = categoryMapping[originalCategory] || 'Technique';
+    const originalProficiency = languageData.proficiencyLevel;
+    const mappedProficiency = proficiencyMapping[originalProficiency] || 'conversational';
     
     // ⭐ VÉRIFICATION FINALE DE SÉCURITÉ
-    const finalCategory = validCategories.includes(mappedCategory) ? mappedCategory : 'Technique';
-    const finalProficiency = validProficiencyLevels.includes(skillData.proficiencyLevel) ? skillData.proficiencyLevel : 'intermediate';
+    const finalProficiency = validProficiencyLevels.includes(mappedProficiency) ? mappedProficiency : 'conversational';
 
-    console.log(`🔧 Normalisation compétence: "${originalCategory}" -> "${finalCategory}"`);
-    
+    console.log(`🔧 Normalisation langue: "${originalProficiency}" -> "${finalProficiency}"`);
+
     return {
-      ...skillData,
-      category: finalCategory,          // ⭐ CORRECTION : Utilise la bonne valeur
+      ...languageData,
       proficiencyLevel: finalProficiency
     };
   },
+
   // ⭐ OPTION 1 : Import et analyse de CV avec PARSING JSON INTELLIGENT (CORRIGÉ)
   async importAndAnalyzeCV(req, res) {
     try {
@@ -629,36 +688,48 @@ const profileController = {
         }
       }
 
-      // 8. ⭐ ENRICHISSEMENT DES LANGUES
+      // 8. ⭐ ENRICHISSEMENT DES LANGUES (AVEC NORMALISATION)
       if (extractedData.languages && extractedData.languages.length > 0) {
         console.log(`🌍 Traitement de ${extractedData.languages.length} langues...`);
         
-        for (const langData of extractedData.languages) {
+        for (const languageData of extractedData.languages) {
           try {
-            const existingLang = await Language.findOne({
+            console.log('🔍 Langue brute reçue:', JSON.stringify(languageData, null, 2));
+            
+            // ⭐ CORRECTION : Normaliser les données avant insertion
+            const normalizedLanguage = profileController.normalizeLanguageData(languageData);
+            
+            console.log('🔧 Langue normalisée:', JSON.stringify(normalizedLanguage, null, 2));
+            
+            const existingLanguage = await Language.findOne({
               userId,
-              languageName: { $regex: new RegExp(`^${escapeRegex(langData.languageName)}$`, 'i') }
+              languageName: { $regex: new RegExp(`^${escapeRegex(normalizedLanguage.languageName)}$`, 'i') }
             });
 
-            if (!existingLang) {
+            if (!existingLanguage) {
               const displayOrder = await Language.countDocuments({ userId });
-              await Language.create({
-                ...langData,
+              const languageToCreate = {
+                ...normalizedLanguage,
                 userId,
                 displayOrder
-              });
+              };
+              
+              console.log('📝 Tentative création langue:', JSON.stringify(languageToCreate, null, 2));
+              
+              await Language.create(languageToCreate);
               importStats.created++;
-              console.log(`✅ Nouvelle langue: ${langData.languageName} (${langData.proficiencyLevel})`);
+              console.log(`✅ Nouvelle langue: ${normalizedLanguage.languageName} (${normalizedLanguage.proficiencyLevel})`);
             } else if (replaceExisting) {
-              await Language.findByIdAndUpdate(existingLang._id, langData);
+              await Language.findByIdAndUpdate(existingLanguage._id, normalizedLanguage);
               importStats.updated++;
-              console.log(`🔄 Langue mise à jour: ${langData.languageName}`);
+              console.log(`🔄 Langue mise à jour: ${normalizedLanguage.languageName}`);
             } else {
               importStats.skipped++;
-              console.log(`⏭️ Langue gardée: ${langData.languageName} (existe déjà)`);
+              console.log(`⏭️ Langue gardée: ${normalizedLanguage.languageName} (existe déjà)`);
             }
           } catch (error) {
             console.error('❌ Erreur langue:', error);
+            console.error('🔍 Données problématiques:', JSON.stringify(languageData, null, 2));
             importStats.errors++;
           }
         }
@@ -740,8 +811,12 @@ const profileController = {
         
         for (const interestData of extractedData.interests) {
           try {
+            console.log('🔍 Centre d\'intérêt brut reçu:', JSON.stringify(interestData, null, 2));
+            
             // ⭐ CORRECTION : Normaliser les données avant insertion
             const normalizedInterest = profileController.normalizeInterestData(interestData);
+            
+            console.log('🔧 Centre d\'intérêt normalisé:', JSON.stringify(normalizedInterest, null, 2));
             
             const existingInterest = await Interest.findOne({
               userId,
@@ -750,11 +825,15 @@ const profileController = {
 
             if (!existingInterest) {
               const displayOrder = await Interest.countDocuments({ userId });
-              await Interest.create({
+              const interestToCreate = {
                 ...normalizedInterest,
                 userId,
                 displayOrder
-              });
+              };
+              
+              console.log('📝 Tentative création centre d\'intérêt:', JSON.stringify(interestToCreate, null, 2));
+              
+              await Interest.create(interestToCreate);
               importStats.created++;
               console.log(`✅ Nouveau centre d'intérêt: ${normalizedInterest.interestName} (${normalizedInterest.category}/${normalizedInterest.level})`);
             } else if (replaceExisting) {
@@ -767,6 +846,7 @@ const profileController = {
             }
           } catch (error) {
             console.error('❌ Erreur centre d\'intérêt:', error);
+            console.error('🔍 Données problématiques:', JSON.stringify(interestData, null, 2));
             importStats.errors++;
           }
         }
@@ -877,29 +957,29 @@ const profileController = {
     }
 
     // ⭐ EXTRACTION BASIQUE DES COMPÉTENCES (CORRIGÉE)
-  const skillsSection = cvText.match(/(?:COMPÉTENCES|SKILLS)([\s\S]*?)(?=(?:\n#{1,3}|\n[A-Z]{2,}|\n---|\Z))/i);
-  if (skillsSection) {
-    const skillsText = skillsSection[1];
-    const skills = skillsText.match(/(?:JavaScript|React|Vue|Node|Python|PHP|Java|HTML|CSS|SQL|MongoDB|MySQL|Docker|AWS|Git|TypeScript|Angular|Figma)/gi) || [];
-    
-    skills.forEach(skill => {
-      extractedData.skills.push({
-        skillName: skill,
-        category: 'Technique', // ⭐ CORRECTION : Valeur enum valide
-        proficiencyLevel: 'intermediate',
-        yearsExperience: 1,
-        isPrimary: false
+    const skillsSection = cvText.match(/(?:COMPÉTENCES|SKILLS)([\s\S]*?)(?=(?:\n#{1,3}|\n[A-Z]{2,}|\n---|\Z))/i);
+    if (skillsSection) {
+      const skillsText = skillsSection[1];
+      const skills = skillsText.match(/(?:JavaScript|React|Vue|Node|Python|PHP|Java|HTML|CSS|SQL|MongoDB|MySQL|Docker|AWS|Git|TypeScript|Angular|Figma)/gi) || [];
+      
+      skills.forEach(skill => {
+        extractedData.skills.push({
+          skillName: skill,
+          category: 'Technique', // ⭐ CORRECTION : Valeur enum valide
+          proficiencyLevel: 'intermediate',
+          yearsExperience: 1,
+          isPrimary: false
+        });
       });
-    });
-    
-    console.log('✅ Compétences extraites:', extractedData.skills.length);
-  }
+      
+      console.log('✅ Compétences extraites:', extractedData.skills.length);
+    }
 
-    // ⭐ EXTRACTION BASIQUE DES LANGUES
+    // ⭐ EXTRACTION BASIQUE DES LANGUES (CORRIGÉE)
     if (cvText.match(/français/i)) {
       extractedData.languages.push({
         languageName: 'Français',
-        proficiencyLevel: 'native',
+        proficiencyLevel: 'native',  // ⭐ CORRECTION : Valeur enum valide
         certification: '',
         description: ''
       });
@@ -908,7 +988,7 @@ const profileController = {
     if (cvText.match(/anglais/i)) {
       extractedData.languages.push({
         languageName: 'Anglais',
-        proficiencyLevel: 'intermediate',
+        proficiencyLevel: 'conversational',  // ⭐ CORRECTION : Valeur enum valide
         certification: '',
         description: ''
       });

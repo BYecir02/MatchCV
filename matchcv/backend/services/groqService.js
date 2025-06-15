@@ -32,7 +32,7 @@ VALEURS ENUM OBLIGATOIRES:
 - skills.proficiencyLevel: UNIQUEMENT "beginner", "intermediate", "advanced", "expert", "master"
 - interests.category: UNIQUEMENT "Sport", "Arts", "Musique", "Lecture", "Cuisine", "Voyage", "Technologie", "Jeux", "Nature", "Bénévolat", "Culture", "Loisirs", "Collection", "Artisanat", "Autre"
 - interests.level: UNIQUEMENT "Débutant", "Amateur", "Passionné", "Expert", "Professionnel"
-- languages.proficiencyLevel: UNIQUEMENT "beginner", "intermediate", "advanced", "native"
+- languages.proficiencyLevel: UNIQUEMENT "basic", "conversational", "fluent", "native", "professional"
 
 RÉPONSE ATTENDUE - UNIQUEMENT LE JSON (pas de texte explicatif avant ou après):
 {
@@ -79,7 +79,7 @@ RÉPONSE ATTENDUE - UNIQUEMENT LE JSON (pas de texte explicatif avant ou après)
   }],
   "languages": [{
     "languageName": "",
-    "proficiencyLevel": "intermediate",
+    "proficiencyLevel": "conversational",  // ⭐ CORRIGÉ
     "certification": "",
     "description": ""
   }],
@@ -396,26 +396,40 @@ Pour les compétences web, utilise "Technique" ou "Programmation" selon le conte
 
   normalizeLanguageProficiency(level) {
     const mapping = {
-      'Débutant': 'beginner',
-      'débutant': 'beginner',
-      'Beginner': 'beginner',
-      'beginner': 'beginner',
-      'Intermédiaire': 'intermediate',
-      'intermédiaire': 'intermediate',
-      'Intermediate': 'intermediate',
-      'intermediate': 'intermediate',
-      'Avancé': 'advanced',
-      'avancé': 'advanced',
-      'Advanced': 'advanced',
-      'advanced': 'advanced',
+      'Débutant': 'basic',              // ✅ CORRIGÉ
+      'débutant': 'basic',
+      'Beginner': 'basic',
+      'beginner': 'basic',
+      'basic': 'basic',
+      'Basic': 'basic',
+      
+      'Intermédiaire': 'conversational',  // ✅ CORRIGÉ
+      'intermédiaire': 'conversational',
+      'Intermediate': 'conversational',
+      'intermediate': 'conversational',   // ⭐ CORRECTION PRINCIPALE
+      'conversational': 'conversational',
+      'Conversational': 'conversational',
+      
+      'Avancé': 'fluent',               // ✅ CORRIGÉ
+      'avancé': 'fluent',
+      'Advanced': 'fluent',
+      'advanced': 'fluent',
+      'fluent': 'fluent',
+      'Fluent': 'fluent',
+      
       'Natif': 'native',
       'natif': 'native',
       'Native': 'native',
       'native': 'native',
       'Langue maternelle': 'native',
-      'langue maternelle': 'native'
+      'langue maternelle': 'native',
+      
+      'Professionnel': 'professional',   // ✅ AJOUTÉ
+      'professionnel': 'professional',
+      'Professional': 'professional',
+      'professional': 'professional'
     };
-    return mapping[level] || 'intermediate';
+    return mapping[level] || 'conversational'; // ✅ DÉFAUT CORRIGÉ
   },
 
   // ⭐ MÉTHODE FALLBACK : Extraction basique sans IA (CORRIGÉE)
