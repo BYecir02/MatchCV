@@ -10,8 +10,10 @@ const groqService = require('../services/groqService');
 
 const profileController = {
 
-  // ⭐ MÉTHODE HELPER : Récupérer données profil (réutilisable)
+  // ⭐ MÉTHODE HELPER CORRIGÉE : Récupérer données profil avec durée calculée
   async getProfileData(userId) {
+    console.log('🔍 Récupération profil complet pour utilisateur:', userId);
+    
     const [user, experiences, education, skills, certifications, languages, projects, interests] = await Promise.all([
       User.findById(userId).select('-password'),
       Experience.find({ userId }).sort({ displayOrder: 1, createdAt: -1 }),
@@ -23,14 +25,26 @@ const profileController = {
       Interest.find({ userId }).sort({ displayOrder: 1, createdAt: -1 })
     ]);
 
-    return {
+    // ✅ VÉRIFICATION : Logger ce qui est récupéré
+    console.log('📊 Éléments récupérés:', {
+      user: !!user,
+      experiences: experiences.length,
+      education: education.length,
+      skills: skills.length,
+      certifications: certifications.length,
+      languages: languages.length,
+      projects: projects.length,
+      interests: interests.length
+    });
+
+    const profileData = {
       personalInfo: {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
         phone: user.phone || '',
         profilePictureUrl: user.profilePictureUrl,
-        ...user.profile
+        ...user.profile // ✅ Inclut tout le profil utilisateur
       },
       experience: experiences.map(exp => ({
         id: exp._id.toString(),
@@ -43,7 +57,9 @@ const profileController = {
         description: exp.description,
         achievements: exp.achievements,
         technologiesUsed: exp.technologiesUsed,
-        displayOrder: exp.displayOrder
+        displayOrder: exp.displayOrder,
+        // ✅ AJOUT : Calculer la durée pour Groq
+        duration: profileController.calculateDuration(exp.startDate, exp.endDate, exp.isCurrent)
       })),
       education: education.map(edu => ({
         id: edu._id.toString(),
@@ -110,6 +126,31 @@ const profileController = {
       })),
       settings: user.settings
     };
+
+    console.log('✅ Profil complet construit avec succès');
+    return profileData;
+  },
+
+  // ✅ NOUVELLE FONCTION HELPER : Calculer la durée d'expérience
+  calculateDuration(startDate, endDate, isCurrent) {
+    if (!startDate) return 'Durée non spécifiée';
+    
+    const start = new Date(startDate);
+    const end = isCurrent ? new Date() : new Date(endDate || new Date());
+    
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffMonths = Math.round(diffDays / 30);
+    const diffYears = Math.floor(diffMonths / 12);
+    const remainingMonths = diffMonths % 12;
+    
+    if (diffYears > 0) {
+      return remainingMonths > 0 
+        ? `${diffYears} an${diffYears > 1 ? 's' : ''} et ${remainingMonths} mois`
+        : `${diffYears} an${diffYears > 1 ? 's' : ''}`;
+    } else {
+      return `${diffMonths} mois`;
+    }
   },
 
   // ⭐ MÉTHODE CORRIGÉE : Récupérer le profil complet
@@ -117,7 +158,7 @@ const profileController = {
     try {
       const userId = req.user.id;
       
-      // Utiliser la méthode helper
+      // Utiliser la méthode helper améliorée
       const profileData = await profileController.getProfileData(userId);
 
       res.json({
@@ -126,7 +167,7 @@ const profileController = {
       });
 
     } catch (error) {
-      console.error('Erreur récupération profil:', error);
+      console.error('❌ Erreur récupération profil:', error);
       res.status(500).json({
         success: false,
         message: 'Erreur lors de la récupération du profil',
@@ -162,8 +203,8 @@ const profileController = {
       
       // Variations courantes -> Bonnes valeurs
       'technique': 'Technique',
-      'Technical': 'Technique',        // ⭐ CORRECTION : technical -> Technique
-      'technical': 'Technique',        // ⭐ CORRECTION : technical -> Technique
+      'Technical': 'Technique',
+      'technical': 'Technique',
       'programmation': 'Programmation',
       'Programming': 'Programmation',
       'programming': 'Programmation',
@@ -189,10 +230,10 @@ const profileController = {
       'Project Management': 'Gestion de projet',
       'marketing': 'Marketing',
       'communication': 'Communication',
-      'Personnel': 'Soft Skills',       // ⭐ CORRECTION : Personnel -> Soft Skills
-      'personnel': 'Soft Skills',       // ⭐ CORRECTION : personnel -> Soft Skills
-      'Personal': 'Soft Skills',        // ⭐ CORRECTION : Personal -> Soft Skills
-      'personal': 'Soft Skills',        // ⭐ CORRECTION : personal -> Soft Skills
+      'Personnel': 'Soft Skills',
+      'personnel': 'Soft Skills',
+      'Personal': 'Soft Skills',
+      'personal': 'Soft Skills',
       'langues': 'Langues',
       'Languages': 'Langues',
       'languages': 'Langues',
@@ -216,7 +257,7 @@ const profileController = {
     
     return {
       ...skillData,
-      category: finalCategory,          // ⭐ CORRECTION : Utilise la bonne valeur
+      category: finalCategory,
       proficiencyLevel: finalProficiency
     };
   },
@@ -289,14 +330,14 @@ const profileController = {
       'Culture': 'Culture',
       'cultural': 'Culture',
       'Cultural': 'Culture',
-      'hobby': 'Loisirs',           // ⭐ CORRECTION : hobby -> Loisirs
-      'Hobby': 'Loisirs',           // ⭐ CORRECTION : Hobby -> Loisirs
+      'hobby': 'Loisirs',
+      'Hobby': 'Loisirs',
       'hobbies': 'Loisirs',
       'Hobbies': 'Loisirs',
       'loisir': 'Loisirs',
       'loisirs': 'Loisirs',
-      'personal': 'Loisirs',        // ⭐ CORRECTION : personal -> Loisirs
-      'Personal': 'Loisirs',        // ⭐ CORRECTION : Personal -> Loisirs
+      'personal': 'Loisirs',
+      'Personal': 'Loisirs',
       'personnel': 'Loisirs',
       'Personnel': 'Loisirs',
       'collection': 'Collection',
@@ -324,23 +365,23 @@ const profileController = {
       
       // Variations courantes -> Bonnes valeurs
       'débutant': 'Débutant',
-      'beginner': 'Débutant',         // ⭐ CORRECTION : beginner -> Débutant
-      'Beginner': 'Débutant',         // ⭐ CORRECTION : Beginner -> Débutant
+      'beginner': 'Débutant',
+      'Beginner': 'Débutant',
       'amateur': 'Amateur',
       'Amateur': 'Amateur',
-      'hobby': 'Amateur',             // ⭐ CORRECTION : hobby -> Amateur
-      'Hobby': 'Amateur',             // ⭐ CORRECTION : Hobby -> Amateur
+      'hobby': 'Amateur',
+      'Hobby': 'Amateur',
       'passionné': 'Passionné',
       'passionate': 'Passionné',
       'Passionate': 'Passionné',
-      'intermediate': 'Amateur',      // ⭐ CORRECTION : intermediate -> Amateur
-      'Intermediate': 'Amateur',      // ⭐ CORRECTION : Intermediate -> Amateur
+      'intermediate': 'Amateur',
+      'Intermediate': 'Amateur',
       'intermédiaire': 'Amateur',
       'Intermédiaire': 'Amateur',
       'expert': 'Expert',
       'Expert': 'Expert',
-      'advanced': 'Expert',           // ⭐ CORRECTION : advanced -> Expert
-      'Advanced': 'Expert',           // ⭐ CORRECTION : Advanced -> Expert
+      'advanced': 'Expert',
+      'Advanced': 'Expert',
       'avancé': 'Expert',
       'Avancé': 'Expert',
       'professionnel': 'Professionnel',
@@ -369,7 +410,7 @@ const profileController = {
     };
   },
 
-  // ⭐ FONCTION HELPER : Normaliser les valeurs enum pour les langues (AJOUTÉE)
+  // ⭐ FONCTION HELPER : Normaliser les valeurs enum pour les langues
   normalizeLanguageData(languageData) {
     // ⭐ VALEURS ENUM EXACTES DU MODÈLE Language
     const validProficiencyLevels = ['basic', 'conversational', 'fluent', 'native', 'professional'];
@@ -397,7 +438,7 @@ const profileController = {
       'Intermédiaire': 'conversational',
       'intermédiaire': 'conversational',
       'Intermediate': 'conversational',
-      'intermediate': 'conversational',     // ⭐ CORRECTION PRINCIPALE
+      'intermediate': 'conversational',
       
       'Avancé': 'fluent',
       'avancé': 'fluent',
@@ -427,7 +468,7 @@ const profileController = {
     };
   },
 
-  // ⭐ OPTION 1 : Import et analyse de CV avec PARSING JSON INTELLIGENT (CORRIGÉ)
+  // ⭐ IMPORT ET ANALYSE DE CV AVEC PARSING JSON INTELLIGENT
   async importAndAnalyzeCV(req, res) {
     try {
       const { cvText, replaceExisting = false } = req.body;
@@ -492,7 +533,7 @@ const profileController = {
             '', null, undefined, 
             'Pas de nom', 'Pas de numéro de téléphone', 'Pas de titre',
             'Non renseigné', 'Non défini', 'Aucun', 'Inconnu',
-            'Pas de nom de famille fourni' // ⭐ AJOUT
+            'Pas de nom de famille fourni'
           ];
 
           const isEmptyValue = (value) => {
@@ -544,7 +585,7 @@ const profileController = {
             const finalUpdate = { ...userUpdate, ...profileUpdate };
             await User.findByIdAndUpdate(userId, finalUpdate, { new: true });
             importStats.updated++;
-            console.log('✅ Infos personnelles enrichies (valeurs par défaut remplacées)');
+            console.log('✅ Infos personnelles enrichies');
           }
         } catch (error) {
           console.error('❌ Erreur enrichissement infos personnelles:', error);
@@ -629,13 +670,13 @@ const profileController = {
         }
       }
 
-      // 7. ⭐ ENRICHISSEMENT DES COMPÉTENCES (FUSION INTELLIGENTE) - CORRIGÉ
+      // 7. ⭐ ENRICHISSEMENT DES COMPÉTENCES (FUSION INTELLIGENTE)
       if (extractedData.skills && extractedData.skills.length > 0) {
         console.log(`🛠️ Traitement de ${extractedData.skills.length} compétences...`);
         
         for (const skillData of extractedData.skills) {
           try {
-            // ⭐ CORRECTION : Normaliser les données avant insertion
+            // ⭐ NORMALISER les données avant insertion
             const normalizedSkill = profileController.normalizeSkillData(skillData);
             
             // Vérifier si la compétence existe (nom similaire)
@@ -661,7 +702,7 @@ const profileController = {
               console.log(`🔄 Compétence mise à jour: ${normalizedSkill.skillName}`);
             } else {
               // ⭐ AMÉLIORATION INTELLIGENTE du niveau si c'est mieux
-              const levelOrder = { 'beginner': 1, 'intermediate': 2, 'advanced': 3, 'expert': 4, 'master': 5 }; // ⭐ AJOUT : 'master': 5
+              const levelOrder = { 'beginner': 1, 'intermediate': 2, 'advanced': 3, 'expert': 4, 'master': 5 };
               const currentLevel = levelOrder[existingSkill.proficiencyLevel] || 1;
               const newLevel = levelOrder[normalizedSkill.proficiencyLevel] || 1;
               
@@ -688,18 +729,13 @@ const profileController = {
         }
       }
 
-      // 8. ⭐ ENRICHISSEMENT DES LANGUES (AVEC NORMALISATION)
+      // 8. ⭐ ENRICHISSEMENT DES LANGUES
       if (extractedData.languages && extractedData.languages.length > 0) {
         console.log(`🌍 Traitement de ${extractedData.languages.length} langues...`);
         
         for (const languageData of extractedData.languages) {
           try {
-            console.log('🔍 Langue brute reçue:', JSON.stringify(languageData, null, 2));
-            
-            // ⭐ CORRECTION : Normaliser les données avant insertion
             const normalizedLanguage = profileController.normalizeLanguageData(languageData);
-            
-            console.log('🔧 Langue normalisée:', JSON.stringify(normalizedLanguage, null, 2));
             
             const existingLanguage = await Language.findOne({
               userId,
@@ -708,15 +744,11 @@ const profileController = {
 
             if (!existingLanguage) {
               const displayOrder = await Language.countDocuments({ userId });
-              const languageToCreate = {
+              await Language.create({
                 ...normalizedLanguage,
                 userId,
                 displayOrder
-              };
-              
-              console.log('📝 Tentative création langue:', JSON.stringify(languageToCreate, null, 2));
-              
-              await Language.create(languageToCreate);
+              });
               importStats.created++;
               console.log(`✅ Nouvelle langue: ${normalizedLanguage.languageName} (${normalizedLanguage.proficiencyLevel})`);
             } else if (replaceExisting) {
@@ -729,7 +761,6 @@ const profileController = {
             }
           } catch (error) {
             console.error('❌ Erreur langue:', error);
-            console.error('🔍 Données problématiques:', JSON.stringify(languageData, null, 2));
             importStats.errors++;
           }
         }
@@ -805,18 +836,13 @@ const profileController = {
         }
       }
 
-      // 11. ⭐ ENRICHISSEMENT DES CENTRES D'INTÉRÊT (CORRIGÉ)
+      // 11. ⭐ ENRICHISSEMENT DES CENTRES D'INTÉRÊT
       if (extractedData.interests && extractedData.interests.length > 0) {
         console.log(`🎯 Traitement de ${extractedData.interests.length} centres d'intérêt...`);
         
         for (const interestData of extractedData.interests) {
           try {
-            console.log('🔍 Centre d\'intérêt brut reçu:', JSON.stringify(interestData, null, 2));
-            
-            // ⭐ CORRECTION : Normaliser les données avant insertion
             const normalizedInterest = profileController.normalizeInterestData(interestData);
-            
-            console.log('🔧 Centre d\'intérêt normalisé:', JSON.stringify(normalizedInterest, null, 2));
             
             const existingInterest = await Interest.findOne({
               userId,
@@ -825,15 +851,11 @@ const profileController = {
 
             if (!existingInterest) {
               const displayOrder = await Interest.countDocuments({ userId });
-              const interestToCreate = {
+              await Interest.create({
                 ...normalizedInterest,
                 userId,
                 displayOrder
-              };
-              
-              console.log('📝 Tentative création centre d\'intérêt:', JSON.stringify(interestToCreate, null, 2));
-              
-              await Interest.create(interestToCreate);
+              });
               importStats.created++;
               console.log(`✅ Nouveau centre d'intérêt: ${normalizedInterest.interestName} (${normalizedInterest.category}/${normalizedInterest.level})`);
             } else if (replaceExisting) {
@@ -846,7 +868,6 @@ const profileController = {
             }
           } catch (error) {
             console.error('❌ Erreur centre d\'intérêt:', error);
-            console.error('🔍 Données problématiques:', JSON.stringify(interestData, null, 2));
             importStats.errors++;
           }
         }
@@ -880,12 +901,12 @@ const profileController = {
     }
   },
 
-  // ⭐ MÉTHODE HELPER : Échapper les caractères spéciaux pour regex (GARDÉE POUR AUTRES MÉTHODES)
+  // ⭐ MÉTHODE HELPER : Échapper les caractères spéciaux pour regex
   escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   },
 
-  // ⭐ MÉTHODE HELPER : Extraction basique améliorée (fallback) - CORRIGÉE
+  // ⭐ MÉTHODE HELPER : Extraction basique améliorée (fallback)
   extractBasicCVInfo(cvText) {
     console.log('🔄 Utilisation de l\'extraction basique (fallback)');
     
@@ -903,7 +924,7 @@ const profileController = {
     const lines = cvText.split('\n').map(line => line.trim()).filter(line => line);
 
     // ⭐ EXTRACTION AMÉLIORÉE DU NOM
-    const nameRegex = /\*\*([^*]+)\*\*/; // Nom entre **
+    const nameRegex = /\*\*([^*]+)\*\*/;
     const fullNameMatch = cvText.match(nameRegex);
     
     if (fullNameMatch) {
@@ -911,7 +932,6 @@ const profileController = {
       const nameParts = fullName.split(/\s+/);
       
       if (nameParts.length >= 2) {
-        // Premier mot = Nom de famille, reste = Prénoms
         extractedData.personalInfo.lastName = nameParts[0];
         extractedData.personalInfo.firstName = nameParts.slice(1).join(' ');
       } else {
@@ -956,7 +976,7 @@ const profileController = {
       console.log('✅ Titre extrait:', extractedData.personalInfo.title);
     }
 
-    // ⭐ EXTRACTION BASIQUE DES COMPÉTENCES (CORRIGÉE)
+    // ⭐ EXTRACTION BASIQUE DES COMPÉTENCES
     const skillsSection = cvText.match(/(?:COMPÉTENCES|SKILLS)([\s\S]*?)(?=(?:\n#{1,3}|\n[A-Z]{2,}|\n---|\Z))/i);
     if (skillsSection) {
       const skillsText = skillsSection[1];
@@ -965,7 +985,7 @@ const profileController = {
       skills.forEach(skill => {
         extractedData.skills.push({
           skillName: skill,
-          category: 'Technique', // ⭐ CORRECTION : Valeur enum valide
+          category: 'Technique',
           proficiencyLevel: 'intermediate',
           yearsExperience: 1,
           isPrimary: false
@@ -975,11 +995,11 @@ const profileController = {
       console.log('✅ Compétences extraites:', extractedData.skills.length);
     }
 
-    // ⭐ EXTRACTION BASIQUE DES LANGUES (CORRIGÉE)
+    // ⭐ EXTRACTION BASIQUE DES LANGUES
     if (cvText.match(/français/i)) {
       extractedData.languages.push({
         languageName: 'Français',
-        proficiencyLevel: 'native',  // ⭐ CORRECTION : Valeur enum valide
+        proficiencyLevel: 'native',
         certification: '',
         description: ''
       });
@@ -988,7 +1008,7 @@ const profileController = {
     if (cvText.match(/anglais/i)) {
       extractedData.languages.push({
         languageName: 'Anglais',
-        proficiencyLevel: 'conversational',  // ⭐ CORRECTION : Valeur enum valide
+        proficiencyLevel: 'conversational',
         certification: '',
         description: ''
       });
@@ -1060,7 +1080,7 @@ const profileController = {
     }
   },
 
-  // Ajouter une expérience (méthode dédiée)
+  // Ajouter une expérience
   async addExperience(req, res) {
     try {
       const userId = req.user.id;

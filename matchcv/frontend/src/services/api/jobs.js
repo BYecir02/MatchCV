@@ -1,22 +1,23 @@
 import BaseApiService from './base.js';
 
 class JobsService extends BaseApiService {
-  // Analyser une annonce d'emploi
-  async analyzeJob(jobText) {
-    return this.request('/analyze-job', {
+  // ✅ CORRIGÉ : Bonne URL + bon format de données
+  async analyzeJob(data) {
+    console.log('📤 JobsService.analyzeJob called with:', data);
+    return this.request('/jobs/analyze', {  // ← URL corrigée
       method: 'POST',
-      body: JSON.stringify({ jobText }),
+      body: JSON.stringify(data),  // ← Données complètes
     });
   }
 
   // Récupérer l'historique des analyses
   async getJobAnalyses() {
-    return this.request('/job-analyses');
+    return this.request('/jobs/my-analyses');  // ← URL corrigée
   }
 
   // Générer une lettre de motivation
   async generateCoverLetter(data) {
-    return this.request('/generate-cover-letter', {
+    return this.request('/jobs/generate-cover-letter', {  // ← URL corrigée
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -24,7 +25,7 @@ class JobsService extends BaseApiService {
 
   // Sauvegarder une lettre de motivation
   async saveCoverLetter(letterData) {
-    return this.request('/cover-letters/save', {
+    return this.request('/jobs/cover-letters/save', {  // ← URL corrigée
       method: 'POST',
       body: JSON.stringify(letterData),
     });
@@ -32,7 +33,7 @@ class JobsService extends BaseApiService {
 
   // Récupérer mes lettres
   async getMyCoverLetters() {
-    return this.request('/cover-letters/my-letters');
+    return this.request('/jobs/my-cover-letters');  // ← URL corrigée
   }
 }
 
