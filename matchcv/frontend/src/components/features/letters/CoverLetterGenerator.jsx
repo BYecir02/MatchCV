@@ -1,41 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  FileText, 
-  Send, 
-  Loader2, 
-  Download,
-  Eye,
-  RefreshCw,
-  Upload,
-  File,
-  X,
-  User,
-  Edit3,
-  Save,
-  Undo,
-  Copy,
-  Check,
-  Brain,
-  Lightbulb,
-  MessageSquare,
-  Bold,
-  Italic,
-  Underline,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Type,
-  Palette
+  FileText, Send, Loader2, Download, Eye, Edit3, RefreshCw,
+  Copy, Check, Maximize2, Minimize2, Save, Undo, Printer,
+  MessageSquare, Settings,
+  Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight,
+  List, ListOrdered, Link, Type, Palette, RotateCcw
 } from 'lucide-react';
-import { generateCoverLetter, extractCVData, downloadPDF } from '../../../services/api';
+
+// Services API existants
+import { generateCoverLetter } from '../../../services/api';
 
 const CoverLetterGenerator = ({ initialData }) => {
+  // States principaux
   const [formData, setFormData] = useState({
     jobDescription: '',
     aiInstructions: '',
     companyName: '',
     position: ''
   });
+  
   const [generatedLetter, setGeneratedLetter] = useState('');
   const [editableLetter, setEditableLetter] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -43,34 +26,85 @@ const CoverLetterGenerator = ({ initialData }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [cvFile, setCvFile] = useState(null);
-  const [cvLoading, setCvLoading] = useState(false);
-  const [extractedProfile, setExtractedProfile] = useState('');
   const [copied, setCopied] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [showInstructionsHelp, setShowInstructionsHelp] = useState(false);
+
+  // States pour la toolbar
+  const [fontSize, setFontSize] = useState('16');
+  const [textColor, setTextColor] = useState('#000000');
   
-  // États pour l'éditeur riche
-  const [isRichEditor, setIsRichEditor] = useState(false);
-  const [selectedText, setSelectedText] = useState('');
-  const [textAlign, setTextAlign] = useState('left');
-  const [fontSize, setFontSize] = useState('14');
-  const [textColor, setTextColor] = useState('#374151');
-  
+  // Ref pour l'éditeur
   const editorRef = useRef(null);
 
-  // Instructions prédéfinies pour aider l'utilisateur
-  const instructionExamples = [
-    "Mets l'accent sur mes compétences techniques en React et Node.js",
-    "Adopte un ton professionnel mais chaleureux",
-    "Évite les formules trop classiques, sois créatif",
-    "Insiste sur ma capacité d'adaptation et mon travail d'équipe",
-    "Mentionne ma passion pour l'innovation technologique",
-    "Reste concis, maximum 300 mots",
-    "Termine par une phrase qui marque l'esprit",
-    "Utilise un vocabulaire technique approprié"
+  // Templates HTML simples
+  const templates = [
+    {
+      name: "Professionnel",
+      content: `<p>Madame, Monsieur,</p>
+<p>Je me permets de vous adresser ma candidature pour le poste de <strong>[POSTE]</strong> au sein de <strong>[ENTREPRISE]</strong>.</p>
+<p>Fort(e) de mes expériences, je suis convaincu(e) que mon profil correspond aux exigences de ce poste.</p>
+<p>Je serais ravi(e) de vous rencontrer pour discuter de ma candidature.</p>
+<p>Cordialement,<br><strong>[VOTRE NOM]</strong></p>`
+    },
+    {
+      name: "Moderne",
+      content: `<p>Bonjour,</p>
+<p>Votre annonce pour le poste de <strong>[POSTE]</strong> chez <em>[ENTREPRISE]</em> a retenu mon attention.</p>
+<p>Mon profil correspond parfaitement à vos attentes car :</p>
+<ul>
+<li><strong>[COMPÉTENCE 1]</strong></li>
+<li><strong>[COMPÉTENCE 2]</strong></li>
+<li><strong>[COMPÉTENCE 3]</strong></li>
+</ul>
+<p>J'aimerais échanger avec vous sur cette opportunité.</p>
+<p>Bien à vous,<br><strong>[VOTRE NOM]</strong></p>`
+    },
+    {
+      name: "Concis",
+      content: `<p><strong>Objet :</strong> Candidature - [POSTE]</p>
+<p>Madame, Monsieur,</p>
+<p>Passionné(e) par [DOMAINE], je candidate pour le poste de <strong>[POSTE]</strong> chez <strong>[ENTREPRISE]</strong>.</p>
+<p><strong>Mes atouts :</strong></p>
+<ul>
+<li>Expérience en [DOMAINE]</li>
+<li>Compétences techniques solides</li>
+<li>Motivation et adaptabilité</li>
+</ul>
+<p>Je reste à votre disposition pour un entretien.</p>
+<p>Cordialement,<br><strong>[VOTRE NOM]</strong></p>`
+    }
   ];
 
-  // Traiter les données initiales du JobAnalyzer
+  // Instructions d'aide
+  const instructionExamples = [
+    {
+      category: "Style",
+      instructions: [
+        "Adopte un ton professionnel mais chaleureux",
+        "Utilise un style moderne et dynamique",
+        "Reste concis, maximum 250 mots"
+      ]
+    },
+    {
+      category: "Compétences",
+      instructions: [
+        "Mets l'accent sur mes compétences techniques",
+        "Insiste sur mon expérience en gestion d'équipe",
+        "Valorise ma capacité d'adaptation"
+      ]
+    },
+    {
+      category: "Structure",
+      instructions: [
+        "Structure avec des paragraphes courts",
+        "Utilise des listes à puces pour la lisibilité",
+        "Termine par un call-to-action fort"
+      ]
+    }
+  ];
+
+  // Traiter les données initiales
   useEffect(() => {
     if (initialData) {
       setFormData(prev => ({
@@ -82,6 +116,7 @@ const CoverLetterGenerator = ({ initialData }) => {
     }
   }, [initialData]);
 
+  // Handlers principaux
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -91,12 +126,7 @@ const CoverLetterGenerator = ({ initialData }) => {
     setSuccess('');
   };
 
-  const handleLetterEdit = (e) => {
-    setEditableLetter(e.target.value);
-    setHasUnsavedChanges(e.target.value !== generatedLetter);
-  };
-
-  const handleRichEditorChange = () => {
+  const handleLetterEdit = () => {
     if (editorRef.current) {
       const content = editorRef.current.innerHTML;
       setEditableLetter(content);
@@ -104,117 +134,161 @@ const CoverLetterGenerator = ({ initialData }) => {
     }
   };
 
-  // Fonctions de formatage de texte
-  const execCommand = (command, value = null) => {
-    document.execCommand(command, false, value);
-    editorRef.current?.focus();
-    handleRichEditorChange();
-  };
-
-  const handleBold = () => execCommand('bold');
-  const handleItalic = () => execCommand('italic');
-  const handleUnderline = () => execCommand('underline');
-
-  const handleTextAlign = (alignment) => {
-    setTextAlign(alignment);
-    execCommand(`justify${alignment.charAt(0).toUpperCase() + alignment.slice(1)}`);
-  };
-
-  const handleFontSize = (size) => {
-    setFontSize(size);
-    execCommand('fontSize', '3');
-    // Appliquer la taille personnalisée
-    if (editorRef.current) {
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        if (!range.collapsed) {
-          const span = document.createElement('span');
-          span.style.fontSize = `${size}px`;
-          try {
-            range.surroundContents(span);
-          } catch (e) {
-            span.appendChild(range.extractContents());
-            range.insertNode(span);
-          }
-        }
-      }
-    }
-  };
-
-  const handleTextColor = (color) => {
-    setTextColor(color);
-    execCommand('foreColor', color);
-  };
-
-  const getSelectedText = () => {
+  // ✨ NOUVELLE FONCTION pour appliquer des styles UNIQUEMENT sur la sélection
+  const applyStyleToSelection = (command, value = null) => {
     const selection = window.getSelection();
-    return selection.toString();
-  };
-
-  const addInstructionExample = (instruction) => {
-    const currentInstructions = formData.aiInstructions;
-    const newInstructions = currentInstructions 
-      ? `${currentInstructions}\n• ${instruction}`
-      : `• ${instruction}`;
     
-    setFormData(prev => ({
-      ...prev,
-      aiInstructions: newInstructions
-    }));
-  };
-
-  const handleCVUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    if (!allowedTypes.includes(file.type)) {
-      setError('Seuls les fichiers PDF et Word sont acceptés');
+    if (!selection.rangeCount || selection.isCollapsed) {
+      alert('Veuillez sélectionner du texte avant d\'appliquer un style');
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Le fichier ne doit pas dépasser 5MB');
+    const range = selection.getRangeAt(0);
+    const selectedText = range.toString();
+    
+    if (!selectedText.trim()) {
+      alert('Veuillez sélectionner du texte avant d\'appliquer un style');
       return;
     }
 
-    setCvFile(file);
-    setCvLoading(true);
-    setError('');
+    // Créer un span avec le style approprié
+    let wrapper;
+    
+    switch (command) {
+      case 'bold':
+        wrapper = document.createElement('strong');
+        break;
+      case 'italic':
+        wrapper = document.createElement('em');
+        break;
+      case 'underline':
+        wrapper = document.createElement('u');
+        break;
+      case 'color':
+        wrapper = document.createElement('span');
+        wrapper.style.color = value;
+        break;
+      case 'fontSize':
+        wrapper = document.createElement('span');
+        wrapper.style.fontSize = value + 'px';
+        break;
+      case 'alignLeft':
+        wrapper = document.createElement('span');
+        wrapper.style.display = 'inline-block';
+        wrapper.style.textAlign = 'left';
+        break;
+      case 'alignCenter':
+        wrapper = document.createElement('span');
+        wrapper.style.display = 'inline-block';
+        wrapper.style.textAlign = 'center';
+        wrapper.style.width = '100%';
+        break;
+      case 'alignRight':
+        wrapper = document.createElement('span');
+        wrapper.style.display = 'inline-block';
+        wrapper.style.textAlign = 'right';
+        wrapper.style.width = '100%';
+        break;
+      default:
+        return;
+    }
 
     try {
-      const cvData = await extractCVData(file);
-      setExtractedProfile(cvData.profile);
+      // Entourer la sélection avec l'élément de style
+      range.surroundContents(wrapper);
       
-      const autoInstructions = `Voici mes informations de profil extraites de mon CV :
-${cvData.profile.substring(0, 300)}...
-
-Instructions pour la lettre :
-• Utilise ces informations pour personnaliser la lettre
-• Mets en avant mes compétences les plus pertinentes pour le poste
-• Adopte un ton professionnel et confiant`;
-
-      setFormData(prev => ({
-        ...prev,
-        aiInstructions: autoInstructions
-      }));
+      // Nettoyer la sélection
+      selection.removeAllRanges();
       
-      setSuccess('CV analysé avec succès ! Instructions générées automatiquement.');
-    } catch (err) {
-      setError('Erreur lors de l\'extraction des données du CV');
-      setCvFile(null);
-    } finally {
-      setCvLoading(false);
+      // Déclencher la mise à jour
+      handleLetterEdit();
+      
+      // Remettre le focus sur l'éditeur
+      editorRef.current?.focus();
+      
+    } catch (error) {
+      // Si surroundContents échoue (sélection complexe), utiliser une approche alternative
+      const fragment = range.extractContents();
+      wrapper.appendChild(fragment);
+      range.insertNode(wrapper);
+      
+      selection.removeAllRanges();
+      handleLetterEdit();
+      editorRef.current?.focus();
     }
   };
 
-  const removeCVFile = () => {
-    setCvFile(null);
-    setExtractedProfile('');
+  // Handlers pour la toolbar améliorés
+  const execCommand = (command, value = null) => {
+    // Pour les commandes qui doivent s'appliquer sur sélection uniquement
+    if (['bold', 'italic', 'underline'].includes(command)) {
+      applyStyleToSelection(command, value);
+    } else {
+      // Pour les autres commandes (listes, liens, etc.)
+      document.execCommand(command, false, value);
+      handleLetterEdit();
+      editorRef.current?.focus();
+    }
   };
 
-  const handleGenerate = async (e) => {
+  const handleFontSizeChange = (size) => {
+    setFontSize(size);
+    applyStyleToSelection('fontSize', size);
+  };
+
+  const handleAlignChange = (align) => {
+    applyStyleToSelection('align' + align.charAt(0).toUpperCase() + align.slice(1));
+  };
+
+  const handleColorChange = (color) => {
+    setTextColor(color);
+    applyStyleToSelection('color', color);
+  };
+
+  const insertLink = () => {
+    const selection = window.getSelection();
+    
+    if (!selection.rangeCount || selection.isCollapsed) {
+      alert('Veuillez sélectionner du texte avant d\'insérer un lien');
+      return;
+    }
+
+    const url = prompt('Entrez l\'URL du lien :');
+    if (url) {
+      document.execCommand('createLink', false, url);
+      handleLetterEdit();
+      editorRef.current?.focus();
+    }
+  };
+
+  // Fonction pour supprimer le formatage de la sélection
+  const removeFormatting = () => {
+    const selection = window.getSelection();
+    
+    if (!selection.rangeCount || selection.isCollapsed) {
+      alert('Veuillez sélectionner du texte avant de supprimer le formatage');
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const selectedText = range.toString();
+    
+    if (!selectedText.trim()) {
+      alert('Veuillez sélectionner du texte avant de supprimer le formatage');
+      return;
+    }
+
+    // Remplacer le contenu sélectionné par du texte brut
+    const textNode = document.createTextNode(selectedText);
+    range.deleteContents();
+    range.insertNode(textNode);
+    
+    selection.removeAllRanges();
+    handleLetterEdit();
+    editorRef.current?.focus();
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.jobDescription.trim() || !formData.aiInstructions.trim()) {
@@ -235,38 +309,73 @@ Instructions pour la lettre :
           position: formData.position
         }
       );
-      setGeneratedLetter(response.letter);
-      setEditableLetter(response.letter);
+      
+      // Convertir le texte brut en HTML avec paragraphes
+      const htmlContent = response.letter
+        .split('\n\n')
+        .map(paragraph => paragraph.trim())
+        .filter(paragraph => paragraph.length > 0)
+        .map(paragraph => `<p>${paragraph}</p>`)
+        .join('');
+      
+      setGeneratedLetter(htmlContent);
+      setEditableLetter(htmlContent);
       setIsEditing(false);
       setHasUnsavedChanges(false);
-      setSuccess('Lettre de motivation générée selon vos instructions !');
+      setSuccess('Lettre de motivation générée avec succès !');
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Erreur lors de la génération');
     } finally {
       setLoading(false);
     }
+  };
+
+  const applyTemplate = (template) => {
+    let content = template.content;
+    content = content.replace(/\[ENTREPRISE\]/g, formData.companyName || '[ENTREPRISE]');
+    content = content.replace(/\[POSTE\]/g, formData.position || '[POSTE]');
+    
+    setEditableLetter(content);
+    setGeneratedLetter(content);
+    setIsEditing(true);
+    setHasUnsavedChanges(false);
+  };
+
+  const addInstructionExample = (instruction) => {
+    const currentInstructions = formData.aiInstructions;
+    const newInstructions = currentInstructions 
+      ? `${currentInstructions}\n• ${instruction}`
+      : `• ${instruction}`;
+    
+    setFormData(prev => ({
+      ...prev,
+      aiInstructions: newInstructions
+    }));
   };
 
   const handleSaveChanges = () => {
     setGeneratedLetter(editableLetter);
     setHasUnsavedChanges(false);
     setSuccess('Modifications sauvegardées !');
-    setTimeout(() => setSuccess(''), 3000);
   };
 
   const handleCancelEdit = () => {
     setEditableLetter(generatedLetter);
     setIsEditing(false);
     setHasUnsavedChanges(false);
-    setIsRichEditor(false);
+    if (editorRef.current) {
+      editorRef.current.innerHTML = generatedLetter;
+    }
   };
 
   const handleCopyToClipboard = async () => {
     try {
-      const textToCopy = isRichEditor 
-        ? editorRef.current?.innerText || editableLetter
-        : editableLetter;
-      await navigator.clipboard.writeText(textToCopy);
+      // Copier le texte sans HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = editableLetter;
+      const textContent = tempDiv.textContent || tempDiv.innerText || '';
+      
+      await navigator.clipboard.writeText(textContent);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -274,25 +383,9 @@ Instructions pour la lettre :
     }
   };
 
-  const handleDownloadPDF = async () => {
-    if (!editableLetter) return;
-    
-    try {
-      const textToDownload = isRichEditor 
-        ? editorRef.current?.innerText || editableLetter
-        : editableLetter;
-      await downloadPDF(textToDownload, `lettre-motivation-${formData.companyName || 'entreprise'}.txt`);
-      setSuccess('Téléchargement en cours...');
-    } catch (error) {
-      setError('Erreur lors du téléchargement');
-    }
-  };
-
   const handleReset = () => {
-    if (hasUnsavedChanges) {
-      if (!window.confirm('Vous avez des modifications non sauvegardées. Voulez-vous vraiment réinitialiser ?')) {
-        return;
-      }
+    if (hasUnsavedChanges && !window.confirm('Modifications non sauvegardées. Continuer ?')) {
+      return;
     }
     
     setFormData({
@@ -303,75 +396,54 @@ Instructions pour la lettre :
     });
     setGeneratedLetter('');
     setEditableLetter('');
-    setCvFile(null);
-    setExtractedProfile('');
     setError('');
     setSuccess('');
     setIsEditing(false);
     setHasUnsavedChanges(false);
-    setIsRichEditor(false);
+    setIsFullscreen(false);
   };
 
-  const handleRegenerateWithUpdatedInstructions = async () => {
-    if (!formData.jobDescription.trim() || !formData.aiInstructions.trim()) {
-      setError('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-    setSuccess('');
-    
-    try {
-      const response = await generateCoverLetter(
-        formData.jobDescription, 
-        formData.aiInstructions,
-        {
-          companyName: formData.companyName,
-          position: formData.position
-        }
-      );
-      setGeneratedLetter(response.letter);
-      setEditableLetter(response.letter);
-      setIsEditing(false);
-      setHasUnsavedChanges(false);
-      setSuccess('Lettre régénérée avec vos nouvelles instructions !');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  // Calcul des statistiques
+  const getTextFromHtml = (html) => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || '';
   };
 
-  const toggleEditorMode = () => {
-    if (isRichEditor) {
-      // Passer en mode texte simple
-      const textContent = editorRef.current?.innerText || editableLetter;
-      setEditableLetter(textContent);
-      setIsRichEditor(false);
-    } else {
-      // Passer en mode éditeur riche
-      setIsRichEditor(true);
-    }
-  };
+  const textContent = getTextFromHtml(editableLetter);
+  const wordCount = textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
+  const charCount = textContent.length;
+  const readingTime = Math.ceil(wordCount / 200);
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${isFullscreen ? 'fixed inset-0 z-50 bg-white p-6 overflow-auto' : ''}`}>
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Générateur de lettres</h1>
           <p className="text-gray-600 mt-1">Créez des lettres de motivation personnalisées avec l'IA</p>
         </div>
-        <button
-          onClick={handleReset}
-          className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <RefreshCw className="h-5 w-5 mr-2" />
-          Réinitialiser
-        </button>
+        <div className="flex items-center space-x-2">
+          {isFullscreen && (
+            <button
+              onClick={() => setIsFullscreen(false)}
+              className="flex items-center px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Minimize2 className="h-5 w-5 mr-2" />
+              Réduire
+            </button>
+          )}
+          <button
+            onClick={handleReset}
+            className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <RefreshCw className="h-5 w-5 mr-2" />
+            Réinitialiser
+          </button>
+        </div>
       </div>
 
-      {/* Messages de statut */}
+      {/* Messages */}
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-md text-center">
           <p className="text-red-600 text-sm">{error}</p>
@@ -384,174 +456,141 @@ Instructions pour la lettre :
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className={`grid gap-6 ${isFullscreen ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
         {/* Formulaire */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-            <FileText className="h-6 w-6 mr-2 text-blue-600" />
-            Informations requises
-          </h2>
-          
-          <form onSubmit={handleGenerate} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nom de l'entreprise
-                </label>
-                <input
-                  type="text"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Ex: Google, Microsoft..."
-                />
+        {(!isFullscreen || !isEditing) && (
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+              <FileText className="h-6 w-6 mr-2 text-blue-600" />
+              Informations requises
+            </h2>
+            
+            {/* Templates */}
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Templates rapides</h3>
+              <div className="grid grid-cols-1 gap-2">
+                {templates.map((template, index) => (
+                  <button
+                    key={index}
+                    onClick={() => applyTemplate(template)}
+                    className="text-left p-3 bg-purple-50 border border-purple-200 rounded-md hover:bg-purple-100 transition-colors text-sm"
+                    type="button"
+                  >
+                    <div className="font-medium text-purple-800">{template.name}</div>
+                    <div className="text-purple-600 text-xs mt-1">
+                      Template formaté prêt à l'emploi
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom de l'entreprise
+                  </label>
+                  <input
+                    type="text"
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Ex: Google, Microsoft..."
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Poste visé
+                  </label>
+                  <input
+                    type="text"
+                    name="position"
+                    value={formData.position}
+                    onChange={handleChange}
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Ex: Développeur Full-Stack"
+                  />
+                </div>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Poste visé
+                  Description du poste *
                 </label>
-                <input
-                  type="text"
-                  name="position"
-                  value={formData.position}
+                <textarea
+                  name="jobDescription"
+                  value={formData.jobDescription}
                   onChange={handleChange}
                   className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Ex: Développeur Full-Stack"
+                  rows="4"
+                  placeholder="Collez ici la description complète du poste..."
+                  required
                 />
               </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description du poste *
-              </label>
-              <textarea
-                name="jobDescription"
-                value={formData.jobDescription}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="4"
-                placeholder="Collez ici la description complète du poste..."
-                required
-              />
-            </div>
-            
-            {/* Section CV Upload */}
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
-              <div className="text-center">
-                <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <h3 className="text-sm font-medium text-gray-700 mb-1">
-                  Importez votre CV (optionnel)
-                </h3>
-                <p className="text-xs text-gray-500 mb-3">
-                  PDF, DOC, DOCX - Max 5MB - Génère automatiquement des instructions
-                </p>
-                
-                {!cvFile ? (
-                  <label className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors">
-                    <File className="h-4 w-4 mr-2" />
-                    Choisir un fichier
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={handleCVUpload}
-                      className="hidden"
-                    />
+              
+              {/* Instructions avec aide */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-gray-700 flex items-center">
+                    <Settings className="h-4 w-4 mr-1 text-purple-600" />
+                    Instructions pour l'IA *
                   </label>
-                ) : (
-                  <div className="flex items-center justify-center space-x-2">
-                    {cvLoading ? (
-                      <div className="flex items-center">
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        <span className="text-sm text-gray-600">Analyse du CV...</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center bg-green-50 text-green-700 px-3 py-1 rounded-md">
-                        <File className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">{cvFile.name}</span>
-                        <button
-                          type="button"
-                          onClick={removeCVFile}
-                          className="ml-2 text-green-600 hover:text-green-800"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    )}
+                  <button
+                    type="button"
+                    onClick={() => setShowInstructionsHelp(!showInstructionsHelp)}
+                    className="text-xs text-blue-600 hover:text-blue-800 flex items-center"
+                  >
+                    {showInstructionsHelp ? 'Masquer' : 'Aide'}
+                  </button>
+                </div>
+
+                {showInstructionsHelp && (
+                  <div className="mb-3 p-4 bg-purple-50 border border-purple-200 rounded-md">
+                    <h4 className="text-sm font-medium text-purple-800 mb-3">
+                      Exemples d'instructions par catégorie :
+                    </h4>
+                    <div className="space-y-3">
+                      {instructionExamples.map((category, catIndex) => (
+                        <div key={catIndex}>
+                          <h5 className="text-xs font-semibold text-purple-700 mb-1">
+                            {category.category}
+                          </h5>
+                          <div className="grid grid-cols-1 gap-1">
+                            {category.instructions.map((instruction, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                onClick={() => addInstructionExample(instruction)}
+                                className="text-left text-xs text-purple-600 hover:text-purple-800 hover:bg-purple-100 p-1 rounded transition-colors"
+                              >
+                                + {instruction}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
+
+                <textarea
+                  name="aiInstructions"
+                  value={formData.aiInstructions}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  rows="6"
+                  placeholder="Instructions spécifiques à l'IA pour personnaliser votre lettre..."
+                  required
+                />
               </div>
-            </div>
-            
-            {/* Instructions pour l'IA */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700 flex items-center">
-                  <Brain className="h-4 w-4 mr-1 text-purple-600" />
-                  Instructions pour l'IA *
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setShowInstructionsHelp(!showInstructionsHelp)}
-                  className="text-xs text-blue-600 hover:text-blue-800 flex items-center"
-                >
-                  <Lightbulb className="h-3 w-3 mr-1" />
-                  {showInstructionsHelp ? 'Masquer' : 'Aide'}
-                </button>
-              </div>
-
-              {/* Aide pour les instructions */}
-              {showInstructionsHelp && (
-                <div className="mb-3 p-3 bg-purple-50 border border-purple-200 rounded-md">
-                  <h4 className="text-sm font-medium text-purple-800 mb-2">Exemples d'instructions :</h4>
-                  <div className="grid grid-cols-1 gap-1">
-                    {instructionExamples.map((instruction, index) => (
-                      <button
-                        key={index}
-                        type="button"
-                        onClick={() => addInstructionExample(instruction)}
-                        className="text-left text-xs text-purple-700 hover:text-purple-900 hover:bg-purple-100 p-1 rounded transition-colors"
-                      >
-                        + {instruction}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <textarea
-                name="aiInstructions"
-                value={formData.aiInstructions}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                rows="8"
-                placeholder="Donnez des instructions spécifiques à l'IA pour personnaliser votre lettre :
-
-Exemples :
-• Mets l'accent sur mes 3 ans d'expérience en React
-• Adopte un ton dynamique et moderne
-• Insiste sur ma capacité d'adaptation
-• Évite les formules trop classiques
-• Termine par une phrase marquante
-• Reste concis, maximum 250 mots"
-                required
-              />
               
-              {extractedProfile && (
-                <p className="text-xs text-purple-600 mt-1 flex items-center">
-                  <User className="h-3 w-3 mr-1" />
-                  Instructions générées automatiquement depuis votre CV
-                </p>
-              )}
-            </div>
-            
-            <div className="flex gap-2">
               <button
                 type="submit"
-                disabled={loading || cvLoading}
-                className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center transition-colors"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center transition-colors"
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin mr-2" />
@@ -560,27 +599,12 @@ Exemples :
                 )}
                 {loading ? 'Génération...' : 'Générer la lettre'}
               </button>
+            </form>
+          </div>
+        )}
 
-              {generatedLetter && (
-                <button
-                  type="button"
-                  onClick={handleRegenerateWithUpdatedInstructions}
-                  disabled={loading || cvLoading}
-                  className="bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center transition-colors"
-                >
-                  {loading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <RefreshCw className="w-5 h-5" />
-                  )}
-                </button>
-              )}
-            </div>
-          </form>
-        </div>
-
-        {/* Aperçu et éditeur */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        {/* Éditeur WYSIWYG amélioré */}
+        <div className={`bg-white rounded-lg shadow-md p-6 ${isFullscreen ? 'min-h-screen' : ''}`}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center">
               {isEditing ? (
@@ -588,43 +612,36 @@ Exemples :
               ) : (
                 <Eye className="h-6 w-6 mr-2 text-green-600" />
               )}
-              {isEditing ? 'Édition de la lettre' : 'Aperçu de la lettre'}
+              {isEditing ? 'Édition WYSIWYG' : 'Aperçu'}
               {hasUnsavedChanges && (
-                <span className="ml-2 w-2 h-2 bg-orange-500 rounded-full"></span>
+                <span className="ml-2 w-2 h-2 bg-orange-500 rounded-full" title="Modifications non sauvegardées"></span>
               )}
             </h2>
             
             {generatedLetter && (
               <div className="flex items-center space-x-2">
-                {/* Bouton copier */}
+                <button 
+                  onClick={() => setIsFullscreen(!isFullscreen)}
+                  className="flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm"
+                >
+                  {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                </button>
+
                 <button 
                   onClick={handleCopyToClipboard}
                   className="flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm"
                 >
-                  {copied ? (
-                    <Check className="h-4 w-4 mr-1" />
-                  ) : (
-                    <Copy className="h-4 w-4 mr-1" />
-                  )}
+                  {copied ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
                   {copied ? 'Copié !' : 'Copier'}
                 </button>
 
-                {/* Bouton mode éditeur */}
-                {isEditing && (
-                  <button 
-                    onClick={toggleEditorMode}
-                    className={`flex items-center px-3 py-2 rounded-md transition-colors text-sm ${
-                      isRichEditor 
-                        ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' 
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <Type className="h-4 w-4 mr-1" />
-                    {isRichEditor ? 'Simple' : 'Riche'}
-                  </button>
-                )}
+                <button 
+                  onClick={() => window.print()}
+                  className="flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm"
+                >
+                  <Printer className="h-4 w-4" />
+                </button>
 
-                {/* Bouton éditer/visualiser */}
                 <button 
                   onClick={() => setIsEditing(!isEditing)}
                   className={`flex items-center px-3 py-2 rounded-md transition-colors text-sm ${
@@ -633,17 +650,12 @@ Exemples :
                       : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                   }`}
                 >
-                  {isEditing ? (
-                    <Eye className="h-4 w-4 mr-1" />
-                  ) : (
-                    <Edit3 className="h-4 w-4 mr-1" />
-                  )}
+                  {isEditing ? <Eye className="h-4 w-4 mr-1" /> : <Edit3 className="h-4 w-4 mr-1" />}
                   {isEditing ? 'Aperçu' : 'Éditer'}
                 </button>
 
-                {/* Bouton télécharger */}
                 <button 
-                  onClick={handleDownloadPDF}
+                  onClick={() => {/* TODO: Implement download */}}
                   className="flex items-center px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
                 >
                   <Download className="h-4 w-4 mr-1" />
@@ -653,30 +665,36 @@ Exemples :
             )}
           </div>
 
-          {/* Barre d'outils de formatage */}
-          {isEditing && isRichEditor && (
+          {/* TOOLBAR améliorée - Styles sur sélection uniquement */}
+          {isEditing && generatedLetter && (
             <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-md">
+              <div className="mb-2 text-xs text-gray-600 italic">
+                💡 Sélectionnez du texte avant d'appliquer les styles
+              </div>
               <div className="flex flex-wrap items-center gap-2">
                 {/* Formatage de texte */}
                 <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
-                  <button
-                    onClick={handleBold}
-                    className="p-2 hover:bg-gray-200 rounded transition-colors"
-                    title="Gras"
+                  <button 
+                    onClick={() => execCommand('bold')} 
+                    className="p-2 hover:bg-gray-200 rounded transition-colors focus:outline-none focus:bg-gray-200" 
+                    title="Gras - Sélectionnez du texte d'abord"
+                    type="button"
                   >
                     <Bold className="h-4 w-4" />
                   </button>
-                  <button
-                    onClick={handleItalic}
-                    className="p-2 hover:bg-gray-200 rounded transition-colors"
-                    title="Italique"
+                  <button 
+                    onClick={() => execCommand('italic')} 
+                    className="p-2 hover:bg-gray-200 rounded transition-colors focus:outline-none focus:bg-gray-200" 
+                    title="Italique - Sélectionnez du texte d'abord"
+                    type="button"
                   >
                     <Italic className="h-4 w-4" />
                   </button>
-                  <button
-                    onClick={handleUnderline}
-                    className="p-2 hover:bg-gray-200 rounded transition-colors"
-                    title="Souligné"
+                  <button 
+                    onClick={() => execCommand('underline')} 
+                    className="p-2 hover:bg-gray-200 rounded transition-colors focus:outline-none focus:bg-gray-200" 
+                    title="Souligné - Sélectionnez du texte d'abord"
+                    type="button"
                   >
                     <Underline className="h-4 w-4" />
                   </button>
@@ -685,55 +703,100 @@ Exemples :
                 {/* Alignement */}
                 <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
                   <button
-                    onClick={() => handleTextAlign('left')}
-                    className={`p-2 hover:bg-gray-200 rounded transition-colors ${textAlign === 'left' ? 'bg-blue-100' : ''}`}
-                    title="Aligner à gauche"
+                    onClick={() => handleAlignChange('left')}
+                    className="p-2 hover:bg-gray-200 rounded transition-colors focus:outline-none"
+                    title="Aligner à gauche - Sélectionnez du texte d'abord"
+                    type="button"
                   >
                     <AlignLeft className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleTextAlign('center')}
-                    className={`p-2 hover:bg-gray-200 rounded transition-colors ${textAlign === 'center' ? 'bg-blue-100' : ''}`}
-                    title="Centrer"
+                    onClick={() => handleAlignChange('center')}
+                    className="p-2 hover:bg-gray-200 rounded transition-colors focus:outline-none"
+                    title="Centrer - Sélectionnez du texte d'abord"
+                    type="button"
                   >
                     <AlignCenter className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleTextAlign('right')}
-                    className={`p-2 hover:bg-gray-200 rounded transition-colors ${textAlign === 'right' ? 'bg-blue-100' : ''}`}
-                    title="Aligner à droite"
+                    onClick={() => handleAlignChange('right')}
+                    className="p-2 hover:bg-gray-200 rounded transition-colors focus:outline-none"
+                    title="Aligner à droite - Sélectionnez du texte d'abord"
+                    type="button"
                   >
                     <AlignRight className="h-4 w-4" />
                   </button>
                 </div>
 
-                {/* Taille de police */}
+                {/* Listes */}
                 <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
-                  <select
-                    value={fontSize}
-                    onChange={(e) => handleFontSize(e.target.value)}
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
-                    title="Taille de police"
+                  <button 
+                    onClick={() => execCommand('insertUnorderedList')} 
+                    className="p-2 hover:bg-gray-200 rounded transition-colors focus:outline-none focus:bg-gray-200" 
+                    title="Liste à puces"
+                    type="button"
                   >
-                    <option value="12">12px</option>
-                    <option value="14">14px</option>
-                    <option value="16">16px</option>
-                    <option value="18">18px</option>
-                    <option value="20">20px</option>
-                    <option value="24">24px</option>
-                  </select>
+                    <List className="h-4 w-4" />
+                  </button>
+                  <button 
+                    onClick={() => execCommand('insertOrderedList')} 
+                    className="p-2 hover:bg-gray-200 rounded transition-colors focus:outline-none focus:bg-gray-200" 
+                    title="Liste numérotée"
+                    type="button"
+                  >
+                    <ListOrdered className="h-4 w-4" />
+                  </button>
                 </div>
 
-                {/* Couleur de texte */}
-                <div className="flex items-center gap-1">
-                  <input
-                    type="color"
-                    value={textColor}
-                    onChange={(e) => handleTextColor(e.target.value)}
-                    className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
-                    title="Couleur du texte"
-                  />
-                  <Palette className="h-4 w-4 text-gray-500" />
+                {/* Autres outils */}
+                <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
+                  <button 
+                    onClick={insertLink} 
+                    className="p-2 hover:bg-gray-200 rounded transition-colors focus:outline-none focus:bg-gray-200" 
+                    title="Insérer un lien - Sélectionnez du texte d'abord"
+                    type="button"
+                  >
+                    <Link className="h-4 w-4" />
+                  </button>
+                  <button 
+                    onClick={removeFormatting} 
+                    className="p-2 hover:bg-gray-200 rounded transition-colors focus:outline-none focus:bg-gray-200" 
+                    title="Supprimer le formatage - Sélectionnez du texte d'abord"
+                    type="button"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* Taille et couleur */}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <Type className="h-4 w-4 text-gray-500" />
+                    <select
+                      value={fontSize}
+                      onChange={(e) => handleFontSizeChange(e.target.value)}
+                      className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      title="Taille de police - Sélectionnez du texte d'abord"
+                    >
+                      <option value="12">12px</option>
+                      <option value="14">14px</option>
+                      <option value="16">16px</option>
+                      <option value="18">18px</option>
+                      <option value="20">20px</option>
+                      <option value="24">24px</option>
+                    </select>
+                  </div>
+                  
+                  <div className="flex items-center gap-1">
+                    <Palette className="h-4 w-4 text-gray-500" />
+                    <input
+                      type="color"
+                      value={textColor}
+                      onChange={(e) => handleColorChange(e.target.value)}
+                      className="w-8 h-8 border border-gray-300 rounded cursor-pointer focus:ring-2 focus:ring-blue-500"
+                      title="Couleur du texte - Sélectionnez du texte d'abord"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -743,7 +806,10 @@ Exemples :
           {isEditing && hasUnsavedChanges && (
             <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-md">
               <div className="flex items-center justify-between">
-                <p className="text-orange-700 text-sm">Vous avez des modifications non sauvegardées</p>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-pulse"></div>
+                  <p className="text-orange-700 text-sm">Modifications non sauvegardées</p>
+                </div>
                 <div className="flex space-x-2">
                   <button
                     onClick={handleSaveChanges}
@@ -765,36 +831,28 @@ Exemples :
           )}
           
           {generatedLetter ? (
-            <div className="border border-gray-200 rounded-md bg-gray-50">
+            <div className="border border-gray-200 rounded-md">
               {isEditing ? (
-                isRichEditor ? (
-                  // Éditeur riche
-                  <div
-                    ref={editorRef}
-                    contentEditable
-                    onInput={handleRichEditorChange}
-                    className="w-full p-4 bg-white border-0 rounded-md focus:ring-2 focus:ring-orange-500 min-h-[400px] text-sm leading-relaxed outline-none"
-                    style={{ fontSize: `${fontSize}px`, color: textColor, textAlign }}
-                    dangerouslySetInnerHTML={{ __html: editableLetter }}
-                  />
-                ) : (
-                  // Éditeur simple
-                  <textarea
-                    value={editableLetter}
-                    onChange={handleLetterEdit}
-                    className="w-full p-4 bg-white border-0 rounded-md focus:ring-2 focus:ring-orange-500 font-mono text-sm leading-relaxed resize-none"
-                    rows="20"
-                    placeholder="Modifiez votre lettre de motivation..."
-                  />
-                )
+                <div 
+                  ref={editorRef}
+                  contentEditable={true}
+                  onInput={handleLetterEdit}
+                  className="w-full p-6 bg-white border-0 rounded-md focus:ring-2 focus:ring-orange-500 outline-none min-h-[400px]"
+                  style={{ 
+                    fontSize: `16px`,
+                    lineHeight: '1.6'
+                  }}
+                  dangerouslySetInnerHTML={{ __html: editableLetter }}
+                />
               ) : (
-                // Mode aperçu
-                <div className="p-4 max-h-96 overflow-y-auto">
+                <div className="p-6 bg-gray-50 rounded-md">
                   <div 
-                    className="text-gray-700 leading-relaxed"
-                    dangerouslySetInnerHTML={{ 
-                      __html: editableLetter.replace(/\n/g, '<br>') 
+                    className="leading-relaxed text-gray-700"
+                    style={{ 
+                      fontSize: `16px`,
+                      lineHeight: '1.6'
                     }}
+                    dangerouslySetInnerHTML={{ __html: editableLetter }}
                   />
                 </div>
               )}
@@ -802,18 +860,27 @@ Exemples :
           ) : (
             <div className="border-2 border-dashed border-gray-300 rounded-md p-8 text-center">
               <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">La lettre générée selon vos instructions apparaîtra ici</p>
-              <p className="text-gray-400 text-sm mt-2">Vous pourrez ensuite l'éditer avec des outils de formatage</p>
+              <p className="text-gray-500">La lettre apparaîtra ici après génération</p>
+              <p className="text-gray-400 text-sm mt-2">
+                Utilisez les templates pour commencer rapidement
+              </p>
             </div>
           )}
 
-          {/* Statistiques de la lettre */}
+          {/* Statistiques */}
           {editableLetter && (
-            <div className="mt-4 p-3 bg-blue-50 rounded-md">
-              <div className="flex items-center justify-between text-sm text-blue-700">
-                <span>Mots: {(isRichEditor ? editorRef.current?.innerText || editableLetter : editableLetter).split(/\s+/).length}</span>
-                <span>Caractères: {(isRichEditor ? editorRef.current?.innerText || editableLetter : editableLetter).length}</span>
-                <span>Mode: {isRichEditor ? 'Éditeur riche' : isEditing ? 'Texte simple' : 'Aperçu'}</span>
+            <div className="mt-4 grid grid-cols-3 gap-4">
+              <div className="p-3 bg-blue-50 rounded-md text-center">
+                <div className="text-lg font-bold text-blue-700">{wordCount}</div>
+                <div className="text-xs text-blue-600">Mots</div>
+              </div>
+              <div className="p-3 bg-green-50 rounded-md text-center">
+                <div className="text-lg font-bold text-green-700">{charCount}</div>
+                <div className="text-xs text-green-600">Caractères</div>
+              </div>
+              <div className="p-3 bg-purple-50 rounded-md text-center">
+                <div className="text-lg font-bold text-purple-700">{readingTime}</div>
+                <div className="text-xs text-purple-600">Min. lecture</div>
               </div>
             </div>
           )}

@@ -17,4 +17,7 @@ router.post('/generate-cover-letter', authenticateToken, jobController.generateC
 // Route publique pour la génération de lettre (compatibilité)
 router.post('/generate-cover-letter-public', jobController.generateCoverLetter);
 
+// ⭐ ROUTE DE TEST (à retirer en production)
+router.get('/test-profile', authenticateToken, jobController.testProfileRetrieval);
+
 module.exports = router;

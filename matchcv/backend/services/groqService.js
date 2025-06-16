@@ -835,6 +835,7 @@ IMPORTANT:
   async generateCoverLetter(jobDescription, userProfile, aiInstructions = '') {
     try {
       console.log('✍️ Génération lettre de motivation...');
+      console.log('👤 Profil utilisateur fourni:', !!userProfile);
       
       if (!process.env.GROQ_API_KEY) {
         throw new Error('GROQ_API_KEY non configurée');
@@ -842,64 +843,122 @@ IMPORTANT:
 
       // ✅ CONSTRUIRE UN RÉSUMÉ DÉTAILLÉ DU PROFIL
       let profileSummary = '';
-      
+
       if (userProfile) {
-        profileSummary = `
-PROFIL CANDIDAT DÉTAILLÉ :
-
-👤 INFORMATIONS PERSONNELLES :
-- Nom: ${userProfile.personalInfo?.firstName} ${userProfile.personalInfo?.lastName}
-- Titre: ${userProfile.personalInfo?.title || 'Non spécifié'}
-- Localisation: ${userProfile.personalInfo?.location || 'Non spécifiée'}
-
-🛠️ COMPÉTENCES TECHNIQUES (${userProfile.skills?.length || 0}) :
-${userProfile.skills?.map(skill => `- ${skill.skillName} (${skill.proficiencyLevel}, ${skill.yearsExperience || 0} ans d'expérience)`).join('\n') || 'Aucune compétence renseignée'}
-
-💼 EXPÉRIENCES PROFESSIONNELLES (${userProfile.experience?.length || 0}) :
-${userProfile.experience?.map(exp => `- ${exp.position} chez ${exp.company} (${exp.duration || 'durée non spécifiée'})\n  Réalisations: ${exp.description || 'Non renseignées'}`).join('\n') || 'Aucune expérience renseignée'}
-
-🎓 FORMATIONS (${userProfile.education?.length || 0}) :
-${userProfile.education?.map(edu => `- ${edu.degreeType} en ${edu.fieldOfStudy} à ${edu.institutionName}`).join('\n') || 'Aucune formation renseignée'}
-
-🚀 PROJETS PERSONNELS (${userProfile.projects?.length || 0}) :
-${userProfile.projects?.map(proj => `- ${proj.projectName}: ${proj.description}\n  Technologies: ${proj.technologiesUsed?.join(', ') || 'Non spécifiées'}`).join('\n') || 'Aucun projet renseigné'}
-
-🏆 CERTIFICATIONS (${userProfile.certifications?.length || 0}) :
-${userProfile.certifications?.map(cert => `- ${cert.certificationName} (${cert.issuingOrganization})`).join('\n') || 'Aucune certification'}
-
-🌍 LANGUES (${userProfile.languages?.length || 0}) :
-${userProfile.languages?.map(lang => `- ${lang.languageName} (${lang.proficiencyLevel})`).join('\n') || 'Aucune langue renseignée'}
-        `;
+        console.log('👤 Construction du résumé profil détaillé...');
+        
+        // ✅ INFORMATIONS PERSONNELLES
+        profileSummary += `\n👤 CANDIDAT : ${userProfile.personalInfo?.firstName || 'Prénom'} ${userProfile.personalInfo?.lastName || 'Nom'}`;
+        profileSummary += `\n📍 LOCALISATION : ${userProfile.personalInfo?.location || 'Non spécifiée'}`;
+        profileSummary += `\n💼 TITRE ACTUEL : ${userProfile.personalInfo?.title || 'Candidat'}`;
+        if (userProfile.personalInfo?.summary) {
+          profileSummary += `\n📝 RÉSUMÉ : ${userProfile.personalInfo.summary}`;
+        }
+        
+        // ✅ COMPÉTENCES DÉTAILLÉES
+        if (userProfile.skills && userProfile.skills.length > 0) {
+          profileSummary += `\n\n🛠️ COMPÉTENCES TECHNIQUES (${userProfile.skills.length}) :`;
+          userProfile.skills.forEach(skill => {
+            profileSummary += `\n- ${skill.skillName || 'Compétence'} (${skill.proficiencyLevel || 'intermediate'}, ${skill.yearsExperience || 0} ans d'expérience, catégorie: ${skill.category || 'Technique'})`;
+          });
+        }
+        
+        // ✅ EXPÉRIENCES PROFESSIONNELLES DÉTAILLÉES
+        if (userProfile.experience && userProfile.experience.length > 0) {
+          profileSummary += `\n\n💼 EXPÉRIENCES PROFESSIONNELLES (${userProfile.experience.length}) :`;
+          userProfile.experience.forEach((exp, index) => {
+            profileSummary += `\n${index + 1}. ${exp.position || 'Poste'} chez ${exp.company || 'Entreprise'}`;
+            if (exp.duration) profileSummary += ` (${exp.duration})`;
+            if (exp.location) profileSummary += ` - ${exp.location}`;
+            if (exp.description) profileSummary += `\n   Description: ${exp.description}`;
+            if (exp.achievements && exp.achievements.length > 0) {
+              profileSummary += `\n   Réalisations: ${exp.achievements.join(', ')}`;
+            }
+          });
+        }
+        
+        // ✅ FORMATIONS
+        if (userProfile.education && userProfile.education.length > 0) {
+          profileSummary += `\n\n🎓 FORMATIONS (${userProfile.education.length}) :`;
+          userProfile.education.forEach((edu, index) => {
+            profileSummary += `\n${index + 1}. ${edu.degreeType || 'Diplôme'} en ${edu.fieldOfStudy || 'Domaine'} - ${edu.institutionName || 'Établissement'}`;
+            if (edu.graduationYear) profileSummary += ` (${edu.graduationYear})`;
+            if (edu.description) profileSummary += `\n   Description: ${edu.description}`;
+          });
+        }
+        
+        // ✅ PROJETS RÉALISÉS
+        if (userProfile.projects && userProfile.projects.length > 0) {
+          profileSummary += `\n\n🚀 PROJETS RÉALISÉS (${userProfile.projects.length}) :`;
+          userProfile.projects.forEach((proj, index) => {
+            profileSummary += `\n${index + 1}. ${proj.projectName || 'Projet'}`;
+            if (proj.description) profileSummary += ` - ${proj.description}`;
+            if (proj.technologiesUsed && proj.technologiesUsed.length > 0) {
+              profileSummary += `\n   Technologies: ${proj.technologiesUsed.join(', ')}`;
+            }
+            if (proj.projectUrl) profileSummary += `\n   URL: ${proj.projectUrl}`;
+          });
+        }
+        
+        // ✅ CERTIFICATIONS
+        if (userProfile.certifications && userProfile.certifications.length > 0) {
+          profileSummary += `\n\n🏆 CERTIFICATIONS (${userProfile.certifications.length}) :`;
+          userProfile.certifications.forEach((cert, index) => {
+            profileSummary += `\n${index + 1}. ${cert.certificationName || 'Certification'} - ${cert.issuingOrganization || 'Organisme'}`;
+            if (cert.issueDate) profileSummary += ` (${cert.issueDate})`;
+          });
+        }
+        
+        // ✅ LANGUES
+        if (userProfile.languages && userProfile.languages.length > 0) {
+          profileSummary += `\n\n🌍 LANGUES (${userProfile.languages.length}) :`;
+          userProfile.languages.forEach(lang => {
+            profileSummary += `\n- ${lang.languageName || 'Langue'} (${lang.proficiencyLevel || 'conversational'})`;
+          });
+        }
+        
+        // ✅ CENTRES D'INTÉRÊT
+        if (userProfile.interests && userProfile.interests.length > 0) {
+          profileSummary += `\n\n🎯 CENTRES D'INTÉRÊT (${userProfile.interests.length}) :`;
+          userProfile.interests.forEach(interest => {
+            profileSummary += `\n- ${interest.interestName || 'Intérêt'} (${interest.level || 'Amateur'})`;
+            if (interest.description) profileSummary += ` - ${interest.description}`;
+          });
+        }
+        
+        console.log('✅ Résumé profil construit:', profileSummary.length, 'caractères');
+      } else {
+        profileSummary = '\n❌ AUCUN PROFIL UTILISATEUR FOURNI - Génération de lettre générique';
+        console.log('⚠️ Aucun profil fourni pour la génération');
       }
 
       const prompt = `
-Tu es un expert en rédaction de lettres de motivation. Génère une lettre professionnelle et personnalisée.
+Tu es un expert en rédaction de lettres de motivation personnalisées.
 
 DESCRIPTION DU POSTE :
 ${jobDescription}
-
 ${profileSummary}
 
 INSTRUCTIONS SPÉCIALES :
 ${aiInstructions || 'Lettre professionnelle standard'}
 
-INSTRUCTIONS GÉNÉRALES :
-- Lettre formelle et professionnelle
-- Structure claire avec introduction, développement, conclusion
-- Personnalisée selon le profil COMPLET et le poste
-- Longueur : 3-4 paragraphes
-- Ton : professionnel mais engageant
-- Mets en avant les compétences, expériences et projets pertinents du candidat
-- Utilise des exemples concrets tirés du profil
-- Montre la correspondance entre le profil et le poste
+INSTRUCTIONS CRUCIALES :
+1. ANALYSE D'ABORD le secteur du poste.
+2. IDENTIFIE les expériences du candidat PERTINENTES pour ce secteur
+3. METS EN AVANT ces expériences pertinentes en premier
+4. ÉTABLIS des liens entre les compétences transversales 
+5. ADAPTE le ton selon le secteur.
+6. Reste dans le cadre de l'annonce et ne fais pas mention des éléments qui n'ont aucun rapport avec le type du poste stp
+
 
 STRUCTURE ATTENDUE :
-1. Introduction avec motivation pour le poste
-2. Expériences et compétences pertinentes avec exemples
-3. Projets ou réalisations qui démontrent les capacités
-4. Conclusion avec appel à l'action
+1. Introduction : Motivation pour CE secteur spécifique et pour l'entreprise
+2. Expériences PERTINENTES avec exemples concrets de vos réalisations
+3. Compétences transversales utiles pour le poste
+4. Conclusion adaptée au secteur
 
-RETOURNE UNIQUEMENT le texte de la lettre, sans titre ni signature :`;
+GÉNÈRE une lettre qui montre que le candidat COMPREND le secteur et a les expériences appropriées.
+`;
 
       const completion = await groq.chat.completions.create({
         messages: [
