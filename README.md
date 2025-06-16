@@ -236,8 +236,8 @@ Distribué sous licence MIT. Voir `LICENSE` pour plus d'informations.
 ## 👨‍💻 Auteur
 
 **Badir** - Développeur Full Stack
-- GitHub: [@votre-github](https://github.com/BYecir02)
-- LinkedIn: [Votre LinkedIn](https://www.linkedin.com/in/mohamed-yecir-badirou-4b46a2299/)
+- GitHub: [@BYecir02](https://github.com/BYecir02)
+- LinkedIn: [Mohamed Yecir Badirou](https://www.linkedin.com/in/mohamed-yecir-badirou-4b46a2299/)
 
 ## 🙏 Remerciements
 
