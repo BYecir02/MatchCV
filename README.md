@@ -92,7 +92,7 @@ MatchCV/
 
 ### **1. Clonage du projet**
 ```bash
-git clone https://github.com/votre-username/MatchCV.git
+git clone https://github.com/BYecir02/MatchCV.git
 cd MatchCV
 ```
 
