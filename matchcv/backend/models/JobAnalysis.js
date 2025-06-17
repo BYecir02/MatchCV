@@ -9,7 +9,7 @@ const jobAnalysisSchema = new mongoose.Schema({
   jobPostingId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'JobPosting',
-    required: false // Optionnel si analyse directe sans sauvegarde annonce
+    required: false
   },
   jobText: {
     type: String,
@@ -22,6 +22,20 @@ const jobAnalysisSchema = new mongoose.Schema({
     contractType: String,
     experienceRequired: String,
     salaryRange: String,
+    
+    // 🚨 AJOUT CRITIQUE
+    aiInstructions: {
+      type: String,
+      default: ''
+    },
+    
+    // Métadonnées de génération
+    type: {
+      type: String,
+      enum: ['job_analysis', 'cover_letter'],
+      default: 'job_analysis'
+    },
+    letterContent: String, // Pour les lettres de motivation
     
     // Compétences extraites
     extractedSkills: [{
@@ -61,9 +75,27 @@ const jobAnalysisSchema = new mongoose.Schema({
     },
     analysisSummary: String,
     
+    // Snapshot du profil utilisé
+    profileSnapshot: {
+      skillsCount: Number,
+      experienceCount: Number,
+      projectsCount: Number,
+      certificationsCount: Number,
+      languagesCount: Number,
+      educationCount: Number,
+      interestsCount: Number,
+      hasProfile: Boolean,
+      generatedAt: Date
+    },
+    
+    // Statistiques
+    wordCount: Number,
+    characterCount: Number,
+    
     // Métadonnées
     description: String,
-    matchScore: Number // Pour compatibilité
+    matchScore: Number, // Pour compatibilité
+    tags: [String]
   },
   
   analysisStatus: {
@@ -83,5 +115,6 @@ const jobAnalysisSchema = new mongoose.Schema({
 // Index pour les recherches
 jobAnalysisSchema.index({ userId: 1, createdAt: -1 });
 jobAnalysisSchema.index({ userId: 1, 'analysis.overallMatchScore': -1 });
+jobAnalysisSchema.index({ userId: 1, 'analysis.type': 1 });
 
 module.exports = mongoose.model('JobAnalysis', jobAnalysisSchema);

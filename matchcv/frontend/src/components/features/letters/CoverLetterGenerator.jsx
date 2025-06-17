@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 // Services API existants
-import { generateCoverLetter } from '../../../services/api';
+import JobsService from '../../../services/api/jobs.js';
 
 const CoverLetterGenerator = ({ initialData }) => {
   // States principaux
@@ -288,27 +288,26 @@ const CoverLetterGenerator = ({ initialData }) => {
     editorRef.current?.focus();
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!formData.jobDescription.trim() || !formData.aiInstructions.trim()) {
-      setError('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    setLoading(true);
-    setError('');
-    setSuccess('');
-    
-    try {
-      const response = await generateCoverLetter(
-        formData.jobDescription, 
-        formData.aiInstructions,
-        {
-          companyName: formData.companyName,
-          position: formData.position
-        }
-      );
+  if (!formData.jobDescription.trim() || !formData.aiInstructions.trim()) {
+    setError('Veuillez remplir tous les champs obligatoires');
+    return;
+  }
+
+  setLoading(true);
+  setError('');
+  setSuccess('');
+
+  try {
+    // ✅ ENVOIE UN OBJET AVEC aiInstructions COMME STRING
+    const response = await JobsService.generateCoverLetter({
+      jobDescription: formData.jobDescription,
+      aiInstructions: formData.aiInstructions,
+      companyName: formData.companyName,
+      position: formData.position
+    });
       
       // Convertir le texte brut en HTML avec paragraphes
       const htmlContent = response.letter

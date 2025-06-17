@@ -299,125 +299,132 @@ const jobController = {
       } = req.body;
       const userId = req.user.id;
 
-      if (!jobDescription || jobDescription.trim().length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: 'La description du poste est requise'
-        });
-      }
+          // 🚨 DEBUG : Vérifier les instructions reçues
+    console.log('🔍 INSTRUCTIONS REÇUES DANS CONTROLLER:');
+    console.log('   Type:', typeof aiInstructions);
+    console.log('   Valeur:', aiInstructions);
+    console.log('   Length:', aiInstructions?.length);
 
-      // ✅ RÉCUPÉRER LE PROFIL COMPLET SI PAS FOURNI - LOGIQUE CORRIGÉE
-      let completeUserProfile = null;
-
-      // Si un profil est fourni dans la requête, l'utiliser
-      if (userProfile && typeof userProfile === 'object') {
-        completeUserProfile = userProfile;
-        console.log('📊 Profil fourni dans la requête - Compétences:', userProfile.skills?.length || 0);
-      } else {
-        // Sinon, récupérer depuis la BDD
-        console.log('🔍 Récupération profil complet depuis BDD...');
-        try {
-          completeUserProfile = await jobController.getCompleteUserProfile(userId);
-          console.log('📊 Éléments récupérés depuis BDD:', {
-            skills: completeUserProfile?.skills?.length || 0,
-            experience: completeUserProfile?.experience?.length || 0,
-            projects: completeUserProfile?.projects?.length || 0,
-            certifications: completeUserProfile?.certifications?.length || 0,
-            languages: completeUserProfile?.languages?.length || 0,
-            education: completeUserProfile?.education?.length || 0,
-            interests: completeUserProfile?.interests?.length || 0
-          });
-        } catch (error) {
-          console.error('❌ Erreur récupération profil:', error);
-          console.error('❌ Stack trace:', error.stack);
-          completeUserProfile = null;
-        }
-      }
-
-      console.log('✍️ Génération lettre avec profil:', {
-        hasProfile: !!completeUserProfile,
-        skillsCount: completeUserProfile?.skills?.length || 0,
-        experienceCount: completeUserProfile?.experience?.length || 0
-      });
-      console.log('📝 Instructions IA:', aiInstructions ? 'Personnalisées' : 'Standard');
-
-      // ✅ UTILISER GROQ POUR GÉNÉRER LA LETTRE AVEC PROFIL COMPLET
-      const letterContent = await groqService.generateCoverLetter(
-        jobDescription, 
-        completeUserProfile, 
-        aiInstructions || ''
-      );
-
-      console.log('✅ Lettre générée avec succès basée sur le profil complet');
-
-      // ✅ SAUVEGARDER DANS L'HISTORIQUE SI DEMANDÉ
-      let letterId = null;
-      if (saveToHistory) {
-        try {
-          const coverLetter = new JobAnalysis({
-            userId,
-            jobText: jobDescription,
-            analysis: {
-              type: 'cover_letter',
-              title: jobTitle || 'Lettre de motivation',
-              company: companyName || 'Entreprise',
-              letterContent: letterContent,
-              aiInstructions: aiInstructions || '',
-              profileSnapshot: completeUserProfile ? {
-                skillsCount: completeUserProfile.skills?.length || 0,
-                experienceCount: completeUserProfile.experience?.length || 0,
-                projectsCount: completeUserProfile.projects?.length || 0,
-                certificationsCount: completeUserProfile.certifications?.length || 0,
-                languagesCount: completeUserProfile.languages?.length || 0,
-                educationCount: completeUserProfile.education?.length || 0,
-                interestsCount: completeUserProfile.interests?.length || 0,
-                hasProfile: true
-              } : { hasProfile: false },
-              wordCount: letterContent.split(/\s+/).length,
-              characterCount: letterContent.length,
-              generatedAt: new Date()
-            }
-          });
-
-          await coverLetter.save();
-          letterId = coverLetter._id;
-          console.log('✅ Lettre sauvegardée:', letterId);
-        } catch (saveError) {
-          console.error('⚠️ Erreur sauvegarde lettre:', saveError);
-        }
-      }
-
-      res.json({
-        success: true,
-        message: 'Lettre générée avec succès',
-        letter: letterContent,
-        letterId: letterId,
-        profileUsed: completeUserProfile ? true : false,
-        stats: {
-          wordCount: letterContent.split(/\s+/).length,
-          characterCount: letterContent.length,
-          hasInstructions: !!aiInstructions,
-          profileElements: completeUserProfile ? {
-            skills: completeUserProfile.skills?.length || 0,
-            experience: completeUserProfile.experience?.length || 0,
-            projects: completeUserProfile.projects?.length || 0,
-            certifications: completeUserProfile.certifications?.length || 0,
-            languages: completeUserProfile.languages?.length || 0,
-            education: completeUserProfile.education?.length || 0,
-            interests: completeUserProfile.interests?.length || 0
-          } : null
-        }
-      });
-
-    } catch (error) {
-      console.error('❌ Erreur génération lettre:', error);
-      res.status(500).json({
+    if (!jobDescription || jobDescription.trim().length === 0) {
+      return res.status(400).json({
         success: false,
-        message: 'Erreur lors de la génération de la lettre',
-        error: error.message
+        message: 'La description du poste est requise'
       });
     }
-  },
+
+    // ✅ RÉCUPÉRER LE PROFIL COMPLET SI PAS FOURNI
+    let completeUserProfile = null;
+
+    if (userProfile && typeof userProfile === 'object') {
+      completeUserProfile = userProfile;
+      console.log('📊 Profil fourni dans la requête - Compétences:', userProfile.skills?.length || 0);
+    } else {
+      console.log('🔍 Récupération profil complet depuis BDD...');
+      try {
+        completeUserProfile = await jobController.getCompleteUserProfile(userId);
+        console.log('📊 Éléments récupérés depuis BDD:', {
+          skills: completeUserProfile?.skills?.length || 0,
+          experience: completeUserProfile?.experience?.length || 0,
+          projects: completeUserProfile?.projects?.length || 0,
+          certifications: completeUserProfile?.certifications?.length || 0,
+          languages: completeUserProfile?.languages?.length || 0,
+          education: completeUserProfile?.education?.length || 0,
+          interests: completeUserProfile?.interests?.length || 0
+        });
+      } catch (error) {
+        console.error('❌ Erreur récupération profil:', error);
+        console.error('❌ Stack trace:', error.stack);
+        completeUserProfile = null;
+      }
+    }
+
+    console.log('✍️ Génération lettre avec profil:', {
+      hasProfile: !!completeUserProfile,
+      skillsCount: completeUserProfile?.skills?.length || 0,
+      experienceCount: completeUserProfile?.experience?.length || 0
+    });
+    
+    // 🚨 DEBUG FINAL AVANT GROQ
+    console.log('📝 INSTRUCTIONS ENVOYÉES À GROQ:', aiInstructions);
+
+    // ✅ UTILISER GROQ POUR GÉNÉRER LA LETTRE AVEC PROFIL COMPLET
+    const letterContent = await groqService.generateCoverLetter(
+      jobDescription, 
+      completeUserProfile, 
+      aiInstructions || ''  // ← 🚨 BIEN PASSÉ ICI
+    );
+
+    console.log('✅ Lettre générée avec succès basée sur le profil complet');
+
+    // ✅ SAUVEGARDER DANS L'HISTORIQUE SI DEMANDÉ
+    let letterId = null;
+    if (saveToHistory) {
+      try {
+        const coverLetter = new JobAnalysis({
+          userId,
+          jobText: jobDescription,
+          analysis: {
+            type: 'cover_letter',
+            title: jobTitle || 'Lettre de motivation',
+            company: companyName || 'Entreprise',
+            letterContent: letterContent,
+            aiInstructions: aiInstructions || '',  // ← SAUVÉ AUSSI
+            profileSnapshot: completeUserProfile ? {
+              skillsCount: completeUserProfile.skills?.length || 0,
+              experienceCount: completeUserProfile.experience?.length || 0,
+              projectsCount: completeUserProfile.projects?.length || 0,
+              certificationsCount: completeUserProfile.certifications?.length || 0,
+              languagesCount: completeUserProfile.languages?.length || 0,
+              educationCount: completeUserProfile.education?.length || 0,
+              interestsCount: completeUserProfile.interests?.length || 0,
+              hasProfile: true
+            } : { hasProfile: false },
+            wordCount: letterContent.split(/\s+/).length,
+            characterCount: letterContent.length,
+            generatedAt: new Date()
+          }
+        });
+
+        await coverLetter.save();
+        letterId = coverLetter._id;
+        console.log('✅ Lettre sauvegardée:', letterId);
+      } catch (saveError) {
+        console.error('⚠️ Erreur sauvegarde lettre:', saveError);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'Lettre générée avec succès',
+      letter: letterContent,
+      letterId: letterId,
+      profileUsed: completeUserProfile ? true : false,
+      stats: {
+        wordCount: letterContent.split(/\s+/).length,
+        characterCount: letterContent.length,
+        hasInstructions: !!aiInstructions,
+        instructionsReceived: aiInstructions || 'Aucune',  // ← DEBUG
+        profileElements: completeUserProfile ? {
+          skills: completeUserProfile.skills?.length || 0,
+          experience: completeUserProfile.experience?.length || 0,
+          projects: completeUserProfile.projects?.length || 0,
+          certifications: completeUserProfile.certifications?.length || 0,
+          languages: completeUserProfile.languages?.length || 0,
+          education: completeUserProfile.education?.length || 0,
+          interests: completeUserProfile.interests?.length || 0
+        } : null
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Erreur génération lettre:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la génération de la lettre',
+      error: error.message
+    });
+  }
+},
 
   // ⭐ SAUVEGARDER UNE LETTRE DE MOTIVATION (méthode dédiée)
   async saveCoverLetter(req, res) {
