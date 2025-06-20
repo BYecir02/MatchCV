@@ -33,7 +33,8 @@ app.get('/api/test', (req, res) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/cv', require('./routes/cv'));
 app.use('/api/jobs', require('./routes/jobs'));
-app.use('/api/profile', require('./routes/profile')); // Nouvelle route
+app.use('/api/profile', require('./routes/profile')); 
+app.use('/api/applications', require('./routes/applications'));
 
 // Gestion d'erreurs globale
 app.use((err, req, res, next) => {

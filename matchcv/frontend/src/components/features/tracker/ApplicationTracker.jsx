@@ -1,72 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Plus, 
-  Filter,
-  Search,
-  Calendar,
-  Building,
-  MapPin,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Eye,
-  Edit,
-  Trash2
+  Plus, Filter, Search, Calendar, Building, MapPin, Clock,
+  CheckCircle, XCircle, AlertCircle, Eye, Edit, Trash2
 } from 'lucide-react';
+import ApplicationsService from '../../../services/api/applications.js';
 
 const ApplicationTracker = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-
-  const [applications, setApplications] = useState([
-    {
-      id: 1,
-      company: 'TechCorp Solutions',
-      position: 'Développeur Full-Stack',
-      location: 'Paris, France',
-      status: 'in_progress',
-      appliedDate: '2025-01-10',
-      lastUpdate: '2025-01-12',
-      salary: '50-60k€',
-      notes: 'Entretien téléphonique prévu jeudi'
-    },
-    {
-      id: 2,
-      company: 'StartupXYZ',
-      position: 'Frontend Developer',
-      location: 'Lyon, France',
-      status: 'accepted',
-      appliedDate: '2025-01-05',
-      lastUpdate: '2025-01-11',
-      salary: '45-55k€',
-      notes: 'Réponse positive ! Négociation en cours'
-    },
-    {
-      id: 3,
-      company: 'Digital Agency',
-      position: 'React Developer',
-      location: 'Remote',
-      status: 'rejected',
-      appliedDate: '2025-01-08',
-      lastUpdate: '2025-01-10',
-      salary: '40-50k€',
-      notes: 'Profil ne correspond pas exactement'
-    },
-    {
-      id: 4,
-      company: 'InnovTech',
-      position: 'JavaScript Developer',
-      location: 'Marseille, France',
-      status: 'pending',
-      appliedDate: '2025-01-13',
-      lastUpdate: '2025-01-13',
-      salary: '42-52k€',
-      notes: 'Candidature envoyée aujourd\'hui'
-    }
-  ]);
-
+  const [applications, setApplications] = useState([]);
   const [newApplication, setNewApplication] = useState({
     company: '',
     position: '',
@@ -75,54 +18,56 @@ const ApplicationTracker = () => {
     notes: ''
   });
 
+  // Charger les candidatures depuis le backend
+  useEffect(() => {
+    ApplicationsService.getMyApplications().then(res => {
+      if (res.success) setApplications(res.applications);
+    });
+  }, []);
+
   const statusConfig = {
-    pending: { 
-      label: 'En attente', 
-      color: 'text-yellow-600', 
-      bgColor: 'bg-yellow-100',
-      icon: Clock 
-    },
-    in_progress: { 
-      label: 'En cours', 
-      color: 'text-blue-600', 
-      bgColor: 'bg-blue-100',
-      icon: AlertCircle 
-    },
-    accepted: { 
-      label: 'Acceptée', 
-      color: 'text-green-600', 
-      bgColor: 'bg-green-100',
-      icon: CheckCircle 
-    },
-    rejected: { 
-      label: 'Refusée', 
-      color: 'text-red-600', 
-      bgColor: 'bg-red-100',
-      icon: XCircle 
-    }
+    pending: { label: 'En attente', color: 'text-yellow-600', bgColor: 'bg-yellow-100', icon: Clock },
+    in_progress: { label: 'En cours', color: 'text-blue-600', bgColor: 'bg-blue-100', icon: AlertCircle },
+    accepted: { label: 'Acceptée', color: 'text-green-600', bgColor: 'bg-green-100', icon: CheckCircle },
+    rejected: { label: 'Refusée', color: 'text-red-600', bgColor: 'bg-red-100', icon: XCircle }
   };
 
-  const handleAddApplication = (e) => {
+  // Ajouter une candidature via l'API
+  const handleAddApplication = async (e) => {
     e.preventDefault();
     const application = {
-      id: Date.now(),
       ...newApplication,
       status: 'pending',
       appliedDate: new Date().toISOString().split('T')[0],
       lastUpdate: new Date().toISOString().split('T')[0]
     };
-    
-    setApplications([application, ...applications]);
-    setNewApplication({ company: '', position: '', location: '', salary: '', notes: '' });
-    setShowAddForm(false);
+    const res = await ApplicationsService.addApplication(application);
+    if (res.success) {
+      setApplications([res.application, ...applications]);
+      setNewApplication({ company: '', position: '', location: '', salary: '', notes: '' });
+      setShowAddForm(false);
+    }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    setApplications(applications.map(app => 
-      app.id === id 
-        ? { ...app, status: newStatus, lastUpdate: new Date().toISOString().split('T')[0] }
-        : app
-    ));
+  // Changer le statut via l'API
+  const handleStatusChange = async (id, newStatus) => {
+    const app = applications.find(a => a._id === id);
+    if (!app) return;
+    const res = await ApplicationsService.updateApplication(id, {
+      status: newStatus,
+      lastUpdate: new Date().toISOString().split('T')[0]
+    });
+    if (res.success) {
+      setApplications(applications.map(a => a._id === id ? res.application : a));
+    }
+  };
+
+  // Supprimer une candidature via l'API
+  const handleDelete = async (id) => {
+    const res = await ApplicationsService.deleteApplication(id);
+    if (res.success) {
+      setApplications(applications.filter(a => a._id !== id));
+    }
   };
 
   const filteredApplications = applications.filter(app => {
@@ -224,7 +169,7 @@ const ApplicationTracker = () => {
             {filteredApplications.map((app) => {
               const StatusIcon = statusConfig[app.status].icon;
               return (
-                <div key={app.id} className="p-6 hover:bg-gray-50 transition-colors">
+                <div key={app._id} className="p-6 hover:bg-gray-50 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-4">
@@ -245,7 +190,6 @@ const ApplicationTracker = () => {
                             </span>
                           </div>
                         </div>
-                        
                         <div className="text-right">
                           <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusConfig[app.status].bgColor} ${statusConfig[app.status].color}`}>
                             <StatusIcon className="h-4 w-4 mr-1" />
@@ -254,18 +198,16 @@ const ApplicationTracker = () => {
                           <div className="text-sm text-gray-600 mt-1">{app.salary}</div>
                         </div>
                       </div>
-                      
                       {app.notes && (
                         <div className="mt-3 p-3 bg-gray-50 rounded-md">
                           <p className="text-sm text-gray-700">{app.notes}</p>
                         </div>
                       )}
                     </div>
-                    
                     <div className="ml-4 flex items-center space-x-2">
                       <select
                         value={app.status}
-                        onChange={(e) => handleStatusChange(app.id, e.target.value)}
+                        onChange={(e) => handleStatusChange(app._id, e.target.value)}
                         className="text-sm border border-gray-300 rounded px-2 py-1"
                       >
                         <option value="pending">En attente</option>
@@ -273,14 +215,13 @@ const ApplicationTracker = () => {
                         <option value="accepted">Acceptée</option>
                         <option value="rejected">Refusée</option>
                       </select>
-                      
                       <button className="p-2 text-gray-400 hover:text-blue-600">
                         <Eye className="h-4 w-4" />
                       </button>
                       <button className="p-2 text-gray-400 hover:text-green-600">
                         <Edit className="h-4 w-4" />
                       </button>
-                      <button className="p-2 text-gray-400 hover:text-red-600">
+                      <button className="p-2 text-gray-400 hover:text-red-600" onClick={() => handleDelete(app._id)}>
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
@@ -298,7 +239,6 @@ const ApplicationTracker = () => {
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Nouvelle candidature</h3>
-              
               <form onSubmit={handleAddApplication} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -312,7 +252,6 @@ const ApplicationTracker = () => {
                     required
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Poste *
@@ -325,7 +264,6 @@ const ApplicationTracker = () => {
                     required
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Localisation
@@ -337,7 +275,6 @@ const ApplicationTracker = () => {
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Salaire
@@ -350,7 +287,6 @@ const ApplicationTracker = () => {
                     placeholder="Ex: 45-55k€"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Notes
@@ -362,7 +298,6 @@ const ApplicationTracker = () => {
                     rows="3"
                   />
                 </div>
-                
                 <div className="flex justify-end space-x-3 pt-4">
                   <button
                     type="button"

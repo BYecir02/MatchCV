@@ -27,7 +27,6 @@ const Login = ({ onSwitchToRegister, onLogin }) => {
       const result = await login(formData);
       
       if (result.success) {
-        // Appeler la fonction de callback si fournie
         if (onLogin) {
           onLogin(result);
         }

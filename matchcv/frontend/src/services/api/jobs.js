@@ -49,6 +49,11 @@ class JobsService extends BaseApiService {
     const res = await this.request('/jobs/cover-letters/count');
     return res.total || 0;
   }
+
+    async getPendingApplicationsCount() {
+    const res = await this.request('/applications/count-pending');
+    return res.total || 0;
+  }
 }
 
 export default new JobsService();

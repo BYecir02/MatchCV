@@ -26,4 +26,5 @@ router.get('/cover-letters/count', authenticateToken, jobController.countMyCover
 
 router.post('/coverletters/save', authenticateToken, jobController.saveCoverLetterV2);
 
+
 module.exports = router;

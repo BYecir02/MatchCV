@@ -10,6 +10,7 @@ const Language = require('../models/Language');
 const Interest = require('../models/Interest');
 const groqService = require('../services/groqService');
 const CoverLetter = require('../models/CoverLetter');
+const Application = require('../models/Application'); 
 
 const jobController = {
   
@@ -187,6 +188,27 @@ const jobController = {
           });
 
           await jobPosting.save();
+          // 🔥 AJOUT AUTOMATIQUE DANS LES CANDIDATURES
+if (jobTitle && companyName) {
+  const existing = await Application.findOne({
+    userId,
+    company: companyName,
+    position: jobTitle
+  });
+  if (!existing) {
+    await Application.create({
+      userId,
+      company: companyName,
+      position: jobTitle,
+      location: analysis.location || '',
+      salary: analysis.salaryRange || '',
+      notes: 'Annonce analysée via MatchCV',
+      status: 'pending',
+      appliedDate: new Date(),
+      lastUpdate: new Date()
+    });
+  }
+}
           jobPostingId = jobPosting._id;
           console.log('✅ Annonce sauvegardée:', jobPostingId);
         } catch (saveError) {

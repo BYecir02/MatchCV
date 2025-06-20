@@ -1,9 +1,9 @@
 .App {
-  background-image: url('../public/background1.jpg'); /* Chemin relatif à App.css */
-    background-size: cover;      /* L'image couvre tout le fond */
-  background-position: center; /* Centrer l'image */
-  background-repeat: no-repeat;/* Pas de répétition */
-  min-height: 100vh;           /* Prend toute la hauteur de la fenêtre */
+   /* background-image: url('../public/background1.png'); Chemin relatif à App.css */
+   /* background-size: cover;      /* L'image couvre tout le fond */
+  /*background-position: center; /* Centrer l'image */
+ /* background-repeat: no-repeat;/* Pas de répétition */
+  /*min-height: 100vh;           /* Prend toute la hauteur de la fenêtre */
 }
 
 .App-logo {

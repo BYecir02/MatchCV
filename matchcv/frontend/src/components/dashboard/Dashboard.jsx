@@ -72,12 +72,13 @@ const Dashboard = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-blue-950">
       {/* Sidebar */}
       <div className={`
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full '} 
         ${sidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} 
-        fixed inset-y-0 left-0 z-50 w-64 bg-white/30 backdrop-blur-md transform transition-all duration-300 ease-in-out 
+        fixed inset-y-0 left-0 z-50 w-64 bg-white/10 backdrop-blur-md
+        transform transition-all duration-300 ease-in-out 
         lg:translate-x-0 lg:static lg:inset-0
       `}>
         
@@ -125,7 +126,7 @@ const Dashboard = ({ user, onLogout }) => {
                   }
                 }}
                 className={`w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
-                  activeSection === item.id ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600' : 'text-gray-700'
+                  activeSection === item.id ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600' : 'text-white'
                 }`}
                 title={sidebarCollapsed ? item.label : ''}
               >
@@ -170,9 +171,9 @@ const Dashboard = ({ user, onLogout }) => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden bg-blue-950">
         {/* Header */}
-        <header className=" bg-white/30 backdrop-blur-md px-4 py-4">
+        <header className="  px-4 py-4">
           <div className="flex items-center justify-between ">
             <div className="flex items-center">
               {/* Bouton menu mobile */}
