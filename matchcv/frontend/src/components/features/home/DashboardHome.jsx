@@ -69,7 +69,7 @@ const DashboardHome = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">Tableau de bord</h1>
-        <div className="flex items-center text-sm text-gray-500">
+        <div className="flex items-center text-sm text-gray-300">
           <Calendar className="h-4 w-4 mr-2" />
           Dernière mise à jour : Aujourd'hui
         </div>
@@ -80,12 +80,12 @@ const DashboardHome = () => {
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div key={index} className=" bg-white/30 backdrop-blur-md p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                  <p className="text-sm font-medium text-gray-900">{stat.title}</p>
                   <p className={`text-3xl font-bold ${stat.color}`}>{stat.value}</p>
-                  <p className="text-xs text-gray-500 mt-1">{stat.trend}</p>
+                  <p className="text-xs text-gray-800 mt-1">{stat.trend}</p>
                 </div>
                 <div className={`p-3 rounded-full ${stat.bgColor}`}>
                   <Icon className={`h-6 w-6 ${stat.color}`} />
@@ -98,8 +98,8 @@ const DashboardHome = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Activité récente */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Activité récente</h3>
+        <div className=" bg-white/30 backdrop-blur-md p-6 rounded-lg shadow-md">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Activité récente</h3>
           <div className="space-y-4">
             {recentActivity.map((activity, index) => (
               <div key={index} className="flex items-center space-x-4">
@@ -108,16 +108,16 @@ const DashboardHome = () => {
                 }`}></div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-900">{activity.action}</p>
-                  <p className="text-sm text-gray-600">{activity.company}</p>
+                  <p className="text-sm text-gray-900">{activity.company}</p>
                 </div>
-                <p className="text-xs text-gray-500">{activity.time}</p>
+                <p className="text-xs text-gray-900">{activity.time}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Actions rapides */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className=" bg-white/30 backdrop-blur-md p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Actions rapides</h3>
           <div className="space-y-3">
             <button className="w-full flex items-center justify-between p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">

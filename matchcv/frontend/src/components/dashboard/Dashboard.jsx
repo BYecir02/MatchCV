@@ -72,12 +72,12 @@ const Dashboard = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen">
       {/* Sidebar */}
       <div className={`
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
         ${sidebarCollapsed ? 'lg:w-16' : 'lg:w-64'} 
-        fixed inset-y-0 left-0 z-50 w-64 bg-white  transform transition-all duration-300 ease-in-out 
+        fixed inset-y-0 left-0 z-50 w-64 bg-white/30 backdrop-blur-md transform transition-all duration-300 ease-in-out 
         lg:translate-x-0 lg:static lg:inset-0
       `}>
         
@@ -147,10 +147,10 @@ const Dashboard = ({ user, onLogout }) => {
               </span>
             </div>
             <div className={`ml-3 ${sidebarCollapsed ? 'lg:hidden' : 'block'} min-w-0`}>
-              <p className="text-sm font-medium text-gray-700 truncate">
+              <p className="text-sm font-medium text-gray-900 truncate">
                 {user?.firstName} {user?.lastName}
               </p>
-              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+              <p className="text-xs text-gray-900 truncate">{user?.email}</p>
             </div>
           </div>
           
@@ -172,7 +172,7 @@ const Dashboard = ({ user, onLogout }) => {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-white shadow-lg  shadow-sm border-b px-4 py-4">
+        <header className=" bg-white/30 backdrop-blur-md px-4 py-4">
           <div className="flex items-center justify-between ">
             <div className="flex items-center">
               {/* Bouton menu mobile */}
@@ -192,7 +192,7 @@ const Dashboard = ({ user, onLogout }) => {
               </button>
               
               <div>
-                <h2 className="text-lg font-medium text-gray-900 m-2">
+                <h2 className="text-lg font-medium text-gray-1000 m-2">
                   {menuItems.find(item => item.id === activeSection)?.label}
                 </h2>
                 {/* Sous-titre contextuel */}
@@ -207,7 +207,7 @@ const Dashboard = ({ user, onLogout }) => {
             {/* Actions supplémentaires dans le header */}
             <div className="flex items-center space-x-2">
               <div className="hidden sm:block">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-900">
                   Bonjour, {user?.firstName} 👋
                 </span>
               </div>
