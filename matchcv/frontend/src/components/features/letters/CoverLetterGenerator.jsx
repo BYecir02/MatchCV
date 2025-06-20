@@ -301,33 +301,42 @@ const handleSubmit = async (e) => {
   setSuccess('');
 
   try {
-    // ✅ ENVOIE UN OBJET AVEC aiInstructions COMME STRING
     const response = await JobsService.generateCoverLetter({
       jobDescription: formData.jobDescription,
       aiInstructions: formData.aiInstructions,
       companyName: formData.companyName,
       position: formData.position
     });
-      
-      // Convertir le texte brut en HTML avec paragraphes
-      const htmlContent = response.letter
-        .split('\n\n')
-        .map(paragraph => paragraph.trim())
-        .filter(paragraph => paragraph.length > 0)
-        .map(paragraph => `<p>${paragraph}</p>`)
-        .join('');
-      
-      setGeneratedLetter(htmlContent);
-      setEditableLetter(htmlContent);
-      setIsEditing(false);
-      setHasUnsavedChanges(false);
-      setSuccess('Lettre de motivation générée avec succès !');
-    } catch (err) {
-      setError(err.message || 'Erreur lors de la génération');
-    } finally {
-      setLoading(false);
-    }
-  };
+
+    // Convertir le texte brut en HTML avec paragraphes
+    const htmlContent = response.letter
+      .split('\n\n')
+      .map(paragraph => paragraph.trim())
+      .filter(paragraph => paragraph.length > 0)
+      .map(paragraph => `<p>${paragraph}</p>`)
+      .join('');
+
+    setGeneratedLetter(htmlContent);
+    setEditableLetter(htmlContent);
+    setIsEditing(false);
+    setHasUnsavedChanges(false);
+    setSuccess('Lettre de motivation générée avec succès !');
+
+    // 🔥 Sauvegarde dans CoverLetter
+    await JobsService.saveCoverLetterV2({
+      jobTitle: formData.position,
+      companyName: formData.companyName,
+      jobDescription: formData.jobDescription,
+      letterContent: htmlContent,
+      aiInstructions: formData.aiInstructions
+    });
+
+  } catch (err) {
+    setError(err.message || 'Erreur lors de la génération');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const applyTemplate = (template) => {
     let content = template.content;

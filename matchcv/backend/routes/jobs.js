@@ -20,4 +20,10 @@ router.post('/generate-cover-letter-public', jobController.generateCoverLetter);
 // ⭐ ROUTE DE TEST (à retirer en production)
 router.get('/test-profile', authenticateToken, jobController.testProfileRetrieval);
 
+router.get('/my-cover-letters', authenticateToken, jobController.getMyCoverLetters);
+
+router.get('/cover-letters/count', authenticateToken, jobController.countMyCoverLettersV2);
+
+router.post('/coverletters/save', authenticateToken, jobController.saveCoverLetterV2);
+
 module.exports = router;

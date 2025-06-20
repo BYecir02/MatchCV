@@ -7,12 +7,20 @@ import {
   Calendar,
   Target
 } from 'lucide-react';
+import JobsService from '../../../services/api/jobs'; 
 
 const DashboardHome = () => {
+  const [lettersCount, setLettersCount] = React.useState(null);
+
+  // Charger le nombre de lettres générées au montage
+  React.useEffect(() => {
+    JobsService.getLettersCount().then(setLettersCount);
+  }, []);
+
   const stats = [
     {
       title: 'Lettres générées',
-      value: '12',
+      value: lettersCount !== null ? lettersCount : '...',
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
       icon: FileText,

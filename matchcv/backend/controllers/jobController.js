@@ -9,6 +9,7 @@ const Certification = require('../models/Certification');
 const Language = require('../models/Language');
 const Interest = require('../models/Interest');
 const groqService = require('../services/groqService');
+const CoverLetter = require('../models/CoverLetter');
 
 const jobController = {
   
@@ -564,6 +565,54 @@ const jobController = {
     }
   },
 
+  async saveCoverLetterV2(req, res) {
+  try {
+    const { letterContent, jobTitle, companyName, jobDescription, aiInstructions, tags = [] } = req.body;
+    const userId = req.user.id;
+
+    if (!letterContent || letterContent.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Le contenu de la lettre est requis'
+      });
+    }
+
+    const coverLetter = new CoverLetter({
+      userId,
+      jobTitle,
+      companyName,
+      jobDescription,
+      letterContent,
+      aiInstructions,
+      tags
+    });
+
+    await coverLetter.save();
+
+    res.json({
+      success: true,
+      message: 'Lettre sauvegardée dans CoverLetter',
+      letterId: coverLetter._id
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la sauvegarde dans CoverLetter',
+      error: error.message
+    });
+  }
+},
+
+async countMyCoverLettersV2(req, res) {
+  try {
+    const userId = req.user.id;
+    const total = await CoverLetter.countDocuments({ userId });
+    res.json({ success: true, total });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+},
+
   // ⭐ RÉCUPÉRER UNE LETTRE SPÉCIFIQUE
   async getCoverLetterById(req, res) {
     try {
@@ -864,6 +913,20 @@ const jobController = {
       });
     }
   },
+
+  // ⭐ COMPTER MES LETTRES DE MOTIVATION
+async countMyCoverLetters(req, res) {
+  try {
+    const userId = req.user.id;
+    const total = await JobAnalysis.countDocuments({
+      userId,
+      'analysis.type': 'cover_letter'
+    });
+    res.json({ success: true, total });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+},
 
   // ⭐ ENDPOINT DE TEST PROFIL
   async testProfileRetrieval(req, res) {
