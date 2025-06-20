@@ -7,7 +7,7 @@ echo "=========================="
 echo "🔐 Connexion..."
 LOGIN_RESPONSE=$(curl -s -X POST "http://localhost:5000/api/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"email":"badirouyecir@gmail.com","password":"B25112004y"}')
+  -d '{"email":"user@gmail.com","password":"password"}')
 
 TOKEN=$(echo $LOGIN_RESPONSE | grep -o '"token":"[^"]*"' | sed 's/"token":"//' | sed 's/"//')
 echo "Token: ${TOKEN:0:20}..."

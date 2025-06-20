@@ -5,8 +5,8 @@ echo "=========================================="
 
 # Configuration
 API_BASE="http://localhost:5000/api"
-EMAIL="badirouyecir@gmail.com"
-PASSWORD="B25112004y"
+EMAIL="user@gmail.com"
+PASSWORD="password"
 
 # Fonction pour extraire le token
 extract_token() {
