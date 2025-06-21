@@ -185,7 +185,7 @@ const ProfileSettings = ({ user }) => {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Chargement du profil...</span>
+        <span className="ml-2 text-white">Chargement du profil...</span>
       </div>
     );
   }
@@ -237,7 +237,7 @@ return (
       <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       
       <div className="flex-1">
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-sm p-6">
           {renderTabContent()}
           
           <div className="flex justify-between items-center pt-6 border-t border-gray-200 mt-6">

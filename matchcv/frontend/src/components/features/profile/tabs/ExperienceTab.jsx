@@ -64,7 +64,7 @@ const ExperienceTab = ({ profileData, addItem, updateItem, removeItem }) => {
               }`}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium text-gray-900">
+                <h3 className="font-medium text-white">
                   {exp.company || '✏️ Nouvelle expérience'} - {exp.position || 'Poste à définir'}
                 </h3>
                 <button

@@ -6,7 +6,7 @@ const SectionHeader = ({ icon: Icon, title, onAdd, addButtonText = "Ajouter" }) 
     <div className="flex items-center justify-between mb-6">
       <div className="flex items-center">
         <Icon className="h-6 w-6 text-blue-600 mr-3" />
-        <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+        <h2 className="text-xl font-semibold text-white">{title}</h2>
       </div>
       {onAdd && (
         <button

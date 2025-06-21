@@ -23,8 +23,8 @@ const ProfileTabs = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <div className="lg:w-64">
-      <nav className="bg-white rounded-lg shadow-sm p-4">
+    <div className="lg:w-64 ">
+      <nav className="bg-white/10 backdrop-blur-md rounded-lg shadow-sm p-4">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -34,7 +34,7 @@ const ProfileTabs = ({ activeTab, setActiveTab }) => {
               className={`w-full flex items-center px-4 py-3 text-left rounded-lg mb-2 transition-colors ${
                 activeTab === tab.id 
                   ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600' 
-                  : 'text-gray-700 hover:bg-gray-50'
+                  : 'text-white hover:bg-gray-50 hover:text-gray-800'
               }`}
             >
               <Icon className="h-5 w-5 mr-3" />

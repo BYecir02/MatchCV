@@ -19,14 +19,14 @@ const PersonalInfoTab = ({ profileData, handleInputChange }) => {
             </span>
           </div>
           <button className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-md">
-            <Camera className="h-4 w-4 text-gray-600" />
+            <Camera className="h-4 w-4 " />
           </button>
         </div>
         <div>
-          <h3 className="text-lg font-medium text-gray-900">
+          <h3 className="text-lg font-medium text-white">
             {personalInfo.firstName} {personalInfo.lastName}
           </h3>
-          <p className="text-gray-600">{personalInfo.title || 'Titre à définir'}</p>
+          <p className="text-white">{personalInfo.title || 'Titre à définir'}</p>
         </div>
       </div>
 
