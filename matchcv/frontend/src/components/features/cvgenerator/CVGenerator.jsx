@@ -184,7 +184,7 @@ const CVGenerator = ({ user, initialData, onNavigateBack }) => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Génération de votre CV optimisé...</p>
+          <p className="text-white">Génération de votre CV optimisé...</p>
         </div>
       </div>
     );
@@ -204,8 +204,8 @@ const CVGenerator = ({ user, initialData, onNavigateBack }) => {
             </button>
           )}
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Générateur de CV</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-white">Générateur de CV</h1>
+            <p className="text-white mt-1">
               {cvData?.optimizedFor ? 
                 `CV optimisé pour ${cvData.optimizedFor.position} chez ${cvData.optimizedFor.company}` :
                 'Créez votre CV professionnel avec IA'

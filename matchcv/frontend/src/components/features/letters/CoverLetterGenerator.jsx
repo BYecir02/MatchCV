@@ -428,8 +428,8 @@ const handleSubmit = async (e) => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Générateur de lettres</h1>
-          <p className="text-gray-600 mt-1">Créez des lettres de motivation personnalisées avec l'IA</p>
+          <h1 className="text-3xl font-bold text-white">Générateur de lettres</h1>
+          <p className="text-white mt-1">Créez des lettres de motivation personnalisées avec l'IA</p>
         </div>
         <div className="flex items-center space-x-2">
           {isFullscreen && (

@@ -125,7 +125,7 @@ const Dashboard = ({ user, onLogout }) => {
                     setNavigationData(null);
                   }
                 }}
-                className={`w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
+                className={`w-full flex items-center px-4 py-3 text-left hover:bg-white/40  transition-colors ${
                   activeSection === item.id ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600' : 'text-white'
                 }`}
                 title={sidebarCollapsed ? item.label : ''}
@@ -148,10 +148,10 @@ const Dashboard = ({ user, onLogout }) => {
               </span>
             </div>
             <div className={`ml-3 ${sidebarCollapsed ? 'lg:hidden' : 'block'} min-w-0`}>
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-white truncate">
                 {user?.firstName} {user?.lastName}
               </p>
-              <p className="text-xs text-gray-900 truncate">{user?.email}</p>
+              <p className="text-xs text-white truncate">{user?.email}</p>
             </div>
           </div>
           
@@ -189,16 +189,16 @@ const Dashboard = ({ user, onLogout }) => {
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                 className="hidden lg:block mr-3 p-1 rounded-md hover:bg-gray-100"
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-5 w-5 text-white" />
               </button>
               
               <div>
-                <h2 className="text-lg font-medium text-gray-1000 m-2">
+                <h2 className="text-lg font-medium text-white m-2">
                   {menuItems.find(item => item.id === activeSection)?.label}
                 </h2>
                 {/* Sous-titre contextuel */}
                 {navigationData && (activeSection === 'cv-generator' || activeSection === 'letters') && (
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-white mt-1">
                     Pour le poste : {navigationData.position} chez {navigationData.companyName}
                   </p>
                 )}
@@ -208,7 +208,7 @@ const Dashboard = ({ user, onLogout }) => {
             {/* Actions supplémentaires dans le header */}
             <div className="flex items-center space-x-2">
               <div className="hidden sm:block">
-                <span className="text-sm text-gray-900">
+                <span className="text-sm text-white">
                   Bonjour, {user?.firstName} 👋
                 </span>
               </div>

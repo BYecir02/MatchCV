@@ -130,26 +130,26 @@ const DashboardHome = () => {
         <div className=" bg-white/10 backdrop-blur-md p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold text-white mb-4">Actions rapides</h3>
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+            <button className="w-full flex items-center justify-between p-3 bg-white/10 backdrop-blur-md hover:bg-blue-50 rounded-lg transition-colors">
               <span className="flex items-center">
-                <FileText className="h-5 w-5 text-blue-600 mr-3" />
-                <span className="text-blue-800 font-medium">Générer une lettre</span>
+                <FileText className="h-5 w-5 text-blue-800 mr-3" />
+                <span className="text-white font-medium">Générer une lettre</span>
               </span>
               <span className="text-blue-600">→</span>
             </button>
             
-            <button className="w-full flex items-center justify-between p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+            <button className="w-full flex items-center justify-between p-3 bg-white/10 backdrop-blur-md hover:bg-green-50 rounded-lg transition-colors">
               <span className="flex items-center">
                 <Target className="h-5 w-5 text-green-600 mr-3" />
-                <span className="text-green-800 font-medium">Analyser une annonce</span>
+                <span className="text-white font-medium">Analyser une annonce</span>
               </span>
               <span className="text-green-600">→</span>
             </button>
             
-            <button className="w-full flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+            <button className="w-full flex items-center justify-between p-3 bg-white/10 backdrop-blur-md hover:bg-purple-50 rounded-lg transition-colors">
               <span className="flex items-center">
-                <Send className="h-5 w-5 text-purple-600 mr-3" />
-                <span className="text-purple-800 font-medium">Ajouter une candidature</span>
+                <Send className="h-5 w-5 text-purple-800 mr-3" />
+                <span className="text-white font-medium">Ajouter une candidature</span>
               </span>
               <span className="text-purple-600">→</span>
             </button>

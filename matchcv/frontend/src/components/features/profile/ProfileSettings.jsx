@@ -36,8 +36,6 @@ const ProfileSettings = ({ user }) => {
   } = useProfileData(user);
 
   const [activeTab, setActiveTab] = useState('personal');
-  const [cvFile, setCvFile] = useState(null);
-  const [cvLoading, setCvLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [saveMessage, setSaveMessage] = useState('');
@@ -70,8 +68,6 @@ const ProfileSettings = ({ user }) => {
     }
 
     try {
-      setCvFile(file);
-      setCvLoading(true);
       setError('');
       setSuccess('');
 
@@ -123,14 +119,9 @@ const ProfileSettings = ({ user }) => {
       console.error('Erreur upload CV:', error);
       setError('Erreur lors de l\'analyse du CV. Veuillez réessayer.');
     } finally {
-      setCvLoading(false);
+      // Réinitialiser le champ de fichier
+      e.target.value = '';
     }
-  };
-
-  const removeCVFile = () => {
-    setCvFile(null);
-    setError('');
-    setSuccess('');
   };
 
   // Sauvegarde manuelle
@@ -204,8 +195,8 @@ return (
     {/* Header avec bouton d'import */}
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Mon profil</h1>
-        <p className="text-gray-600 mt-1">Gérez vos informations personnelles et professionnelles</p>
+        <h1 className="text-3xl font-bold text-white">Mon profil</h1>
+        <p className="text-white mt-1">Gérez vos informations personnelles et professionnelles</p>
       </div>
       
       {/* ⭐ Bouton d'import CV */}

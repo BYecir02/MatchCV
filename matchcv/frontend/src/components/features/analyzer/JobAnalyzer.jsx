@@ -305,13 +305,13 @@ useEffect(() => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Analyse d'annonces</h1>
-        <p className="text-gray-600 mt-1">Analysez les offres d'emploi et découvrez votre compatibilité</p>
+        <h1 className="text-3xl font-bold text-white">Analyse d'annonces</h1>
+        <p className="text-white mt-1">Analysez les offres d'emploi et découvrez votre compatibilité</p>
         
         {/* ✅ INDICATEUR DU PROFIL CHARGÉ */}
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+        <div className="mt-4 p-3 bg-white/10 backdrop-blur-md rounded-lg">
           <div className="flex items-center justify-between">
-            <div className="flex items-center text-blue-800">
+            <div className="flex items-center text-white">
               <User className="h-4 w-4 mr-2" />
               <span className="text-sm font-medium">
                 Profil chargé: {userProfile?.skills?.length || 0} compétences, {userProfile?.experience?.length || 0} expériences
@@ -329,8 +329,8 @@ useEffect(() => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Zone de saisie */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
             <FileText className="h-6 w-6 mr-2 text-blue-600" />
             Texte de l'annonce
           </h2>
@@ -338,17 +338,16 @@ useEffect(() => {
           <textarea
             value={jobText}
             onChange={(e) => setJobText(e.target.value)}
-            className="w-full p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full p-4 text-white  bg-white/10 backdrop-blur-md rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows="12"
             placeholder="Collez ici le texte complet de l'annonce d'emploi...
-
-Exemple:
-Développeur React Senior recherché
-Entreprise: TechCorp
-Localisation: Paris
-Compétences: React, Node.js, MongoDB, JavaScript
-Expérience: 3+ ans
-Salaire: 45-60k€"
+                        Exemple:
+                        Développeur React Senior recherché
+                        Entreprise: TechCorp
+                        Localisation: Paris
+                        Compétences: React, Node.js, MongoDB, JavaScript
+                        Expérience: 3+ ans
+                        Salaire: 45-60k€"
           />
           
           <button
@@ -366,8 +365,8 @@ Salaire: 45-60k€"
         </div>
 
         {/* Résultats d'analyse */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
             <TrendingUp className="h-6 w-6 mr-2 text-green-600" />
             Résultats d'analyse
           </h2>
