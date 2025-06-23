@@ -15,7 +15,7 @@ const cvAnalyzer = {
         messages: [
           {
             role: "system",
-            content: "Tu es un expert en analyse de CV. Tu extrais les informations de CV et les structures en JSON valide avec les bonnes valeurs enum. Retourne UNIQUEMENT le JSON, sans texte explicatif."
+            content: "Tu es un expert en analyse de CV. Tu extrais les informations et les structures en JSON valide. IMPORTANT: Retourne UNIQUEMENT le JSON, sans texte avant ou après. Le JSON doit être parfaitement valide et respecter exactement le schéma demandé."
           },
           {
             role: "user",
@@ -23,9 +23,9 @@ const cvAnalyzer = {
           }
         ],
         model: "llama-3.1-8b-instant",
-        temperature: 0.1,
+        temperature: 0.05,
         max_tokens: 4000,
-        top_p: 1,
+        top_p: 0.9,
         stream: false
       });
 
@@ -44,26 +44,26 @@ const cvAnalyzer = {
   },
 
   buildCVAnalysisPrompt(cvText) {
-    return `
-Tu es un expert en analyse de CV. Analyse le CV suivant et extrait les informations dans un format JSON structuré.
+    return `ANALYSE CE CV ET RETOURNE UNIQUEMENT LE JSON SUIVANT:
 
-CV À ANALYSER:
+CV:
 ${cvText}
 
-INSTRUCTIONS IMPORTANTES:
-1. Extrait toutes les informations personnelles, expériences, formations, compétences, etc.
-2. Structure les données selon le format demandé
-3. Pour les dates, utilise le format YYYY-MM-DD quand possible
-4. RESPECTE ABSOLUMENT les valeurs enum suivantes:
+RÈGLES STRICTES:
+1. Retourne UNIQUEMENT le JSON, sans texte avant ou après
+2. Respecte EXACTEMENT les valeurs enum listées
+3. Pour les dates: format YYYY-MM-DD si possible, sinon string vide
+4. Pour les arrays vides: utilise [] pas null
+5. Pour les booléens: true/false, pas "true"/"false"
 
 VALEURS ENUM OBLIGATOIRES:
-- skills.category: UNIQUEMENT "Technique", "Programmation", "Framework/Librairie", "Base de données", "DevOps/Cloud", "Design/UX", "Gestion de projet", "Marketing", "Communication", "Langues", "Soft Skills", "Autre"
-- skills.proficiencyLevel: UNIQUEMENT "beginner", "intermediate", "advanced", "expert", "master"
-- interests.category: UNIQUEMENT "Sport", "Arts", "Musique", "Lecture", "Cuisine", "Voyage", "Technologie", "Jeux", "Nature", "Bénévolat", "Culture", "Loisirs", "Collection", "Artisanat", "Autre"
-- interests.level: UNIQUEMENT "Débutant", "Amateur", "Passionné", "Expert", "Professionnel"
-- languages.proficiencyLevel: UNIQUEMENT "basic", "conversational", "fluent", "native", "professional"
+- skills.category: ["Technique", "Programmation", "Framework/Librairie", "Base de données", "DevOps/Cloud", "Design/UX", "Gestion de projet", "Marketing", "Communication", "Langues", "Soft Skills", "Autre"]
+- skills.proficiencyLevel: ["beginner", "intermediate", "advanced", "expert", "master"]
+- interests.category: ["Sport", "Arts", "Musique", "Lecture", "Cuisine", "Voyage", "Technologie", "Jeux", "Nature", "Bénévolat", "Culture", "Loisirs", "Collection", "Artisanat", "Autre"]
+- interests.level: ["Débutant", "Amateur", "Passionné", "Expert", "Professionnel"]
+- languages.proficiencyLevel: ["basic", "conversational", "fluent", "native", "professional"]
 
-RÉPONSE ATTENDUE - UNIQUEMENT LE JSON (pas de texte explicatif avant ou après):
+JSON ATTENDU:
 {
   "personalInfo": {
     "firstName": "",
@@ -77,72 +77,85 @@ RÉPONSE ATTENDUE - UNIQUEMENT LE JSON (pas de texte explicatif avant ou après)
     "githubUrl": "",
     "portfolioUrl": ""
   },
-  "experience": [{
-    "company": "",
-    "position": "",
-    "startDate": "",
-    "endDate": "",
-    "isCurrent": false,
-    "location": "",
-    "description": "",
-    "achievements": [],
-    "technologiesUsed": []
-  }],
-  "education": [{
-    "institutionName": "",
-    "degreeType": "",
-    "fieldOfStudy": "",
-    "location": "",
-    "startDate": "",
-    "endDate": "",
-    "grade": "",
-    "description": "",
-    "honors": []
-  }],
-  "skills": [{
-    "skillName": "",
-    "category": "Technique",
-    "proficiencyLevel": "intermediate",
-    "yearsExperience": 1,
-    "isPrimary": false
-  }],
-  "languages": [{
-    "languageName": "",
-    "proficiencyLevel": "conversational",
-    "certification": "",
-    "description": ""
-  }],
-  "projects": [{
-    "projectName": "",
-    "description": "",
-    "projectUrl": "",
-    "repositoryUrl": "",
-    "technologiesUsed": [],
-    "startDate": "",
-    "endDate": "",
-    "isOngoing": false,
-    "screenshots": []
-  }],
-  "certifications": [{
-    "certificationName": "",
-    "issuingOrganization": "",
-    "credentialId": "",
-    "issueDate": "",
-    "expirationDate": "",
-    "credentialUrl": "",
-    "neverExpires": false
-  }],
-  "interests": [{
-    "interestName": "",
-    "category": "Loisirs",
-    "description": "",
-    "level": "Amateur",
-    "isActive": true
-  }]
+  "experience": [
+    {
+      "company": "",
+      "position": "",
+      "startDate": "",
+      "endDate": "",
+      "isCurrent": false,
+      "location": "",
+      "description": "",
+      "achievements": [],
+      "technologiesUsed": []
+    }
+  ],
+  "education": [
+    {
+      "institutionName": "",
+      "degreeType": "",
+      "fieldOfStudy": "",
+      "location": "",
+      "startDate": "",
+      "endDate": "",
+      "grade": "",
+      "description": "",
+      "honors": []
+    }
+  ],
+  "skills": [
+    {
+      "skillName": "",
+      "category": "Technique",
+      "proficiencyLevel": "intermediate",
+      "yearsExperience": 0,
+      "isPrimary": false
+    }
+  ],
+  "languages": [
+    {
+      "languageName": "",
+      "proficiencyLevel": "conversational",
+      "certification": "",
+      "description": ""
+    }
+  ],
+  "projects": [
+    {
+      "projectName": "",
+      "description": "",
+      "projectUrl": "",
+      "repositoryUrl": "",
+      "technologiesUsed": [],
+      "startDate": "",
+      "endDate": "",
+      "isOngoing": false,
+      "screenshots": []
+    }
+  ],
+  "certifications": [
+    {
+      "certificationName": "",
+      "issuingOrganization": "",
+      "credentialId": "",
+      "issueDate": "",
+      "expirationDate": "",
+      "credentialUrl": "",
+      "neverExpires": false
+    }
+  ],
+  "interests": [
+    {
+      "interestName": "",
+      "category": "Loisirs",
+      "description": "",
+      "level": "Amateur",
+      "isActive": true
+    }
+  ]
 }
 
-IMPORTANT: Retourne UNIQUEMENT le JSON, sans texte d'introduction ou d'explication.
-Pour les compétences web, utilise "Technique" ou "Programmation" selon le contexte.`;
+RÉPONSE: UNIQUEMENT LE JSON CI-DESSUS, RIEN D'AUTRE.`;
   },
 
   processResponse(responseText, cvText) {
@@ -151,31 +164,63 @@ Pour les compétences web, utilise "Technique" ou "Programmation" selon le conte
     let cleanedResponse = responseText.trim();
     
     const firstBrace = cleanedResponse.indexOf('{');
-    if (firstBrace > 0) {
-      cleanedResponse = cleanedResponse.substring(firstBrace);
-      console.log('🧹 Texte d\'introduction supprimé');
-    }
-    
     const lastBrace = cleanedResponse.lastIndexOf('}');
-    if (lastBrace > 0 && lastBrace < cleanedResponse.length - 1) {
-      cleanedResponse = cleanedResponse.substring(0, lastBrace + 1);
-      console.log('🧹 Texte de conclusion supprimé');
+    
+    if (firstBrace >= 0 && lastBrace > firstBrace) {
+      cleanedResponse = cleanedResponse.substring(firstBrace, lastBrace + 1);
     }
     
-    cleanedResponse = cleanedResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    cleanedResponse = cleanedResponse.replace(/^\s*```[\s\S]*?\n/, '').replace(/\n```\s*$/, '');
+    cleanedResponse = cleanedResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '');
     
     try {
       const extractedData = JSON.parse(cleanedResponse);
-      const normalizedData = dataExtractor.normalizeExtractedData(extractedData);
       
-      console.log('✅ Données extraites et normalisées avec succès');
+      const validatedData = this.validateAndNormalizeData(extractedData);
+      const normalizedData = dataExtractor.normalizeExtractedData(validatedData);
+      
+      console.log('✅ Données extraites et validées avec succès');
       return normalizedData;
     } catch (parseError) {
       console.error('❌ Erreur parsing JSON:', parseError);
       console.error('🔍 Réponse problématique:', cleanedResponse.substring(0, 500));
       return dataExtractor.extractBasicInfo(cvText);
     }
+  },
+
+  validateAndNormalizeData(data) {
+    const validSkillCategories = ["Technique", "Programmation", "Framework/Librairie", "Base de données", "DevOps/Cloud", "Design/UX", "Gestion de projet", "Marketing", "Communication", "Langues", "Soft Skills", "Autre"];
+    const validSkillLevels = ["beginner", "intermediate", "advanced", "expert", "master"];
+    const validInterestCategories = ["Sport", "Arts", "Musique", "Lecture", "Cuisine", "Voyage", "Technologie", "Jeux", "Nature", "Bénévolat", "Culture", "Loisirs", "Collection", "Artisanat", "Autre"];
+    const validInterestLevels = ["Débutant", "Amateur", "Passionné", "Expert", "Professionnel"];
+    const validLanguageLevels = ["basic", "conversational", "fluent", "native", "professional"];
+
+    if (data.skills && Array.isArray(data.skills)) {
+      data.skills = data.skills.map(skill => ({
+        ...skill,
+        category: validSkillCategories.includes(skill.category) ? skill.category : "Technique",
+        proficiencyLevel: validSkillLevels.includes(skill.proficiencyLevel) ? skill.proficiencyLevel : "intermediate",
+        yearsExperience: typeof skill.yearsExperience === 'number' ? skill.yearsExperience : 0,
+        isPrimary: !!skill.isPrimary
+      }));
+    }
+
+    if (data.interests && Array.isArray(data.interests)) {
+      data.interests = data.interests.map(interest => ({
+        ...interest,
+        category: validInterestCategories.includes(interest.category) ? interest.category : "Loisirs",
+        level: validInterestLevels.includes(interest.level) ? interest.level : "Amateur",
+        isActive: !!interest.isActive
+      }));
+    }
+
+    if (data.languages && Array.isArray(data.languages)) {
+      data.languages = data.languages.map(language => ({
+        ...language,
+        proficiencyLevel: validLanguageLevels.includes(language.proficiencyLevel) ? language.proficiencyLevel : "conversational"
+      }));
+    }
+
+    return data;
   }
 };
 

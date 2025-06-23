@@ -17,9 +17,9 @@ const jobAnalyzer = {
         messages: [
           {
             role: "system",
-            content: `Tu es un expert RH ultra-spécialisé dans l'analyse d'annonces d'emploi et la correspondance avec des profils candidats ULTRA-COMPLETS. 
-            ${userProfile ? 'COMPARE MÉTICULEUSEMENT avec ABSOLUMENT TOUT le profil fourni (compétences déclarées + expériences détaillées avec missions et réalisations + projets avec technologies + formations + certifications + langues). Identifie les compétences implicites dans les expériences et projets. Sois réaliste mais optimiste dans les correspondances.' : 'Aucun profil fourni, marque toutes les compétences comme non possédées.'}
-            Retourne UNIQUEMENT du JSON valide, sans texte d'explication.`
+            content: `Tu es un expert RH spécialisé dans l'analyse d'annonces d'emploi et la correspondance avec des profils candidats. 
+            ${userProfile ? 'Compare PRÉCISÉMENT chaque compétence demandée avec le profil fourni (compétences + expériences + projets + formations). Identifie les compétences implicites dans les descriptions d\'expériences et projets.' : 'Aucun profil fourni, marque toutes les compétences comme non possédées.'}
+            Retourne UNIQUEMENT du JSON valide, sans texte avant ou après.`
           },
           {
             role: "user", 
@@ -27,8 +27,9 @@ const jobAnalyzer = {
           }
         ],
         model: "llama-3.1-8b-instant",
-        temperature: 0.1,
+        temperature: 0.05,
         max_tokens: 3000,
+        top_p: 0.9,
         stream: false
       });
 
@@ -48,43 +49,40 @@ const jobAnalyzer = {
 
   buildProfileSummary(userProfile) {
     if (!userProfile) {
-      return '\n❌ AUCUN PROFIL UTILISATEUR FOURNI - Analyse générique';
+      return '\n❌ AUCUN PROFIL UTILISATEUR FOURNI';
     }
 
-    let summary = `\n👤 PROFIL UTILISATEUR ULTRA-COMPLET ET DÉTAILLÉ :`;
+    let summary = `\n👤 PROFIL CANDIDAT :`;
     
     // Informations personnelles
-    summary += `\n👤 INFORMATIONS PERSONNELLES :`;
     summary += `\n- Nom: ${userProfile.personalInfo?.firstName} ${userProfile.personalInfo?.lastName}`;
-    summary += `\n- Titre actuel: ${userProfile.personalInfo?.title || 'Non spécifié'}`;
+    summary += `\n- Titre: ${userProfile.personalInfo?.title || 'Non spécifié'}`;
     summary += `\n- Localisation: ${userProfile.personalInfo?.location || 'Non spécifiée'}`;
-    summary += `\n- Email: ${userProfile.personalInfo?.email || 'Non fourni'}`;
-    summary += `\n- Résumé: ${userProfile.personalInfo?.summary || 'Non fourni'}`;
-    summary += `\n- LinkedIn: ${userProfile.personalInfo?.linkedinUrl || 'Non fourni'}`;
+    if (userProfile.personalInfo?.summary) {
+      summary += `\n- Résumé: ${userProfile.personalInfo.summary}`;
+    }
 
-    // Compétences détaillées
+    // Compétences
     if (userProfile.skills && userProfile.skills.length > 0) {
-      summary += `\n\n🛠️ COMPÉTENCES TECHNIQUES DÉTAILLÉES (${userProfile.skills.length}) :`;
+      summary += `\n\n🛠️ COMPÉTENCES (${userProfile.skills.length}):`;
       userProfile.skills.forEach(skill => {
-        summary += `\n- ${skill.skillName} (Niveau: ${skill.proficiencyLevel}, Expérience: ${skill.yearsExperience || 0} ans, Catégorie: ${skill.category}${skill.isPrimary ? ', ⭐ COMPÉTENCE PRINCIPALE' : ''})`;
+        summary += `\n- ${skill.skillName} (${skill.proficiencyLevel}, ${skill.yearsExperience || 0} ans, ${skill.category}${skill.isPrimary ? ', ⭐ PRINCIPALE' : ''})`;
       });
     }
 
-    // Expériences détaillées
+    // Expériences
     if (userProfile.experience && userProfile.experience.length > 0) {
-      summary += `\n\n💼 EXPÉRIENCES PROFESSIONNELLES ULTRA-DÉTAILLÉES (${userProfile.experience.length}) :`;
+      summary += `\n\n💼 EXPÉRIENCES (${userProfile.experience.length}):`;
       userProfile.experience.forEach((exp, index) => {
-        summary += `\n[EXP ${index + 1}] ${exp.position || 'Poste'} chez ${exp.company || 'Entreprise'}`;
-        
+        summary += `\n${index + 1}. ${exp.position} chez ${exp.company}`;
         if (exp.startDate || exp.endDate) {
           const period = exp.startDate ? 
             `${exp.startDate}${exp.endDate ? ` - ${exp.endDate}` : ' - Actuellement'}` : 
             `Jusqu'à ${exp.endDate}`;
           summary += ` (${period})`;
         }
-        
         if (exp.location) summary += ` - ${exp.location}`;
-        if (exp.description) summary += ` | Mission: ${exp.description}`;
+        if (exp.description) summary += ` | ${exp.description}`;
         if (exp.achievements && exp.achievements.length > 0) {
           summary += ` | Réalisations: ${exp.achievements.join(', ')}`;
         }
@@ -97,139 +95,120 @@ const jobAnalyzer = {
 
     // Formations
     if (userProfile.education && userProfile.education.length > 0) {
-      summary += `\n\n🎓 FORMATIONS COMPLÈTES (${userProfile.education.length}) :`;
+      summary += `\n\n🎓 FORMATIONS (${userProfile.education.length}):`;
       userProfile.education.forEach((edu, index) => {
-        summary += `\n[EDU ${index + 1}] ${edu.degreeType || 'Diplôme'} en ${edu.fieldOfStudy || 'Domaine'} à ${edu.institutionName || 'Établissement'}`;
-        
+        summary += `\n${index + 1}. ${edu.degreeType} en ${edu.fieldOfStudy} - ${edu.institutionName}`;
         if (edu.startDate || edu.endDate) {
           const period = edu.startDate ? 
             `${edu.startDate}${edu.endDate ? ` - ${edu.endDate}` : ' - En cours'}` : 
             `Jusqu'à ${edu.endDate}`;
           summary += ` (${period})`;
         }
-        
         if (edu.location) summary += ` - ${edu.location}`;
         if (edu.grade) summary += ` | Mention: ${edu.grade}`;
-        if (edu.description) summary += ` | Description: ${edu.description}`;
-        if (edu.honors && edu.honors.length > 0) summary += ` | Distinctions: ${edu.honors.join(', ')}`;
       });
     }
 
     // Projets
     if (userProfile.projects && userProfile.projects.length > 0) {
-      summary += `\n\n🚀 PROJETS RÉALISÉS DÉTAILLÉS (${userProfile.projects.length}) :`;
+      summary += `\n\n🚀 PROJETS (${userProfile.projects.length}):`;
       userProfile.projects.forEach((proj, index) => {
-        summary += `\n[PROJET ${index + 1}] ${proj.projectName || 'Projet'}`;
+        summary += `\n${index + 1}. ${proj.projectName}`;
         if (proj.description) summary += `: ${proj.description}`;
         if (proj.technologiesUsed && proj.technologiesUsed.length > 0) {
           summary += ` | Technologies: ${proj.technologiesUsed.join(', ')}`;
         }
         if (proj.projectUrl) summary += ` | URL: ${proj.projectUrl}`;
-        if (proj.repositoryUrl) summary += ` | Repository: ${proj.repositoryUrl}`;
-        if (proj.startDate) summary += ` | Début: ${proj.startDate}`;
-        if (proj.endDate) summary += ` | Fin: ${proj.endDate}`;
-        if (proj.isOngoing) summary += ` | EN COURS`;
       });
     }
 
     // Certifications
     if (userProfile.certifications && userProfile.certifications.length > 0) {
-      summary += `\n\n🏆 CERTIFICATIONS DÉTAILLÉES (${userProfile.certifications.length}) :`;
+      summary += `\n\n🏆 CERTIFICATIONS (${userProfile.certifications.length}):`;
       userProfile.certifications.forEach((cert, index) => {
-        summary += `\n[CERT ${index + 1}] ${cert.certificationName || 'Certification'} délivré par ${cert.issuingOrganization || 'Organisme'}`;
-        if (cert.issueDate) summary += ` | Obtenu: ${cert.issueDate}`;
-        if (cert.expirationDate && !cert.neverExpires) summary += ` | Expire: ${cert.expirationDate}`;
+        summary += `\n${index + 1}. ${cert.certificationName} - ${cert.issuingOrganization}`;
+        if (cert.issueDate) summary += ` | ${cert.issueDate}`;
         if (cert.neverExpires) summary += ` | Valide à vie`;
-        if (cert.credentialId) summary += ` | ID: ${cert.credentialId}`;
-        if (cert.credentialUrl) summary += ` | URL: ${cert.credentialUrl}`;
+        else if (cert.expirationDate) summary += ` | Expire: ${cert.expirationDate}`;
       });
     }
 
     // Langues
     if (userProfile.languages && userProfile.languages.length > 0) {
-      summary += `\n\n🌍 LANGUES PARLÉES DÉTAILLÉES (${userProfile.languages.length}) :`;
-      const languagesText = userProfile.languages.map(lang => {
-        let langText = `${lang.languageName || 'Langue'} (${lang.proficiencyLevel || 'conversational'})`;
-        if (lang.certification) langText += ` | Certification: ${lang.certification}`;
-        if (lang.description) langText += ` | Description: ${lang.description}`;
-        return langText;
-      }).join(', ');
+      summary += `\n\n🌍 LANGUES:`;
+      const languagesText = userProfile.languages.map(lang => 
+        `${lang.languageName} (${lang.proficiencyLevel})`
+      ).join(', ');
       summary += `\n${languagesText}`;
-    }
-
-    // Centres d'intérêt
-    if (userProfile.interests && userProfile.interests.length > 0) {
-      summary += `\n\n🎯 CENTRES D'INTÉRÊT DÉTAILLÉS (${userProfile.interests.length}) :`;
-      const interestsText = userProfile.interests.map(interest => {
-        let interestText = `${interest.interestName || 'Intérêt'} (${interest.level || 'Amateur'})`;
-        if (interest.description) interestText += ` - ${interest.description}`;
-        if (interest.category) interestText += ` [${interest.category}]`;
-        if (!interest.isActive) interestText += ` (Inactif)`;
-        return interestText;
-      }).join(', ');
-      summary += `\n${interestsText}`;
     }
 
     return summary;
   },
 
   buildJobAnalysisPrompt(jobText, profileSummary, userProfile) {
-    return `
-Tu es un expert RH qui analyse des annonces d'emploi et compare avec des profils candidats ULTRA-DÉTAILLÉS.
+    return `ANALYSE CETTE ANNONCE D'EMPLOI ET COMPARE AVEC LE PROFIL CANDIDAT:
 
-ANNONCE D'EMPLOI À ANALYSER :
+ANNONCE:
 ${jobText}
 
 ${profileSummary}
 
 ${userProfile ? `
-INSTRUCTIONS ULTRA-IMPORTANTES :
-- Compare PRÉCISÉMENT chaque compétence de l'annonce avec TOUT le profil utilisateur (compétences, expériences, projets, formations)
-- Si une compétence apparaît dans les expériences, projets ou technologies utilisées, marque userHasSkill: true
-- Calcule le userProficiencyLevel en croisant niveau déclaré + expérience pratique + projets réalisés
-- Tiens compte des descriptions d'expériences et réalisations pour identifier les compétences implicites
-- Considère les technologies utilisées dans les projets comme des compétences pratiques
-- Score de correspondance basé sur l'ENSEMBLE du profil (pas seulement les compétences déclarées)
-- Recommandations hyper-personnalisées basées sur TOUTES les données du profil
+INSTRUCTIONS:
+1. Identifie TOUTES les compétences demandées dans l'annonce
+2. Compare avec le profil candidat (compétences + expériences + projets + formations)
+3. Si une compétence apparaît dans les expériences/projets/technologies, marque userHasSkill: true
+4. Calcule userProficiencyLevel en croisant niveau déclaré + expérience pratique
+5. Score de correspondance basé sur l'ensemble du profil
+6. Recommandations personnalisées basées sur les forces/faiblesses identifiées
 ` : `
-AUCUN PROFIL UTILISATEUR FOURNI
+AUCUN PROFIL FOURNI:
 - Marque toutes les compétences avec userHasSkill: false
 - userProficiencyLevel: 0 pour toutes les compétences
 - Recommandations génériques
 `}
 
-RETOURNE UNIQUEMENT ce JSON (sans texte d'explication) :
+RÈGLES STRICTES:
+- Retourne UNIQUEMENT le JSON, sans texte avant ou après
+- Pour les scores: nombres entre 0 et 100
+- Pour les booléens: true/false, pas "true"/"false"
+- Pour les arrays vides: utilise []
 
+JSON ATTENDU:
 {
-  "title": "Titre du poste extrait de l'annonce",
-  "company": "Nom de l'entreprise extrait", 
-  "location": "Lieu du poste (ville, région, pays)",
-  "contractType": "CDI/CDD/Stage/Freelance/Alternance",
-  "experienceRequired": "Niveau d'expérience requis (ex: 2-3 ans, débutant accepté, senior)",
-  "salaryRange": "Fourchette salariale si mentionnée (ex: 45-55k€, négociable)",
-  "extractedSkills": [
+  "jobAnalysis": {
+    "jobTitle": "",
+    "company": "",
+    "location": "",
+    "jobType": "",
+    "experienceLevel": "",
+    "salaryRange": "",
+    "keyResponsibilities": [],
+    "requiredSkills": [],
+    "preferredSkills": [],
+    "benefits": []
+  },
+  "skillsAnalysis": [
     {
-      "skillName": "Nom exact de la compétence",
-      "category": "Technique/Programmation/Framework/Base de données/DevOps/Design/Autre",
-      "importanceLevel": "essential/desired/nice_to_have",
-      "yearsRequired": 2,
-      "userHasSkill": ${userProfile ? 'true si l\'utilisateur possède cette compétence selon TOUT SON PROFIL (compétences déclarées, expériences, projets, technologies utilisées)' : 'false'},
-      "userProficiencyLevel": ${userProfile ? 'Niveau 1-5 calculé selon profil COMPLET (1=débutant, 5=expert) en croisant compétences déclarées + expérience pratique + projets' : '0'}
+      "skillName": "",
+      "category": "",
+      "isRequired": true,
+      "userHasSkill": false,
+      "userProficiencyLevel": 0,
+      "matchScore": 0,
+      "recommendation": ""
     }
   ],
-  "strengths": [${userProfile ? '"Points forts basés sur TOUT le profil : compétences, expériences détaillées, projets, formations, certifications qui matchent avec l\'annonce"' : '"Aucun profil pour analyser les forces"'}],
-  "weaknesses": [${userProfile ? '"Compétences/expériences manquantes essentielles identifiées en comparant avec le profil COMPLET"' : '"Profil utilisateur nécessaire pour analyser"'}],
-  "recommendations": [${userProfile ? '"Conseils hyper-personnalisés basés sur TOUT le profil (formations suggérées selon lacunes, projets à réaliser pour acquérir compétences manquantes, certifications utiles, expériences à valoriser)"' : '"Complétez votre profil pour des recommandations personnalisées"'}],
-  "canApply": ${userProfile ? 'true si le profil COMPLET correspond suffisamment (>= 60% des compétences essentielles OU expérience pertinente significative)' : 'true'},
-  "analysisSummary": "Résumé de l'analyse en 2-3 phrases incluant le niveau de correspondance${userProfile ? ' avec le profil utilisateur ULTRA-COMPLET (expériences, projets, compétences, formations)' : ''}"
+  "overallMatch": {
+    "score": 0,
+    "strengths": [],
+    "weaknesses": [],
+    "recommendations": [],
+    "estimatedFit": ""
+  }
 }
 
-IMPORTANT: 
-- Retourne UNIQUEMENT le JSON, pas de texte avant ou après
-- Sois ULTRA-précis dans la comparaison avec le profil COMPLET (ne rate aucune compétence implicite)
-- ${userProfile ? 'Base-toi sur ABSOLUMENT TOUTES les données : compétences + expériences détaillées + projets + technologies + formations + certifications' : 'Marque toutes les correspondances comme false'}
-- Une compétence peut être acquise via expérience professionnelle, projets personnels, ou formations même si pas listée explicitement
-- Considère les descriptions détaillées d'expériences pour identifier compétences cachées`;
+RÉPONSE: UNIQUEMENT LE JSON CI-DESSUS, RIEN D'AUTRE.`;
   },
 
   processJobAnalysisResponse(responseText, jobText) {
