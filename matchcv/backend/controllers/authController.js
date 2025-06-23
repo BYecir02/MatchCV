@@ -95,6 +95,36 @@ const authController = {
         error: error.message
       });
     }
+  },
+
+  // Vérification du token
+  async verifyToken(req, res) {
+    try {
+      // Le middleware authenticateToken a déjà vérifié le token
+      // et ajouté req.user avec l'ID de l'utilisateur
+      const user = await User.findById(req.user.id);
+      
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Utilisateur non trouvé'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Token valide',
+        user: user.getPublicProfile()
+      });
+
+    } catch (error) {
+      console.error('Erreur vérification token:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Erreur serveur',
+        error: error.message
+      });
+    }
   }
 };
 

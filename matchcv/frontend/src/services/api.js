@@ -52,6 +52,16 @@ export const register = async (userData) => { // ⭐ AJOUTÉ async
   }
 };
 
+export const checkAuth = async () => { // ⭐ NOUVELLE FONCTION
+  try {
+    const { AuthService } = await import('./api/index.js');
+    return await AuthService.checkAuth();
+  } catch (error) {
+    console.error('Erreur vérification auth:', error);
+    throw error;
+  }
+};
+
 export const logout = async () => { // ⭐ AJOUTÉ async
   try {
     const { AuthService } = await import('./api/index.js');

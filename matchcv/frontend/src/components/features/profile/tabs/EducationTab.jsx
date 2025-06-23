@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraduationCap, Trash2, Plus } from 'lucide-react';
+import { GraduationCap, Trash2 } from 'lucide-react';
 import SectionHeader from '../components/SectionHeader';
 import FormField from '../components/FormField';
 

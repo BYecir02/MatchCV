@@ -1,5 +1,5 @@
 import React from 'react';
-import { Briefcase, Trash2, Loader2, Plus } from 'lucide-react';
+import { Briefcase, Trash2 } from 'lucide-react';
 import SectionHeader from '../components/SectionHeader';
 import FormField from '../components/FormField';
 

@@ -19,15 +19,48 @@ export const AuthProvider = ({ children }) => {
 
   // Vérifier si l'utilisateur est connecté au démarrage
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('authToken');
-    
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
-    }
-    
-    setLoading(false);
+    const checkAuthStatus = async () => {
+      try {
+        const storedUser = localStorage.getItem('user');
+        const storedToken = localStorage.getItem('authToken');
+        
+        if (storedUser && storedToken) {
+          // Vérifier que le token est toujours valide avec le serveur
+          try {
+            const response = await ApiService.checkAuth();
+            if (response.success) {
+              // Token valide, mettre à jour l'état
+              setUser(JSON.parse(storedUser));
+              setToken(storedToken);
+            } else {
+              // Token invalide, nettoyer le localStorage
+              localStorage.removeItem('user');
+              localStorage.removeItem('authToken');
+              setUser(null);
+              setToken(null);
+            }
+          } catch (error) {
+            console.log('Token invalide ou expiré, déconnexion automatique');
+            // Token invalide, nettoyer le localStorage
+            localStorage.removeItem('user');
+            localStorage.removeItem('authToken');
+            setUser(null);
+            setToken(null);
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de la vérification d\'authentification:', error);
+        // En cas d'erreur, nettoyer pour être sûr
+        localStorage.removeItem('user');
+        localStorage.removeItem('authToken');
+        setUser(null);
+        setToken(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuthStatus();
   }, []);
 
   // Connexion

@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import JobsService from '../../../services/api/jobs'; 
 
-const DashboardHome = () => {
+const DashboardHome = ({ onNavigateToLetters, onNavigateToCV, onNavigateToAnalyzer, onNavigateToTracker }) => {
   const [lettersCount, setLettersCount] = React.useState(null);
   const [pendingCount, setPendingCount] = React.useState(null);
 
@@ -130,7 +130,10 @@ const DashboardHome = () => {
         <div className=" bg-white/10 backdrop-blur-md p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold text-white mb-4">Actions rapides</h3>
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-3 bg-white/10 backdrop-blur-md hover:bg-blue-50 rounded-lg transition-colors">
+            <button
+              className="w-full flex items-center justify-between p-3 bg-white/10 backdrop-blur-md hover:bg-blue-50 rounded-lg transition-colors"
+              onClick={onNavigateToLetters}
+            >
               <span className="flex items-center">
                 <FileText className="h-5 w-5 text-blue-800 mr-3" />
                 <span className="text-white font-medium">Générer une lettre</span>
@@ -138,7 +141,10 @@ const DashboardHome = () => {
               <span className="text-blue-600">→</span>
             </button>
             
-            <button className="w-full flex items-center justify-between p-3 bg-white/10 backdrop-blur-md hover:bg-green-50 rounded-lg transition-colors">
+            <button
+              className="w-full flex items-center justify-between p-3 bg-white/10 backdrop-blur-md hover:bg-green-50 rounded-lg transition-colors"
+              onClick={onNavigateToAnalyzer}
+            >
               <span className="flex items-center">
                 <Target className="h-5 w-5 text-green-600 mr-3" />
                 <span className="text-white font-medium">Analyser une annonce</span>
@@ -146,7 +152,10 @@ const DashboardHome = () => {
               <span className="text-green-600">→</span>
             </button>
             
-            <button className="w-full flex items-center justify-between p-3 bg-white/10 backdrop-blur-md hover:bg-purple-50 rounded-lg transition-colors">
+            <button
+              className="w-full flex items-center justify-between p-3 bg-white/10 backdrop-blur-md hover:bg-purple-50 rounded-lg transition-colors"
+              onClick={onNavigateToTracker}
+            >
               <span className="flex items-center">
                 <Send className="h-5 w-5 text-purple-800 mr-3" />
                 <span className="text-white font-medium">Ajouter une candidature</span>

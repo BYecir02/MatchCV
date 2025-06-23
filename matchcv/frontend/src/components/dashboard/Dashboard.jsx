@@ -57,6 +57,16 @@ const Dashboard = ({ user, onLogout }) => {
     setActiveSection('analyzer');
   };
 
+  const handleNavigateToAnalyzer = () => {
+    setActiveSection('analyzer');
+    setNavigationData(null);
+  };
+
+  const handleNavigateToTracker = () => {
+    setActiveSection('tracker');
+    setNavigationData(null);
+  };
+
   const renderActiveComponent = () => {
     const ActiveComponent = menuItems.find(item => item.id === activeSection)?.component || DashboardHome;
     
@@ -65,7 +75,9 @@ const Dashboard = ({ user, onLogout }) => {
       initialData: navigationData,
       onNavigateToLetters: handleNavigateToLetters,
       onNavigateToCV: handleNavigateToCV,
-      onNavigateBack: handleNavigateBack
+      onNavigateBack: handleNavigateBack,
+      onNavigateToAnalyzer: handleNavigateToAnalyzer,
+      onNavigateToTracker: handleNavigateToTracker
     };
 
     return <ActiveComponent {...commonProps} />;
