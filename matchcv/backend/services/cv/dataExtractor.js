@@ -242,28 +242,277 @@ const dataExtractor = {
     
     const lines = cvText.split('\n').map(line => line.trim()).filter(line => line);
     
-    const nameRegex = /\*\*([^*]+)\*\*/;
+    // Extraction du nom
+    const nameRegex = /^([A-Z][a-z]+)\s+([A-Z][a-z]+)/;
     let firstName = '';
     let lastName = '';
     
     const fullNameMatch = cvText.match(nameRegex);
     if (fullNameMatch) {
-      const fullName = fullNameMatch[1].trim();
-      const nameParts = fullName.split(/\s+/);
-      
-      if (nameParts.length >= 2) {
-        firstName = nameParts[0];
-        lastName = nameParts.slice(1).join(' ');
-      } else {
-        firstName = fullName;
-      }
+      firstName = fullNameMatch[1];
+      lastName = fullNameMatch[2];
     }
     
+    // Extraction email
     const emailMatch = cvText.match(/[\w.-]+@[\w.-]+\.\w+/);
     const email = emailMatch ? emailMatch[0] : '';
     
-    const phoneMatch = cvText.match(/📞\s*([0-9\s\-\+\(\)]{10,})/);
+    // Extraction téléphone
+    const phoneMatch = cvText.match(/(?:📞|Téléphone|Phone|Tel)[:\s]*([0-9\s\-\+\(\)]{10,})/);
     const phone = phoneMatch ? phoneMatch[1].trim() : '';
+    
+    // Extraction titre
+    const titleMatch = cvText.match(/(?:Développeur|Ingénieur|Consultant|Chef de projet|Analyste)[^,\n]*/i);
+    const title = titleMatch ? titleMatch[0].trim() : '';
+    
+    // Extraction localisation
+    const locationMatch = cvText.match(/(?:Mobilité|Localisation|Location)[:\s]*([^,\n]+)/i);
+    const location = locationMatch ? locationMatch[1].trim() : '';
+    
+    // Extraction compétences de base
+    const skills = [];
+    const skillKeywords = [
+      'JavaScript', 'React', 'Node.js', 'Python', 'Java', 'PHP', 'SQL', 'HTML', 'CSS',
+      'MongoDB', 'MySQL', 'PostgreSQL', 'Docker', 'Git', 'TypeScript', 'Angular', 'Vue',
+      'Express', 'Django', 'Laravel', 'AWS', 'Azure', 'Kubernetes', 'Redis', 'GraphQL'
+    ];
+    
+    skillKeywords.forEach(skill => {
+      if (cvText.toLowerCase().includes(skill.toLowerCase())) {
+        skills.push({
+          skillName: skill,
+          category: 'Technique',
+          proficiencyLevel: 'intermediate',
+          yearsExperience: 1,
+          isPrimary: false
+        });
+      }
+    });
+    
+    // Extraction langues de base
+    const languages = [];
+    const languageMatch = cvText.match(/(?:LANGUES|LANGUAGES)[:\s]*([^]*?)(?=\n[A-Z]|$)/i);
+    if (languageMatch) {
+      const languageText = languageMatch[1];
+      const languageKeywords = ['Français', 'Anglais', 'Espagnol', 'Allemand', 'Italien'];
+      
+      languageKeywords.forEach(lang => {
+        if (languageText.toLowerCase().includes(lang.toLowerCase())) {
+          languages.push({
+            languageName: lang,
+            proficiencyLevel: 'conversational',
+            certification: '',
+            description: ''
+          });
+        }
+      });
+    }
+    
+    // Extraction expériences de base
+    const experience = [];
+    const experienceMatch = cvText.match(/(?:EXPÉRIENCES|EXPERIENCE)[:\s]*([^]*?)(?=\n[A-Z]|$)/i);
+    if (experienceMatch) {
+      const expText = experienceMatch[1];
+      const expLines = expText.split('\n').filter(line => line.trim());
+      
+      expLines.forEach(line => {
+        const trimmedLine = line.trim();
+        if (trimmedLine && (trimmedLine.includes(' - ') || trimmedLine.includes(' chez ') || trimmedLine.includes('('))) {
+          // Pattern 1: "Poste - Entreprise - Période, Lieu"
+          let match = trimmedLine.match(/^([^-]+)\s*-\s*([^-]+?)\s*-\s*([^,]+)(?:,\s*(.+))?$/);
+          if (match) {
+            experience.push({
+              company: match[2]?.trim() || '',
+              position: match[1]?.trim() || '',
+              startDate: '',
+              endDate: '',
+              isCurrent: false,
+              location: match[4]?.trim() || '',
+              description: trimmedLine,
+              achievements: [],
+              technologiesUsed: []
+            });
+            return;
+          }
+          
+          // Pattern 2: "Poste (Entreprise) - Période, Lieu"
+          match = trimmedLine.match(/^([^(]+)\s*\(([^)]+)\)\s*-\s*([^,]+)(?:,\s*(.+))?$/);
+          if (match) {
+            experience.push({
+              company: match[2]?.trim() || '',
+              position: match[1]?.trim() || '',
+              startDate: '',
+              endDate: '',
+              isCurrent: false,
+              location: match[4]?.trim() || '',
+              description: trimmedLine,
+              achievements: [],
+              technologiesUsed: []
+            });
+            return;
+          }
+          
+          // Pattern 3: "Entreprise - Poste - Période"
+          match = trimmedLine.match(/^([^-]+)\s*-\s*([^-]+?)\s*-\s*(.+)$/);
+          if (match) {
+            experience.push({
+              company: match[1]?.trim() || '',
+              position: match[2]?.trim() || '',
+              startDate: '',
+              endDate: '',
+              isCurrent: false,
+              location: '',
+              description: trimmedLine,
+              achievements: [],
+              technologiesUsed: []
+            });
+            return;
+          }
+          
+          // Pattern 4: Ligne simple avec séparateur
+          const parts = trimmedLine.split(/\s*[-@]\s*/);
+          if (parts.length >= 2) {
+            experience.push({
+              company: parts[1]?.trim() || '',
+              position: parts[0]?.trim() || '',
+              startDate: '',
+              endDate: '',
+              isCurrent: false,
+              location: '',
+              description: trimmedLine,
+              achievements: [],
+              technologiesUsed: []
+            });
+          }
+        }
+      });
+    }
+    
+    // Extraction éducation de base
+    const education = [];
+    const educationMatch = cvText.match(/(?:ÉDUCATION|FORMATION|DIPLÔME)[:\s]*([^]*?)(?=\n[A-Z]|$)/i);
+    if (educationMatch) {
+      const eduText = educationMatch[1];
+      const eduLines = eduText.split('\n').filter(line => line.trim());
+      
+      eduLines.forEach(line => {
+        const trimmedLine = line.trim();
+        if (trimmedLine && (trimmedLine.includes(' - ') || trimmedLine.includes(' à ') || trimmedLine.includes('('))) {
+          // Pattern 1: "Diplôme - Institution - Période, Lieu"
+          let match = trimmedLine.match(/^([^-]+)\s*-\s*([^-]+?)\s*-\s*([^,]+)(?:,\s*(.+))?$/);
+          if (match) {
+            education.push({
+              institutionName: match[2]?.trim() || '',
+              degreeType: match[1]?.trim() || '',
+              fieldOfStudy: '',
+              location: match[4]?.trim() || '',
+              startDate: '',
+              endDate: '',
+              grade: '',
+              description: trimmedLine,
+              honors: []
+            });
+            return;
+          }
+          
+          // Pattern 2: "Diplôme (Institution) - Période, Lieu"
+          match = trimmedLine.match(/^([^(]+)\s*\(([^)]+)\)\s*-\s*([^,]+)(?:,\s*(.+))?$/);
+          if (match) {
+            education.push({
+              institutionName: match[2]?.trim() || '',
+              degreeType: match[1]?.trim() || '',
+              fieldOfStudy: '',
+              location: match[4]?.trim() || '',
+              startDate: '',
+              endDate: '',
+              grade: '',
+              description: trimmedLine,
+              honors: []
+            });
+            return;
+          }
+          
+          // Pattern 3: Ligne simple avec séparateur
+          const parts = trimmedLine.split(/\s*[-@]\s*/);
+          if (parts.length >= 2) {
+            education.push({
+              institutionName: parts[1]?.trim() || '',
+              degreeType: parts[0]?.trim() || '',
+              fieldOfStudy: '',
+              location: '',
+              startDate: '',
+              endDate: '',
+              grade: '',
+              description: trimmedLine,
+              honors: []
+            });
+          }
+        }
+      });
+    }
+    
+    // Extraction projets de base
+    const projects = [];
+    const projectMatch = cvText.match(/(?:PROJETS|RÉALISATIONS)[:\s]*([^]*?)(?=\n[A-Z]|$)/i);
+    if (projectMatch) {
+      const projText = projectMatch[1];
+      const projLines = projText.split('\n').filter(line => line.trim());
+      
+      projLines.forEach(line => {
+        const trimmedLine = line.trim();
+        if (trimmedLine && (trimmedLine.includes(' - ') || trimmedLine.includes(' : ') || trimmedLine.includes('('))) {
+          // Pattern 1: "Nom du projet - Description"
+          let match = trimmedLine.match(/^([^-]+)\s*-\s*(.+)$/);
+          if (match) {
+            projects.push({
+              projectName: match[1]?.trim() || '',
+              description: match[2]?.trim() || '',
+              projectUrl: '',
+              repositoryUrl: '',
+              technologiesUsed: [],
+              startDate: '',
+              endDate: '',
+              isOngoing: false,
+              screenshots: []
+            });
+            return;
+          }
+          
+          // Pattern 2: "Nom du projet : Description"
+          match = trimmedLine.match(/^([^:]+)\s*:\s*(.+)$/);
+          if (match) {
+            projects.push({
+              projectName: match[1]?.trim() || '',
+              description: match[2]?.trim() || '',
+              projectUrl: '',
+              repositoryUrl: '',
+              technologiesUsed: [],
+              startDate: '',
+              endDate: '',
+              isOngoing: false,
+              screenshots: []
+            });
+            return;
+          }
+          
+          // Pattern 3: "Nom du projet (Technologies)"
+          match = trimmedLine.match(/^([^(]+)\s*\(([^)]+)\)$/);
+          if (match) {
+            projects.push({
+              projectName: match[1]?.trim() || '',
+              description: `Technologies: ${match[2]?.trim() || ''}`,
+              projectUrl: '',
+              repositoryUrl: '',
+              technologiesUsed: [],
+              startDate: '',
+              endDate: '',
+              isOngoing: false,
+              screenshots: []
+            });
+          }
+        }
+      });
+    }
     
     const extractedData = {
       personalInfo: {
@@ -271,59 +520,23 @@ const dataExtractor = {
         lastName,
         email,
         phone,
-        location: '',
-        title: '',
+        location,
+        title,
         summary: '',
         linkedinUrl: '',
         githubUrl: '',
         portfolioUrl: ''
       },
-      experience: [],
-      education: [],
-      skills: [],
-      languages: [],
-      projects: [],
+      experience,
+      education,
+      skills,
+      languages,
+      projects,
       certifications: [],
       interests: []
     };
 
-    // Extraction de compétences basiques
-    const skillsSection = cvText.match(/(?:COMPÉTENCES|SKILLS)([\s\S]*?)(?=(?:\n#{1,3}|\n[A-Z]{2,}|\n---|\Z))/i);
-    if (skillsSection) {
-      const skillsText = skillsSection[1];
-      const skills = skillsText.match(/(?:JavaScript|React|Vue|Node|Python|PHP|Java|HTML|CSS|SQL|MongoDB|MySQL|Docker|AWS|Git|TypeScript|Angular|Figma)/gi) || [];
-      
-      skills.forEach(skill => {
-        extractedData.skills.push({
-          skillName: skill,
-          category: 'Technique',
-          proficiencyLevel: 'intermediate',
-          yearsExperience: 1,
-          isPrimary: false
-        });
-      });
-    }
-
-    // Langues communes
-    if (cvText.match(/français/i)) {
-      extractedData.languages.push({
-        languageName: 'Français',
-        proficiencyLevel: 'native',
-        certification: '',
-        description: ''
-      });
-    }
-
-    if (cvText.match(/anglais/i)) {
-      extractedData.languages.push({
-        languageName: 'Anglais',
-        proficiencyLevel: 'conversational',
-        certification: '',
-        description: ''
-      });
-    }
-
-    console.log('✅ Données extraites (fallback):', Object.keys(extractedData));
+    console.log(`✅ Extraction basique: ${skills.length} compétences, ${languages.length} langues, ${experience.length} expériences, ${education.length} formations, ${projects.length} projets`);
     return extractedData;
   }
 };

@@ -1248,6 +1248,86 @@ const profileController = {
         error: error.message
       });
     }
+  },
+
+  // ⭐ NOUVELLE MÉTHODE : Upload et analyse de fichier CV
+  async uploadAndAnalyzeCV(req, res) {
+    try {
+      const file = req.file;
+      const { replaceExisting = false } = req.body;
+      const userId = req.user.id;
+
+      console.log('📁 Début upload CV pour utilisateur:', userId);
+
+      if (!file) {
+        return res.status(400).json({
+          success: false,
+          message: 'Aucun fichier fourni'
+        });
+      }
+
+      console.log(`📄 Fichier reçu: ${file.originalname} (${file.size} bytes)`);
+
+      // Importer les modules nécessaires
+      const path = require('path');
+      const fs = require('fs');
+      const fileExtractor = require('../services/cv/fileExtractor');
+
+      try {
+        // Extraire le texte du fichier
+        const fileExt = path.extname(file.originalname).toLowerCase();
+        console.log(`🔍 Extraction texte depuis ${fileExt}...`);
+        
+        const rawText = await fileExtractor.extractTextFromFile(file.path, fileExt);
+        const cvText = fileExtractor.cleanExtractedText(rawText);
+        
+        // Valider le contenu extrait
+        fileExtractor.validateExtractedContent(cvText);
+        
+        console.log(`✅ Texte extrait: ${cvText.length} caractères`);
+
+        // Utiliser la logique existante d'analyse
+        const mockReq = {
+          body: { cvText, replaceExisting },
+          user: { id: userId }
+        };
+
+        // Appeler la méthode existante
+        await profileController.importAndAnalyzeCV(mockReq, res);
+
+        // Nettoyer le fichier temporaire
+        fs.unlinkSync(file.path);
+        console.log('🗑️ Fichier temporaire supprimé');
+
+      } catch (extractionError) {
+        // Nettoyer le fichier en cas d'erreur
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+          console.log('🗑️ Fichier temporaire supprimé après erreur');
+        }
+        
+        console.error('❌ Erreur extraction:', extractionError);
+        return res.status(400).json({
+          success: false,
+          message: extractionError.message || 'Erreur lors de l\'extraction du texte du fichier'
+        });
+      }
+
+    } catch (error) {
+      console.error('❌ Erreur upload CV:', error);
+      
+      // Nettoyer le fichier en cas d'erreur
+      if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+        console.log('🗑️ Fichier temporaire supprimé après erreur');
+      }
+      
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors du traitement du fichier CV',
+        error: error.message
+      });
+    }
   }
 };
 

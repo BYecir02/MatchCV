@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
-import { Upload, FileText, Zap, AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { Upload, FileText, Zap, AlertTriangle, CheckCircle, X, File, FileUp } from 'lucide-react';
 import ProfileService from '../../../../services/api/profile'; // ⭐ IMPORTER ProfileService
 
 const CVImportModal = ({ isOpen, onClose, onImportSuccess }) => {
+  const [uploadMode, setUploadMode] = useState('text'); // 'text' ou 'file'
   const [cvText, setCvText] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
   const [replaceExisting, setReplaceExisting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [error, setError] = useState('');
 
   const handleImport = async () => {
-    if (!cvText.trim()) {
+    if (uploadMode === 'file' && !selectedFile) {
+      setError('Veuillez sélectionner un fichier CV');
+      return;
+    }
+
+    if (uploadMode === 'text' && !cvText.trim()) {
       setError('Veuillez coller le contenu de votre CV');
       return;
     }
@@ -20,10 +27,21 @@ const CVImportModal = ({ isOpen, onClose, onImportSuccess }) => {
     setAnalysisResult(null);
 
     try {
-      console.log('🚀 Import CV démarré...');
+      console.log('🚀 Import CV démarré...', { mode: uploadMode });
       
-      // ⭐ UTILISER ProfileService au lieu de fetch direct
-      const data = await ProfileService.importCV(cvText.trim(), replaceExisting);
+      let data;
+      
+      if (uploadMode === 'file') {
+        // Upload de fichier
+        const formData = new FormData();
+        formData.append('cv', selectedFile);
+        formData.append('replaceExisting', replaceExisting);
+        
+        data = await ProfileService.uploadCV(formData);
+      } else {
+        // Import de texte
+        data = await ProfileService.importCV(cvText.trim(), replaceExisting);
+      }
 
       if (data.success) {
         setAnalysisResult(data);
@@ -45,8 +63,31 @@ const CVImportModal = ({ isOpen, onClose, onImportSuccess }) => {
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validation du fichier
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      
+      if (!allowedTypes.includes(file.type)) {
+        setError('Format de fichier non supporté. Utilisez PDF, DOC ou DOCX.');
+        return;
+      }
+      
+      if (file.size > maxSize) {
+        setError('Le fichier est trop volumineux. Taille maximum: 5MB.');
+        return;
+      }
+      
+      setSelectedFile(file);
+      setError('');
+    }
+  };
+
   const handleClose = () => {
     setCvText('');
+    setSelectedFile(null);
     setReplaceExisting(false);
     setIsAnalyzing(false);
     setAnalysisResult(null);
@@ -86,6 +127,32 @@ const CVImportModal = ({ isOpen, onClose, onImportSuccess }) => {
         <div className="p-6 space-y-6">
           {!analysisResult ? (
             <>
+              {/* Toggle Mode */}
+              <div className="flex space-x-4 mb-4">
+                <button 
+                  onClick={() => setUploadMode('text')}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                    uploadMode === 'text' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <FileText className="h-4 w-4" />
+                  <span>Coller le texte</span>
+                </button>
+                <button 
+                  onClick={() => setUploadMode('file')}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                    uploadMode === 'file' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <FileUp className="h-4 w-4" />
+                  <span>Uploader un fichier</span>
+                </button>
+              </div>
+
               {/* Instructions */}
               <div className="bg-blue-50 rounded-lg p-4">
                 <div className="flex items-start space-x-3">
@@ -95,8 +162,17 @@ const CVImportModal = ({ isOpen, onClose, onImportSuccess }) => {
                       Comment ça fonctionne :
                     </p>
                     <ul className="text-blue-800 space-y-1">
-                      <li>• Copiez le contenu de votre CV (texte uniquement)</li>
-                      <li>• Collez-le dans la zone ci-dessous</li>
+                      {uploadMode === 'text' ? (
+                        <>
+                          <li>• Copiez le contenu de votre CV (texte uniquement)</li>
+                          <li>• Collez-le dans la zone ci-dessous</li>
+                        </>
+                      ) : (
+                        <>
+                          <li>• Sélectionnez votre fichier CV (PDF, DOC, DOCX)</li>
+                          <li>• Taille maximum: 5MB</li>
+                        </>
+                      )}
                       <li>• Notre IA Groq analysera et extraira automatiquement vos informations</li>
                       <li>• Vous pourrez ensuite modifier les données importées</li>
                     </ul>
@@ -104,15 +180,16 @@ const CVImportModal = ({ isOpen, onClose, onImportSuccess }) => {
                 </div>
               </div>
 
-              {/* Zone de texte */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Contenu de votre CV
-                </label>
-                <textarea
-                  value={cvText}
-                  onChange={(e) => setCvText(e.target.value)}
-                  placeholder="Collez ici le contenu textuel de votre CV...
+              {/* Zone de saisie selon le mode */}
+              {uploadMode === 'text' ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Contenu de votre CV
+                  </label>
+                  <textarea
+                    value={cvText}
+                    onChange={(e) => setCvText(e.target.value)}
+                    placeholder="Collez ici le contenu textuel de votre CV...
 
 Exemple:
 Jean Dupont
@@ -125,14 +202,60 @@ Développeur Senior - TechCorp (2020-2024)
 - Développement d'applications web React/Node.js
 - Management d'équipe de 3 développeurs
 - ..."
-                  rows={12}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  disabled={isAnalyzing}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {cvText.length} caractères - Minimum 100 caractères recommandé
-                </p>
-              </div>
+                    rows={12}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    disabled={isAnalyzing}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {cvText.length} caractères - Minimum 100 caractères recommandé
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fichier CV
+                  </label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
+                    <div className="text-center">
+                      <File className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600">
+                          Glissez-déposez votre fichier ici ou cliquez pour sélectionner
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          PDF, DOC, DOCX - Max 5MB
+                        </p>
+                      </div>
+                      
+                      {selectedFile ? (
+                        <div className="mt-4 flex items-center justify-center space-x-4">
+                          <div className="flex items-center bg-green-50 text-green-700 px-4 py-2 rounded-lg">
+                            <File className="h-5 w-5 mr-2" />
+                            <span className="font-medium">{selectedFile.name}</span>
+                          </div>
+                          <button
+                            onClick={() => setSelectedFile(null)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <X className="h-5 w-5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="mt-4 cursor-pointer inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                          <FileUp className="h-5 w-5 mr-2" />
+                          Choisir un fichier
+                          <input
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            onChange={handleFileChange}
+                            className="hidden"
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Options */}
               <div className="space-y-4">
@@ -233,7 +356,10 @@ Développeur Senior - TechCorp (2020-2024)
               </button>
               <button
                 onClick={handleImport}
-                disabled={isAnalyzing || cvText.trim().length < 50}
+                disabled={isAnalyzing || 
+                  (uploadMode === 'text' && cvText.trim().length < 50) ||
+                  (uploadMode === 'file' && !selectedFile)
+                }
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 flex items-center space-x-2 transition-colors"
               >
                 {isAnalyzing ? (
@@ -243,7 +369,7 @@ Développeur Senior - TechCorp (2020-2024)
                   </>
                 ) : (
                   <>
-                    <FileText className="h-4 w-4" />
+                    {uploadMode === 'file' ? <FileUp className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
                     <span>Analyser le CV</span>
                   </>
                 )}

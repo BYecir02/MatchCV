@@ -227,6 +227,20 @@ class ProfileService extends BaseApiService {
       }),
     });
   }
+
+  // ⭐ NOUVELLE MÉTHODE : Upload de fichier CV
+  async uploadCV(formData) {
+    console.log('📡 API Call - uploadCV:', { 
+      hasFile: formData.has('cv'),
+      replaceExisting: formData.get('replaceExisting')
+    });
+    
+    return this.request('/profile/upload-cv', {
+      method: 'POST',
+      body: formData,
+      headers: {}, // Pas de Content-Type pour FormData
+    });
+  }
 }
 
 export default new ProfileService();
