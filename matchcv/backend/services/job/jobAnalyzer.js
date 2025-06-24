@@ -188,15 +188,14 @@ JSON ATTENDU:
     "preferredSkills": [],
     "benefits": []
   },
-  "skillsAnalysis": [
+  "extractedSkills": [
     {
       "skillName": "",
       "category": "",
-      "isRequired": true,
+      "importanceLevel": "essential",
+      "yearsRequired": 1,
       "userHasSkill": false,
-      "userProficiencyLevel": 0,
-      "matchScore": 0,
-      "recommendation": ""
+      "userProficiencyLevel": 0
     }
   ],
   "overallMatch": {
@@ -233,22 +232,38 @@ RÉPONSE: UNIQUEMENT LE JSON CI-DESSUS, RIEN D'AUTRE.`;
     try {
       const analysis = JSON.parse(cleanedResponse);
       
+      // 🔧 CORRECTION : Gérer les deux formats possibles
+      let skillsArray = analysis.extractedSkills || analysis.skillsAnalysis || [];
+      
+      // Si c'est un objet avec jobAnalysis, extraire les compétences
+      if (analysis.jobAnalysis && !skillsArray.length) {
+        skillsArray = analysis.jobAnalysis.requiredSkills || analysis.jobAnalysis.preferredSkills || [];
+      }
+      
+      console.log(`🔍 Compétences trouvées: ${skillsArray.length}`);
+      console.log(`🔍 Format détecté: ${analysis.extractedSkills ? 'extractedSkills' : analysis.skillsAnalysis ? 'skillsAnalysis' : 'autre'}`);
+      
       // Calculer le score de correspondance
-      if (analysis.extractedSkills && Array.isArray(analysis.extractedSkills)) {
-        const matchingSkills = analysis.extractedSkills.filter(skill => skill.userHasSkill === true);
-        const essentialSkills = analysis.extractedSkills.filter(skill => skill.importanceLevel === 'essential');
+      if (skillsArray && Array.isArray(skillsArray) && skillsArray.length > 0) {
+        const matchingSkills = skillsArray.filter(skill => skill.userHasSkill === true);
+        const essentialSkills = skillsArray.filter(skill => skill.importanceLevel === 'essential');
         const matchingEssentialSkills = essentialSkills.filter(skill => skill.userHasSkill === true);
         
-        const totalSkills = analysis.extractedSkills.length;
+        const totalSkills = skillsArray.length;
         const overallScore = totalSkills > 0 ? Math.round((matchingSkills.length / totalSkills) * 100) : 0;
         const essentialScore = essentialSkills.length > 0 ? Math.round((matchingEssentialSkills.length / essentialSkills.length) * 100) : 100;
         
+        // 🔧 ASSURER LA COHÉRENCE DES DONNÉES
+        analysis.extractedSkills = skillsArray;
         analysis.overallMatchScore = overallScore;
         analysis.essentialSkillsScore = essentialScore;
         
         console.log(`📊 Score calculé - Global: ${overallScore}%, Essentiel: ${essentialScore}%`);
         console.log(`🔧 Compétences: ${matchingSkills.length}/${totalSkills} matchées`);
+        console.log(`🎯 Compétences essentielles: ${matchingEssentialSkills.length}/${essentialSkills.length} matchées`);
       } else {
+        console.log('⚠️ Aucune compétence trouvée dans la réponse IA');
+        analysis.extractedSkills = [];
         analysis.overallMatchScore = 0;
         analysis.essentialSkillsScore = 0;
       }
