@@ -2,7 +2,7 @@ import React from 'react';
 import { Check, Star } from 'lucide-react';
 
 const ModernTemplatePreview = () => (
-  <div className="w-full h-48 bg-white border rounded-lg overflow-hidden relative">
+  <div className="w-full h-48 bg-white/10 backdrop-blur-md border rounded-lg overflow-hidden relative">
     {/* Header moderne avec couleur */}
     <div className="bg-blue-600 h-12 flex items-center px-3">
       <div className="w-8 h-8 bg-white rounded-full mr-2"></div>
@@ -34,7 +34,7 @@ const ModernTemplatePreview = () => (
 );
 
 const ClassicTemplatePreview = () => (
-  <div className="w-full h-48 bg-white border rounded-lg overflow-hidden relative">
+  <div className="w-full h-48 bg-white/10 backdrop-blur-md border rounded-lg overflow-hidden relative">
     {/* Header classique centré */}
     <div className="p-3 text-center border-b">
       <div className="w-6 h-6 bg-gray-300 rounded-full mx-auto mb-1"></div>

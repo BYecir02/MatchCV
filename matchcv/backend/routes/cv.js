@@ -4,7 +4,7 @@ const authenticateToken = require('../middleware/auth');
 
 const router = express.Router();
 
-// Routes CV (toutes protégées)
+// Routes CV de base (toutes protégées)
 router.post('/save', authenticateToken, cvController.saveCV);
 router.get('/my-cvs', authenticateToken, cvController.getMyCVs);
 router.get('/:id', authenticateToken, cvController.getCVById);

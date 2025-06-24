@@ -576,7 +576,7 @@ const CVEditor = ({ cvData, onUpdateCV, onSave, className = '' }) => {
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm ${className}`}>
+    <div className={`bg-white/10 backdrop-blur-md rounded-lg shadow-sm ${className}`}>
       <div className="flex border-b border-gray-200">
         {/* Sidebar des sections */}
         <div className="w-64 bg-gray-50 p-4">

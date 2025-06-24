@@ -424,7 +424,7 @@ const handleSubmit = async (e) => {
   const readingTime = Math.ceil(wordCount / 200);
 
   return (
-    <div className={`space-y-6 ${isFullscreen ? 'fixed inset-0 z-50 bg-white p-6 overflow-auto' : ''}`}>
+    <div className={`space-y-6 ${isFullscreen ? 'fixed inset-0 z-50 bg-white/10 backdrop-blur-md p-6 overflow-auto' : ''}`}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -467,7 +467,7 @@ const handleSubmit = async (e) => {
       <div className={`grid gap-6 ${isFullscreen ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
         {/* Formulaire */}
         {(!isFullscreen || !isEditing) && (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
               <FileText className="h-6 w-6 mr-2 text-blue-600" />
               Informations requises
@@ -612,7 +612,7 @@ const handleSubmit = async (e) => {
         )}
 
         {/* Éditeur WYSIWYG amélioré */}
-        <div className={`bg-white rounded-lg shadow-md p-6 ${isFullscreen ? 'min-h-screen' : ''}`}>
+        <div className={`bg-white/10 backdrop-blur-md rounded-lg shadow-md p-6 ${isFullscreen ? 'min-h-screen' : ''}`}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center">
               {isEditing ? (
@@ -845,7 +845,7 @@ const handleSubmit = async (e) => {
                   ref={editorRef}
                   contentEditable={true}
                   onInput={handleLetterEdit}
-                  className="w-full p-6 bg-white border-0 rounded-md focus:ring-2 focus:ring-orange-500 outline-none min-h-[400px]"
+                  className="w-full p-6 bg-white/10 backdrop-blur-md border-0 rounded-md focus:ring-2 focus:ring-orange-500 outline-none min-h-[400px]"
                   style={{ 
                     fontSize: `16px`,
                     lineHeight: '1.6'

@@ -24,7 +24,7 @@ const CVSchema = new mongoose.Schema({
       title: String,
       linkedin: String,
       github: String,
-      portfolio: String
+      website: String
     },
     summary: String,
     experience: [{
@@ -38,39 +38,34 @@ const CVSchema = new mongoose.Schema({
     education: [{
       school: String,
       degree: String,
-      field: String,
       period: String,
       location: String,
       grade: String
     }],
     skills: [{
       name: String,
-      level: String,
-      category: String,
-      highlighted: Boolean
+      level: String
     }],
     languages: [{
       name: String,
       level: String
     }],
+    certifications: [{
+      name: String,
+      issuer: String,
+      date: String
+    }],
     projects: [{
       name: String,
       description: String,
       url: String,
-      technologies: [String],
-      period: String
+      technologies: [String]
     }]
   },
   optimizedFor: {
     company: String,
     position: String,
-    keywords: [String],
-    jobAnalysisId: mongoose.Schema.Types.ObjectId
-  },
-  analytics: {
-    views: { type: Number, default: 0 },
-    downloads: { type: Number, default: 0 },
-    shares: { type: Number, default: 0 }
+    keywords: [String]
   }
 }, {
   timestamps: true

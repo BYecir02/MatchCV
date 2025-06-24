@@ -37,7 +37,7 @@ const cvController = {
     try {
       const cvs = await CV.find({ userId: req.user.id })
         .sort({ createdAt: -1 })
-        .select('templateId title optimizedFor createdAt analytics');
+        .select('templateId title optimizedFor createdAt');
 
       res.json({
         success: true,
@@ -69,10 +69,6 @@ const cvController = {
           message: 'CV non trouvé'
         });
       }
-
-      // Incrémenter le compteur de vues
-      cv.analytics.views += 1;
-      await cv.save();
 
       res.json({
         success: true,

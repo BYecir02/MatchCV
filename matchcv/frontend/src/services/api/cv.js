@@ -3,10 +3,21 @@ import BaseApiService from './base.js';
 class CVService extends BaseApiService {
   // Sauvegarder un CV
   async saveCV(cvData) {
-    return this.request('/cv/save', {
-      method: 'POST',
-      body: JSON.stringify(cvData),
-    });
+    console.log('🔍 CVService.saveCV appelé avec:', cvData);
+    console.log('🔑 Token présent:', !!localStorage.getItem('authToken'));
+    
+    try {
+      const result = await this.request('/cv/save', {
+        method: 'POST',
+        body: JSON.stringify(cvData),
+      });
+      
+      console.log('✅ CVService.saveCV résultat:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ CVService.saveCV erreur:', error);
+      throw error;
+    }
   }
 
   // Récupérer mes CVs

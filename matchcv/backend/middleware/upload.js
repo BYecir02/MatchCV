@@ -62,8 +62,7 @@ const handleUploadError = (err, req, res, next) => {
   next();
 };
 
-module.exports = {
-  uploadCV,
-  handleUploadError,
-  uploadsDir
-}; 
+module.exports = upload;
+module.exports.uploadCV = uploadCV;
+module.exports.handleUploadError = handleUploadError;
+module.exports.uploadsDir = uploadsDir; 
