@@ -1,197 +1,103 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Globe, Linkedin, Calendar, Award, GraduationCap, Briefcase } from 'lucide-react';
 
-const ClassicTemplate = ({ cvData, className = '' }) => {
-  if (!cvData) return null;
-
-  const { personalInfo, summary, experience, education, skills, languages, certifications } = cvData;
+const ClassicTemplate = ({ data }) => {
+  // Données d'exemple si aucune data n'est passée
+  const cv = data || {
+    personalInfo: {
+      firstName: 'Thomas',
+      lastName: 'Dubois',
+      title: 'Ingénieur Logiciel Senior',
+      email: 'thomas.dubois@email.com',
+      phone: '01 23 45 67 89',
+      address: 'Lyon, France',
+      linkedin: 'linkedin.com/in/thomasdubois'
+    },
+    summary: "Ingénieur logiciel expérimenté avec 8 ans d'expérience dans le développement d'applications d'entreprise. Spécialisé en Java, Spring Boot et architecture microservices.",
+    experience: [
+      {
+        company: 'Grande Entreprise SA',
+        position: 'Ingénieur Logiciel Senior',
+        start: '2020',
+        end: '2024',
+        description: "Développement d'applications critiques, mentorat junior, architecture système."
+      },
+      {
+        company: 'TechCorp',
+        position: 'Développeur Backend',
+        start: '2016',
+        end: '2020',
+        description: "Création d'APIs REST, optimisation de performances, maintenance système."
+      }
+    ],
+    education: [
+      {
+        school: 'École Centrale de Lyon',
+        degree: 'Diplôme d\'Ingénieur',
+        year: '2016'
+      }
+    ],
+    skills: ['Java', 'Spring Boot', 'PostgreSQL', 'Docker', 'Kubernetes', 'Maven']
+  };
 
   return (
-    <div className={`bg-white mx-auto print:shadow-none ${className}`} 
-         style={{ 
-           maxWidth: '210mm', 
-           minHeight: '297mm',
-           width: '100%',
-           '@media print': {
-             maxWidth: '210mm',
-             width: '210mm'
-           }
-         }}>
-      {/* Header centré */}
-      <div className="text-center border-b-2 border-gray-300 pb-4 sm:pb-6 mb-4 sm:mb-6 px-4 sm:px-6">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
-          {personalInfo.firstName} {personalInfo.lastName}
-        </h1>
-        <h2 className="text-lg sm:text-xl text-gray-600 mb-3 sm:mb-4">{personalInfo.title}</h2>
-        
-        {/* Contacts en ligne */}
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
-          {personalInfo.email && (
-            <div className="flex items-center">
-              <Mail className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-              <span className="truncate">{personalInfo.email}</span>
-            </div>
-          )}
-          {personalInfo.phone && (
-            <div className="flex items-center">
-              <Phone className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-              <span>{personalInfo.phone}</span>
-            </div>
-          )}
-          {personalInfo.location && (
-            <div className="flex items-center">
-              <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-              <span className="truncate">{personalInfo.location}</span>
-            </div>
-          )}
-          {personalInfo.linkedin && (
-            <div className="flex items-center">
-              <Linkedin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-              <span className="truncate">{personalInfo.linkedin.replace('https://', '')}</span>
-            </div>
-          )}
+    <div className="w-full max-w-2xl mx-auto bg-white border border-gray-300 text-gray-900 text-sm" style={{fontFamily:'Times New Roman, serif'}}>
+      {/* Header */}
+      <div className="border-b-2 border-black px-8 py-6">
+        <h1 className="text-3xl font-bold text-center mb-2">{cv.personalInfo.firstName} {cv.personalInfo.lastName}</h1>
+        <div className="text-xl text-center text-gray-700 mb-4">{cv.personalInfo.title}</div>
+        <div className="flex justify-center space-x-8 text-sm">
+          <span>{cv.personalInfo.email}</span>
+          <span>{cv.personalInfo.phone}</span>
+          <span>{cv.personalInfo.address}</span>
         </div>
       </div>
-
-      <div className="px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8">
-        {/* Résumé */}
-        {summary && (
-          <section className="mb-6 sm:mb-8">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 text-center uppercase tracking-wide">
-              Profil Professionnel
-            </h3>
-            <hr className="border-gray-300 mb-3 sm:mb-4" />
-            <p className="text-gray-700 leading-relaxed text-center italic text-sm sm:text-base">{summary}</p>
-          </section>
-        )}
-
-        {/* Expérience */}
-        {experience && experience.length > 0 && (
-          <section className="mb-6 sm:mb-8">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 text-center uppercase tracking-wide">
-              Expérience Professionnelle
-            </h3>
-            <hr className="border-gray-300 mb-3 sm:mb-4" />
-            <div className="space-y-4 sm:space-y-6">
-              {experience.map((exp, index) => (
-                <div key={index}>
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
-                    <div className="flex-1">
-                      <h4 className="text-base sm:text-lg font-semibold text-gray-800">{exp.position}</h4>
-                      <p className="text-gray-600 font-medium text-sm sm:text-base">{exp.company}</p>
-                      {exp.location && <p className="text-xs sm:text-sm text-gray-500">{exp.location}</p>}
-                    </div>
-                    <div className="text-left sm:text-right">
-                      <p className="text-xs sm:text-sm text-gray-600">{exp.period}</p>
-                    </div>
-                  </div>
-                  {exp.description && (
-                    <p className="text-gray-700 mb-2 text-sm sm:text-base">{exp.description}</p>
-                  )}
-                  {exp.achievements && exp.achievements.length > 0 && (
-                    <ul className="list-disc list-inside text-gray-700 space-y-1 ml-2 sm:ml-4 text-sm sm:text-base">
-                      {exp.achievements.map((achievement, idx) => (
-                        <li key={idx}>{achievement}</li>
-                      ))}
-                    </ul>
-                  )}
-                  {index < experience.length - 1 && <hr className="mt-3 sm:mt-4 border-gray-200" />}
-                </div>
-              ))}
+      
+      {/* Résumé */}
+      <div className="px-8 py-4">
+        <h2 className="text-lg font-bold border-b border-gray-400 mb-2">PROFIL PROFESSIONNEL</h2>
+        <p className="text-justify">{cv.summary}</p>
+      </div>
+      
+      {/* Expérience */}
+      <div className="px-8 py-4">
+        <h2 className="text-lg font-bold border-b border-gray-400 mb-3">EXPÉRIENCE PROFESSIONNELLE</h2>
+        {cv.experience.map((exp, i) => (
+          <div key={i} className="mb-4">
+            <div className="flex justify-between items-center mb-1">
+              <span className="font-bold">{exp.position}</span>
+              <span className="text-sm">{exp.start} - {exp.end}</span>
             </div>
-          </section>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          {/* Formation */}
-          {education && education.length > 0 && (
-            <section>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 text-center uppercase tracking-wide">
-                Formation
-              </h3>
-              <hr className="border-gray-300 mb-3 sm:mb-4" />
-              <div className="space-y-3 sm:space-y-4">
-                {education.map((edu, index) => (
-                  <div key={index} className="text-center">
-                    <h4 className="font-semibold text-gray-800 text-sm sm:text-base">{edu.degree}</h4>
-                    <p className="text-gray-600 font-medium text-sm sm:text-base">{edu.school}</p>
-                    <div className="text-xs sm:text-sm text-gray-500">
-                      <p>{edu.period}</p>
-                      {edu.location && <p>{edu.location}</p>}
-                      {edu.grade && <p><em>Mention: {edu.grade}</em></p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Compétences et Langues */}
-          <section>
-            {/* Compétences */}
-            {skills && skills.length > 0 && (
-              <div className="mb-4 sm:mb-6">
-                <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 text-center uppercase tracking-wide">
-                  Compétences
-                </h3>
-                <hr className="border-gray-300 mb-3 sm:mb-4" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {skills.map((skill, index) => (
-                    <div key={index} className="text-center">
-                      <span className={`inline-block px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full ${
-                        skill.highlighted 
-                          ? 'bg-gray-800 text-white' 
-                          : 'bg-gray-200 text-gray-700'
-                      }`}>
-                        {skill.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Langues */}
-            {languages && languages.length > 0 && (
-              <div className="mb-4 sm:mb-6">
-                <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 text-center uppercase tracking-wide">
-                  Langues
-                </h3>
-                <hr className="border-gray-300 mb-3 sm:mb-4" />
-                <div className="space-y-2">
-                  {languages.map((lang, index) => (
-                    <div key={index} className="flex justify-between border-b border-gray-100 pb-1">
-                      <span className="font-medium text-gray-800 text-sm sm:text-base">{lang.name}</span>
-                      <span className="text-gray-600 text-sm">{lang.level}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Certifications */}
-            {certifications && certifications.length > 0 && (
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 text-center uppercase tracking-wide">
-                  Certifications
-                </h3>
-                <hr className="border-gray-300 mb-3 sm:mb-4" />
-                <div className="space-y-2 sm:space-y-3">
-                  {certifications.map((cert, index) => (
-                    <div key={index} className="text-center">
-                      <h4 className="font-medium text-gray-800 text-sm sm:text-base">{cert.name}</h4>
-                      <p className="text-sm text-gray-600">{cert.issuer}</p>
-                      <p className="text-xs text-gray-500">{cert.date}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </section>
+            <div className="font-semibold text-gray-700 mb-1">{exp.company}</div>
+            <p className="text-sm">{exp.description}</p>
+          </div>
+        ))}
+      </div>
+      
+      {/* Formation */}
+      <div className="px-8 py-4">
+        <h2 className="text-lg font-bold border-b border-gray-400 mb-3">FORMATION</h2>
+        {cv.education.map((edu, i) => (
+          <div key={i} className="mb-2">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold">{edu.degree}</span>
+              <span className="text-sm">{edu.year}</span>
+            </div>
+            <div className="text-gray-700">{edu.school}</div>
+          </div>
+        ))}
+      </div>
+      
+      {/* Compétences */}
+      <div className="px-8 py-4">
+        <h2 className="text-lg font-bold border-b border-gray-400 mb-3">COMPÉTENCES TECHNIQUES</h2>
+        <div className="grid grid-cols-2 gap-2">
+          {cv.skills.map((skill, i) => (
+            <div key={i} className="text-sm">• {skill}</div>
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-export default ClassicTemplate;
+export default ClassicTemplate; 

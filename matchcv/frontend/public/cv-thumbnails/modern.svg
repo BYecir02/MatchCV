@@ -1,0 +1,34 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond -->
+  <rect width="300" height="200" fill="#f8fafc"/>
+  
+  <!-- Header moderne avec couleur -->
+  <rect x="0" y="0" width="300" height="60" fill="#3b82f6"/>
+  
+  <!-- Nom -->
+  <rect x="20" y="15" width="120" height="8" fill="white" rx="2"/>
+  <rect x="20" y="30" width="80" height="6" fill="white" opacity="0.8" rx="2"/>
+  
+  <!-- Contact -->
+  <rect x="200" y="15" width="80" height="6" fill="white" opacity="0.8" rx="2"/>
+  <rect x="200" y="25" width="80" height="6" fill="white" opacity="0.8" rx="2"/>
+  <rect x="200" y="35" width="80" height="6" fill="white" opacity="0.8" rx="2"/>
+  
+  <!-- Contenu -->
+  <rect x="20" y="80" width="260" height="6" fill="#374151" rx="2"/>
+  <rect x="20" y="95" width="200" height="6" fill="#6b7280" rx="2"/>
+  <rect x="20" y="110" width="180" height="6" fill="#6b7280" rx="2"/>
+  
+  <!-- Section expérience -->
+  <rect x="20" y="130" width="100" height="8" fill="#3b82f6" rx="2"/>
+  <rect x="20" y="145" width="80" height="6" fill="#374151" rx="2"/>
+  <rect x="20" y="155" width="120" height="6" fill="#6b7280" rx="2"/>
+  <rect x="20" y="165" width="140" height="6" fill="#6b7280" rx="2"/>
+  
+  <!-- Section compétences -->
+  <rect x="160" y="130" width="120" height="8" fill="#3b82f6" rx="2"/>
+  <rect x="160" y="145" width="40" height="6" fill="#374151" rx="2"/>
+  <rect x="210" y="145" width="40" height="6" fill="#374151" rx="2"/>
+  <rect x="160" y="155" width="50" height="6" fill="#374151" rx="2"/>
+  <rect x="220" y="155" width="40" height="6" fill="#374151" rx="2"/>
+</svg> 

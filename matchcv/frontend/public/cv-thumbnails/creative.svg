@@ -1,0 +1,41 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond -->
+  <rect width="300" height="200" fill="#fdf2f8"/>
+  
+  <!-- Header créatif avec dégradé -->
+  <defs>
+    <linearGradient id="creativeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ec4899;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect x="0" y="0" width="300" height="60" fill="url(#creativeGradient)"/>
+  
+  <!-- Nom avec style créatif -->
+  <rect x="20" y="15" width="120" height="8" fill="white" rx="4"/>
+  <rect x="20" y="30" width="80" height="6" fill="white" opacity="0.9" rx="3"/>
+  
+  <!-- Contact -->
+  <rect x="200" y="15" width="80" height="6" fill="white" opacity="0.8" rx="3"/>
+  <rect x="200" y="25" width="80" height="6" fill="white" opacity="0.8" rx="3"/>
+  <rect x="200" y="35" width="80" height="6" fill="white" opacity="0.8" rx="3"/>
+  
+  <!-- Contenu avec style créatif -->
+  <rect x="20" y="80" width="260" height="6" fill="#ec4899" rx="3"/>
+  <rect x="20" y="95" width="200" height="6" fill="#8b5cf6" rx="3"/>
+  <rect x="20" y="110" width="180" height="6" fill="#a855f7" rx="3"/>
+  
+  <!-- Section expérience avec couleur -->
+  <rect x="20" y="130" width="100" height="8" fill="#ec4899" rx="4"/>
+  <rect x="20" y="145" width="80" height="6" fill="#374151" rx="3"/>
+  <rect x="20" y="155" width="120" height="6" fill="#6b7280" rx="3"/>
+  <rect x="20" y="165" width="140" height="6" fill="#6b7280" rx="3"/>
+  
+  <!-- Section compétences avec style créatif -->
+  <rect x="160" y="130" width="120" height="8" fill="#8b5cf6" rx="4"/>
+  <rect x="160" y="145" width="40" height="6" fill="#ec4899" rx="3"/>
+  <rect x="210" y="145" width="40" height="6" fill="#8b5cf6" rx="3"/>
+  <rect x="160" y="155" width="50" height="6" fill="#a855f7" rx="3"/>
+  <rect x="220" y="155" width="40" height="6" fill="#ec4899" rx="3"/>
+</svg> 

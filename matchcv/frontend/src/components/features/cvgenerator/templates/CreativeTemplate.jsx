@@ -1,277 +1,146 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Globe, Linkedin, Github, Calendar, Award, GraduationCap, Briefcase, Star } from 'lucide-react';
 
-const CreativeTemplate = ({ cvData, className = '' }) => {
-  if (!cvData) return null;
-
-  const { personalInfo, summary, experience, education, skills, languages, certifications, projects } = cvData;
+const CreativeTemplate = ({ data }) => {
+  // Données d'exemple si aucune data n'est passée
+  const cv = data || {
+    personalInfo: {
+      firstName: 'Emma',
+      lastName: 'Rousseau',
+      title: 'Designer UX/UI & Développeuse Frontend',
+      email: 'emma.rousseau@email.com',
+      phone: '06 98 76 54 32',
+      address: 'Bordeaux, France',
+      linkedin: 'linkedin.com/in/emmarousseau',
+      portfolio: 'emmarousseau.design'
+    },
+    summary: "Designer UX/UI créative avec 5 ans d'expérience en conception d'interfaces utilisateur et développement frontend. Passionnée par l'expérience utilisateur et les technologies web modernes.",
+    experience: [
+      {
+        company: 'Studio Créatif',
+        position: 'Designer UX/UI Senior',
+        start: '2021',
+        end: '2024',
+        description: "Conception d'interfaces utilisateur, prototypage, tests utilisateurs, collaboration avec les développeurs."
+      },
+      {
+        company: 'Agence Digital',
+        position: 'Designer & Développeuse',
+        start: '2019',
+        end: '2021',
+        description: "Design de sites web, développement frontend, animations CSS, optimisation mobile."
+      }
+    ],
+    education: [
+      {
+        school: 'École des Beaux-Arts de Bordeaux',
+        degree: 'Master Design Numérique',
+        year: '2019'
+      }
+    ],
+    skills: ['Figma', 'Adobe Creative Suite', 'React', 'CSS/SCSS', 'Prototypage', 'Design Thinking']
+  };
 
   return (
-    <div className={`bg-gradient-to-br from-purple-50 to-pink-50 mx-auto print:shadow-none ${className}`} 
-         style={{ 
-           maxWidth: '210mm', 
-           minHeight: '297mm',
-           width: '100%',
-           '@media print': {
-             maxWidth: '210mm',
-             width: '210mm'
-           }
-         }}>
-      
-      {/* Header créatif avec gradient */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 sm:p-6 lg:p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-10"></div>
+    <div className="w-full max-w-2xl mx-auto bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-xl overflow-hidden border border-purple-200 text-gray-900 text-sm" style={{fontFamily:'Poppins, sans-serif'}}>
+      {/* Header avec gradient */}
+      <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-purple-700 text-white px-8 py-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
         <div className="relative z-10">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
-                {personalInfo.firstName} {personalInfo.lastName}
-              </h1>
-              <h2 className="text-lg sm:text-xl text-purple-100 mb-4">{personalInfo.title}</h2>
-              
-              {/* Contacts */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                {personalInfo.email && (
-                  <div className="flex items-center">
-                    <Mail className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="truncate">{personalInfo.email}</span>
-                  </div>
-                )}
-                {personalInfo.phone && (
-                  <div className="flex items-center">
-                    <Phone className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span>{personalInfo.phone}</span>
-                  </div>
-                )}
-                {personalInfo.location && (
-                  <div className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="truncate">{personalInfo.location}</span>
-                  </div>
-                )}
-                {personalInfo.linkedin && (
-                  <div className="flex items-center">
-                    <Linkedin className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="truncate">{personalInfo.linkedin.replace('https://', '')}</span>
-                  </div>
-                )}
-                {personalInfo.github && (
-                  <div className="flex items-center">
-                    <Github className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="truncate">{personalInfo.github.replace('https://', '')}</span>
-                  </div>
-                )}
-                {personalInfo.website && (
-                  <div className="flex items-center">
-                    <Globe className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="truncate">{personalInfo.website.replace('https://', '')}</span>
-                  </div>
-                )}
-              </div>
+          <h1 className="text-3xl font-bold mb-2">{cv.personalInfo.firstName} {cv.personalInfo.lastName}</h1>
+          <div className="text-xl text-purple-100 mb-4">{cv.personalInfo.title}</div>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center">
+              <span className="mr-2">📧</span>
+              <span>{cv.personalInfo.email}</span>
             </div>
-            
-            {/* Photo placeholder avec effet créatif */}
-            <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-sm border-2 border-white border-opacity-30">
-              <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
-                {personalInfo.firstName?.[0]}{personalInfo.lastName?.[0]}
-              </span>
+            <div className="flex items-center">
+              <span className="mr-2">📱</span>
+              <span>{cv.personalInfo.phone}</span>
+            </div>
+            <div className="flex items-center">
+              <span className="mr-2">📍</span>
+              <span>{cv.personalInfo.address}</span>
+            </div>
+            <div className="flex items-center">
+              <span className="mr-2">💼</span>
+              <span>{cv.personalInfo.portfolio}</span>
             </div>
           </div>
         </div>
       </div>
-
-      <div className="p-4 sm:p-6 lg:p-8">
-        {/* Résumé */}
-        {summary && (
-          <section className="mb-6 lg:mb-8">
-            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border-l-4 border-purple-500">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
-                <Star className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-purple-600 flex-shrink-0" />
-                Profil Professionnel
-              </h3>
-              <p className="text-gray-700 leading-relaxed text-sm sm:text-base">{summary}</p>
+      
+      {/* Résumé avec icône */}
+      <div className="px-8 py-6 bg-white">
+        <div className="flex items-center mb-3">
+          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mr-3">
+            <span className="text-white text-sm">✨</span>
+          </div>
+          <h2 className="text-lg font-bold text-purple-700">À PROPOS</h2>
+        </div>
+        <p className="text-gray-700 leading-relaxed">{cv.summary}</p>
+      </div>
+      
+      {/* Expérience avec timeline */}
+      <div className="px-8 py-6 bg-gradient-to-r from-purple-50 to-pink-50">
+        <div className="flex items-center mb-4">
+          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mr-3">
+            <span className="text-white text-sm">🚀</span>
+          </div>
+          <h2 className="text-lg font-bold text-purple-700">EXPÉRIENCE</h2>
+        </div>
+        {cv.experience.map((exp, i) => (
+          <div key={i} className="mb-4 relative pl-6 border-l-2 border-purple-300">
+            <div className="absolute left-0 top-2 w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full -ml-1.5"></div>
+            <div className="bg-white rounded-lg p-4 shadow-sm">
+              <div className="flex justify-between items-start mb-2">
+                <span className="font-bold text-purple-700">{exp.position}</span>
+                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">{exp.start} - {exp.end}</span>
+              </div>
+              <div className="text-sm font-semibold text-gray-600 mb-2">{exp.company}</div>
+              <p className="text-sm text-gray-700">{exp.description}</p>
             </div>
-          </section>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          {/* Colonne principale */}
-          <div className="lg:col-span-2 space-y-6 lg:space-y-8">
-            {/* Expérience */}
-            {experience && experience.length > 0 && (
-              <section>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
-                  <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-purple-600 flex-shrink-0" />
-                  Expérience Professionnelle
-                </h3>
-                <div className="space-y-4 sm:space-y-6">
-                  {experience.map((exp, index) => (
-                    <div key={index} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border-l-4 border-purple-500">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
-                        <div className="flex-1">
-                          <h4 className="text-base sm:text-lg font-semibold text-gray-800">{exp.position}</h4>
-                          <p className="text-purple-600 font-medium text-sm sm:text-base">{exp.company}</p>
-                          {exp.location && <p className="text-sm text-gray-500">{exp.location}</p>}
-                        </div>
-                        <div className="text-left sm:text-right">
-                          <p className="text-xs sm:text-sm text-gray-600 flex items-center">
-                            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-                            {exp.period}
-                          </p>
-                        </div>
-                      </div>
-                      {exp.description && (
-                        <p className="text-gray-700 mb-3 text-sm sm:text-base">{exp.description}</p>
-                      )}
-                      {exp.achievements && exp.achievements.length > 0 && (
-                        <ul className="list-disc list-inside text-gray-700 space-y-1 text-sm sm:text-base">
-                          {exp.achievements.map((achievement, idx) => (
-                            <li key={idx}>{achievement}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Projets */}
-            {projects && projects.length > 0 && (
-              <section>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
-                  <Star className="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-purple-600 flex-shrink-0" />
-                  Projets
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  {projects.map((project, index) => (
-                    <div key={index} className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border border-purple-200">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
-                        <h4 className="text-base sm:text-lg font-semibold text-gray-800">{project.name}</h4>
-                        {project.url && (
-                          <a href={project.url} target="_blank" rel="noopener noreferrer" 
-                             className="text-purple-600 hover:underline text-xs sm:text-sm">
-                            Voir le projet
-                          </a>
-                        )}
-                      </div>
-                      {project.description && (
-                        <p className="text-gray-700 mb-3 text-sm sm:text-base">{project.description}</p>
-                      )}
-                      {project.technologies && project.technologies.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
-                          {project.technologies.map((tech, idx) => (
-                            <span key={idx} className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
           </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6 lg:space-y-8">
-            {/* Compétences */}
-            {skills && skills.length > 0 && (
-              <section>
-                <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border-l-4 border-purple-500">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
-                    <Award className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-purple-600 flex-shrink-0" />
-                    Compétences
-                  </h3>
-                  <div className="space-y-2 sm:space-y-3">
-                    {skills.map((skill, index) => (
-                      <div key={index} className={`p-2 sm:p-3 rounded-lg ${
-                        skill.highlighted ? 'bg-purple-50 border border-purple-200' : 'bg-gray-50'
-                      }`}>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="font-medium text-gray-800 text-sm sm:text-base">{skill.name}</span>
-                          <span className="text-xs text-gray-500">{skill.level}</span>
-                        </div>
-                        {skill.highlighted && (
-                          <div className="w-full bg-purple-200 rounded-full h-2">
-                            <div className="bg-purple-600 h-2 rounded-full" style={{
-                              width: skill.level === 'Expert' ? '90%' : 
-                                     skill.level === 'Avancé' ? '75%' : '60%'
-                            }}></div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Formation */}
-            {education && education.length > 0 && (
-              <section>
-                <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border-l-4 border-purple-500">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
-                    <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-purple-600 flex-shrink-0" />
-                    Formation
-                  </h3>
-                  <div className="space-y-3 sm:space-y-4">
-                    {education.map((edu, index) => (
-                      <div key={index} className="border-l-2 border-purple-200 pl-3 sm:pl-4">
-                        <h4 className="font-semibold text-gray-800 text-sm sm:text-base">{edu.degree}</h4>
-                        <p className="text-purple-600 font-medium text-sm sm:text-base">{edu.school}</p>
-                        <div className="text-xs sm:text-sm text-gray-600">
-                          <p>{edu.period}</p>
-                          {edu.location && <p>{edu.location}</p>}
-                          {edu.grade && <p>Mention: {edu.grade}</p>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Langues */}
-            {languages && languages.length > 0 && (
-              <section>
-                <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border-l-4 border-purple-500">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">Langues</h3>
-                  <div className="space-y-2">
-                    {languages.map((lang, index) => (
-                      <div key={index} className="flex justify-between">
-                        <span className="font-medium text-gray-800 text-sm sm:text-base">{lang.name}</span>
-                        <span className="text-gray-600 text-sm">{lang.level}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* Certifications */}
-            {certifications && certifications.length > 0 && (
-              <section>
-                <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm border-l-4 border-purple-500">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">Certifications</h3>
-                  <div className="space-y-2 sm:space-y-3">
-                    {certifications.map((cert, index) => (
-                      <div key={index} className="bg-gray-50 p-2 sm:p-3 rounded-lg">
-                        <h4 className="font-medium text-gray-800 text-sm sm:text-base">{cert.name}</h4>
-                        <p className="text-sm text-gray-600">{cert.issuer}</p>
-                        <p className="text-xs text-gray-500">{cert.date}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            )}
+        ))}
+      </div>
+      
+      {/* Formation */}
+      <div className="px-8 py-6 bg-white">
+        <div className="flex items-center mb-3">
+          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mr-3">
+            <span className="text-white text-sm">🎓</span>
           </div>
+          <h2 className="text-lg font-bold text-purple-700">FORMATION</h2>
+        </div>
+        {cv.education.map((edu, i) => (
+          <div key={i} className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-1">
+              <span className="font-semibold text-purple-700">{edu.degree}</span>
+              <span className="text-xs bg-purple-200 text-purple-700 px-2 py-1 rounded-full">{edu.year}</span>
+            </div>
+            <div className="text-sm text-gray-600">{edu.school}</div>
+          </div>
+        ))}
+      </div>
+      
+      {/* Compétences avec badges colorés */}
+      <div className="px-8 py-6 bg-gradient-to-r from-purple-50 to-pink-50">
+        <div className="flex items-center mb-4">
+          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mr-3">
+            <span className="text-white text-sm">🎨</span>
+          </div>
+          <h2 className="text-lg font-bold text-purple-700">COMPÉTENCES</h2>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {cv.skills.map((skill, i) => (
+            <span key={i} className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-xs font-medium shadow-sm">
+              {skill}
+            </span>
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-export default CreativeTemplate;
+export default CreativeTemplate; 
